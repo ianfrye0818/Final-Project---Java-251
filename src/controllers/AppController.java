@@ -52,7 +52,7 @@ public class AppController {
     }
 
     public void start() {
-        viewManager.setDisplay(ViewType.ORDER_HISTORY_VIEW);
+        viewManager.setDisplay(ViewType.LOGIN_VIEW);
     }
 
     public void setDisplay(ViewType view) {

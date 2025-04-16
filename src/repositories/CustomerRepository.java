@@ -41,6 +41,7 @@ public class CustomerRepository implements ICustomerRepository {
 
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createSql);
+            seed();
         }
     }
 
@@ -182,6 +183,49 @@ public class CustomerRepository implements ICustomerRepository {
         } catch (SQLException e) {
             System.out.println("Save Customer Failed: " + e.getMessage());
             return false;
+        }
+    }
+
+    private void seed() {
+        List<Customer> customers = new ArrayList<>();
+        customers.add(new Customer.Builder()
+                .setFirstName("Ian")
+                .setLastName("Frye")
+                .setStreet("123 Main St")
+                .setCity("Anytown")
+                .setState("CA")
+                .setZip("12345")
+                .setEmail("ianfrye@gmail.com")
+                .setPhone("3368307157")
+                .setCreditLimit(100.00)
+                .build());
+
+        customers.add(new Customer.Builder()
+                .setFirstName("Jane")
+                .setLastName("Doe")
+                .setStreet("456 Main St")
+                .setCity("Anytown")
+                .setState("CA")
+                .setZip("12345")
+                .setEmail("jane.doe@example.com")
+                .setPhone("3368307157")
+                .setCreditLimit(100.00)
+                .build());
+
+        customers.add(new Customer.Builder()
+                .setFirstName("Jim")
+                .setLastName("Beam")
+                .setStreet("789 Main St")
+                .setCity("Anytown")
+                .setState("CA")
+                .setZip("12345")
+                .setEmail("jim.beam@example.com")
+                .setPhone("3368307157")
+                .setCreditLimit(100.00)
+                .build());
+
+        for (Customer customer : customers) {
+            save(customer);
         }
     }
 

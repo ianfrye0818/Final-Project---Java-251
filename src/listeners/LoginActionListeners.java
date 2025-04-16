@@ -28,18 +28,17 @@ public class LoginActionListeners {
       String email = emailField.getText().trim();
       String password = new String(passwordField.getPassword());
 
-      boolean isEmailValid = ValidatorService.isValidEmail(email);
-      if (!isEmailValid) {
-        showError("Invalid email format.");
-        return;
-      }
-
-      boolean isPasswordValid = ValidatorService.isValidNotEmpty(password);
-      if (!isPasswordValid) {
-        showError("Password is required.");
-      }
-
       try {
+
+        boolean isEmailValid = ValidatorService.isValidEmail(email);
+        if (!isEmailValid) {
+          showError("Invalid email format.");
+          return;
+        }
+
+        if (password.isEmpty()) {
+          showError("Password is required.");
+        }
         appController.getAuthService().login(email);
         appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
       } catch (Exception e1) {

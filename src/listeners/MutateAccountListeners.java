@@ -50,8 +50,8 @@ public class MutateAccountListeners {
     this.passwordField = passwordField;
   }
 
-  public ActionListener getBackButtonListener() {
-    return e -> appController.setDisplay(ViewType.LOGIN_VIEW);
+  public ActionListener getBackButtonListener(ViewType viewType) {
+    return e -> appController.setDisplay(viewType);
   }
 
   public ActionListener getMutateButtonListener() {
@@ -87,7 +87,7 @@ public class MutateAccountListeners {
   }
 
   private boolean validateDto(ValidateCreateAccountDto dto) {
-    if (!ValidatorService.isValidNotEmpty(dto)) {
+    if (!ValidatorService.isValidCustomer(dto)) {
       showError("All fields are required.");
       return false;
     }

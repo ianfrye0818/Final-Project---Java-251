@@ -1,6 +1,7 @@
 package views;
 
 import controllers.AppController;
+import enums.ViewType;
 import listeners.MutateAccountListeners;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -122,7 +123,7 @@ public class CreateAccountView extends SuperView {
                                 emailField,
                                 passwordField);
 
-                backButton.addActionListener(listeners.getBackButtonListener());
+                backButton.addActionListener(listeners.getBackButtonListener(ViewType.LOGIN_VIEW));
                 createButton.addActionListener(listeners.getMutateButtonListener());
 
         }
