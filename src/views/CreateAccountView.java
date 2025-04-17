@@ -1,13 +1,13 @@
 package views;
 
-import controllers.AppController;
-import enums.ViewType;
-import listeners.MutateAccountListeners;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import components.StyledInputs;
 import components.Typography;
+import controllers.AppController;
+import enums.ViewType;
+import listeners.AccountListeners;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class CreateAccountView extends SuperView {
@@ -28,71 +28,103 @@ public class CreateAccountView extends SuperView {
 
                 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 setLayout(new BorderLayout());
+                setMinimumSize(new Dimension(800, 600));
                 getContentPane().setBackground(new Color(245, 245, 245));
 
                 JPanel mainPanel = new JPanel(new GridBagLayout());
                 mainPanel.setBackground(Color.WHITE);
-                mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+                mainPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.insets = new Insets(8, 8, 8, 8);
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.weightx = 1.0;
-                gbc.gridwidth = GridBagConstraints.REMAINDER; // Default to single column
+                gbc.gridwidth = 2; // Two columns layout
 
+                // Header Section (spans both columns)
                 JLabel titleLabel = new Typography.StyledTitleField("Create Account");
                 gbc.gridy = 0;
                 mainPanel.add(titleLabel, gbc);
 
                 JLabel subtitleLabel = new Typography.StyledSubtitleField("Please fill in the following details");
                 gbc.gridy = 1;
-                gbc.insets = new Insets(0, 10, 15, 10);
+                gbc.insets = new Insets(0, 10, 25, 10);
                 mainPanel.add(subtitleLabel, gbc);
-                // Email
-                emailField = new StyledInputs.StyledTextField(20);
-                addFormField(mainPanel, gbc, "Email:", emailField,
-                                2, 0, 1.0, GridBagConstraints.REMAINDER);
 
-                // Password
-                passwordField = new StyledInputs.StyledPasswordField(20);
-                addFormField(mainPanel, gbc, "Password:", passwordField,
-                                4, 0, 1.0, GridBagConstraints.REMAINDER);
+                // Left Column - Personal Information
+                gbc.gridwidth = 1;
+                gbc.weightx = 0.5;
+                gbc.gridx = 0;
+
+                // Section Header - Personal Information
+                addSectionHeader(mainPanel, gbc, "Personal Information", 2, 0);
 
                 // First Name
-                firstNameField = new StyledInputs.StyledTextField(10);
-                addFormField(mainPanel, gbc, "First Name:", firstNameField,
-                                6, 0, 1.0, GridBagConstraints.REMAINDER);
+                firstNameField = new StyledInputs.StyledTextField(15);
+                addFormField(mainPanel, gbc, "First Name:", firstNameField, 3, 0);
 
                 // Last Name
-                lastNameField = new StyledInputs.StyledTextField(10);
-                addFormField(mainPanel, gbc, "Last Name:", lastNameField,
-                                8, 0, 1.0, GridBagConstraints.REMAINDER);
+                lastNameField = new StyledInputs.StyledTextField(15);
+                addFormField(mainPanel, gbc, "Last Name:", lastNameField, 4, 0);
+
+                // Email
+                emailField = new StyledInputs.StyledTextField(20);
+                addFormField(mainPanel, gbc, "Email:", emailField, 5, 0);
+
+                // Phone
+                phoneField = new StyledInputs.StyledTextField(15);
+                addFormField(mainPanel, gbc, "Phone:", phoneField, 6, 0);
+
+                // Right Column - Address Information
+                gbc.gridx = 1;
+
+                // Section Header - Address
+                addSectionHeader(mainPanel, gbc, "Address Information", 2, 1);
 
                 // Street
                 streetField = new StyledInputs.StyledTextField(20);
-                addFormField(mainPanel, gbc, "Street:", streetField,
-                                10, 0, 1.0, GridBagConstraints.REMAINDER);
+                addFormField(mainPanel, gbc, "Street:", streetField, 3, 1);
 
-                // City, State, Zip in one row
-                cityField = new StyledInputs.StyledTextField(10);
-                addFormField(mainPanel, gbc, "City:", cityField,
-                                12, 0, 0.33, 1);
+                // City
+                cityField = new StyledInputs.StyledTextField(15);
+                addFormField(mainPanel, gbc, "City:", cityField, 4, 1);
 
-                stateField = new StyledInputs.StyledTextField(3);
-                addFormField(mainPanel, gbc, "State:", stateField,
-                                12, 1, 0.33, 1);
+                // State and Zip (in one panel)
+                JPanel stateZipPanel = new JPanel(new GridLayout(1, 2, 10, 0));
+                stateZipPanel.setBackground(Color.WHITE);
 
+                // State
+                JPanel statePanel = new JPanel(new BorderLayout(0, 5));
+                statePanel.setBackground(Color.WHITE);
+                JLabel stateLabel = new JLabel("State:");
+                stateLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                statePanel.add(stateLabel, BorderLayout.NORTH);
+                stateField = new StyledInputs.StyledTextField(2);
+                statePanel.add(stateField, BorderLayout.CENTER);
+                stateZipPanel.add(statePanel);
+
+                // Zip
+                JPanel zipPanel = new JPanel(new BorderLayout(0, 5));
+                zipPanel.setBackground(Color.WHITE);
+                JLabel zipLabel = new JLabel("Zip:");
+                zipLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                zipPanel.add(zipLabel, BorderLayout.NORTH);
                 zipField = new StyledInputs.StyledTextField(7);
-                addFormField(mainPanel, gbc, "Zip:", zipField,
-                                12, 2, 0.34, 1);
+                zipPanel.add(zipField, BorderLayout.CENTER);
+                stateZipPanel.add(zipPanel);
 
-                // Reset gridx and gridwidth for next row
+                gbc.gridy = 5;
+                mainPanel.add(stateZipPanel, gbc);
+
+                // Bottom Section - Account Security (spans both columns)
                 gbc.gridx = 0;
-                gbc.gridwidth = GridBagConstraints.REMAINDER;
+                gbc.gridwidth = 2;
+                gbc.gridy = 7;
+                addSectionHeader(mainPanel, gbc, "Account Security", 7, 0);
 
-                // Phone
-                phoneField = new StyledInputs.StyledTextField(20);
-                addFormField(mainPanel, gbc, "Phone:", phoneField,
-                                14, 0, 1.0, GridBagConstraints.REMAINDER);
+                // Password
+                passwordField = new StyledInputs.StyledPasswordField(20);
+                gbc.gridy = 8;
+                addFormField(mainPanel, gbc, "Password:", passwordField, 8, 0);
 
                 // Buttons Panel
                 JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
@@ -105,12 +137,13 @@ public class CreateAccountView extends SuperView {
                                 Color.WHITE);
                 buttonsPanel.add(createButton);
 
-                gbc.gridy = 16;
+                gbc.gridy = 9;
+                gbc.insets = new Insets(20, 8, 8, 8);
                 mainPanel.add(buttonsPanel, gbc);
 
                 add(mainPanel, BorderLayout.CENTER);
 
-                MutateAccountListeners listeners = new MutateAccountListeners(
+                AccountListeners listeners = new AccountListeners(
                                 appController,
                                 this,
                                 firstNameField,
@@ -126,6 +159,34 @@ public class CreateAccountView extends SuperView {
                 backButton.addActionListener(listeners.getBackButtonListener(ViewType.LOGIN_VIEW));
                 createButton.addActionListener(listeners.getMutateButtonListener());
 
+                pack();
+                setLocationRelativeTo(null);
+        }
+
+        private void addSectionHeader(JPanel panel, GridBagConstraints gbc, String text, int gridy, int gridx) {
+                JLabel header = new JLabel(text);
+                header.setFont(new Font("Segoe UI", Font.BOLD, 16));
+                header.setForeground(new Color(79, 55, 48));
+                gbc.gridy = gridy;
+                gbc.gridx = gridx;
+                gbc.insets = new Insets(20, 8, 8, 8);
+                panel.add(header, gbc);
+        }
+
+        private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JTextField field, int gridy,
+                        int gridx) {
+                gbc.gridy = gridy;
+                gbc.gridx = gridx;
+
+                JPanel fieldPanel = new JPanel(new BorderLayout(0, 5));
+                fieldPanel.setBackground(Color.WHITE);
+
+                JLabel label = new JLabel(labelText);
+                label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                fieldPanel.add(label, BorderLayout.NORTH);
+                fieldPanel.add(field, BorderLayout.CENTER);
+
+                panel.add(fieldPanel, gbc);
         }
 
         @Override

@@ -1,12 +1,12 @@
 package views;
 
-import controllers.AppController;
-import listeners.LoginActionListeners;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import components.StyledInputs;
 import components.Typography;
+import controllers.AppController;
+import listeners.LoginActionListeners;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class LoginView extends SuperView {
@@ -14,11 +14,10 @@ public class LoginView extends SuperView {
     private JTextField emailField;
     private JPasswordField passwordField;
 
-    public LoginView(AppController appController) {
+    public LoginView(AppController controller) {
         this.title = "Login";
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(400, 220)); // Slightly increased height
+        setMinimumSize(new Dimension(400, 220));
         setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(245, 245, 245));
 
@@ -69,13 +68,30 @@ public class LoginView extends SuperView {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        LoginActionListeners listeners = new LoginActionListeners(appController, this, emailField, passwordField);
+        LoginActionListeners listeners = new LoginActionListeners(controller, this, emailField, passwordField);
 
         createAccountButton.addActionListener(listeners.getCreateAccountButtonListener());
 
         loginButton.addActionListener(listeners.getLoginButtonListener());
         pack();
         setLocationRelativeTo(null);
+    }
+
+    private void addFormField(JPanel panel, GridBagConstraints gbc,
+            String labelText, JComponent field,
+            int gridY, int gridX,
+            double weightX, int gridWidth) {
+
+        JLabel label = new Typography.StyledLabel(labelText);
+        gbc.gridy = gridY;
+        gbc.gridx = gridX;
+        gbc.weightx = weightX;
+        gbc.gridwidth = gridWidth;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(label, gbc);
+
+        gbc.gridy = gridY + 1;
+        panel.add(field, gbc);
     }
 
     @Override

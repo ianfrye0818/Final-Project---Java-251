@@ -114,7 +114,15 @@ public class CustomerRepository implements ICustomerRepository {
                 INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME, STREET, CITY, STATE, ZIP, EMAIL_ADDRESS, PHONE_NUMBER, CREDIT_LIMIT)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
-        return saveCustomer(customer, sql);
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            setCustomerProps(customer, stmt);
+            int result = stmt.executeUpdate();
+
+            return result > 0;
+        } catch (SQLException e) {
+            System.out.println("Save Customer Failed: " + e.getMessage());
+            return false;
+        }
 
     }
 
@@ -129,11 +137,20 @@ public class CustomerRepository implements ICustomerRepository {
                 STATE = ?,
                 ZIP = ?,
                 EMAIL_ADDRESS = ?,
-                PHONE = ?,
+                PHONE_NUMBER = ?,
                 CREDIT_LIMIT = ?
                 WHERE CUSTOMER_ID = ?
                 """;
-        return saveCustomer(customer, sql);
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            setCustomerProps(customer, stmt);
+            stmt.setInt(10, customer.getCustomerId());
+            int result = stmt.executeUpdate();
+
+            return result > 0;
+        } catch (SQLException e) {
+            System.out.println("Save Customer Failed: " + e.getMessage());
+            return false;
+        }
     }
 
     @Override
@@ -166,36 +183,30 @@ public class CustomerRepository implements ICustomerRepository {
                 .build();
     }
 
-    private boolean saveCustomer(Customer customer, String sql) {
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, customer.getFirstName());
-            stmt.setString(2, customer.getLastName());
-            stmt.setString(3, customer.getStreet());
-            stmt.setString(4, customer.getCity());
-            stmt.setString(5, customer.getState());
-            stmt.setString(6, customer.getZip());
-            stmt.setString(7, customer.getEmail());
-            stmt.setString(8, customer.getPhone());
-            stmt.setDouble(9, customer.getCreditLimit());
-            int result = stmt.executeUpdate();
 
-            return result > 0;
-        } catch (SQLException e) {
-            System.out.println("Save Customer Failed: " + e.getMessage());
-            return false;
-        }
+    private void setCustomerProps(Customer customer, PreparedStatement stmt) throws SQLException {
+        stmt.setString(1, customer.getFirstName());
+        stmt.setString(2, customer.getLastName());
+        stmt.setString(3, customer.getStreet());
+        stmt.setString(4, customer.getCity());
+        stmt.setString(5, customer.getState());
+        stmt.setString(6, customer.getZip());
+        stmt.setString(7, customer.getEmail());
+        stmt.setString(8, customer.getPhone());
+        stmt.setDouble(9, customer.getCreditLimit());
     }
+
 
     private void seed() {
         List<Customer> customers = new ArrayList<>();
         customers.add(new Customer.Builder()
-                .setFirstName("Ian")
-                .setLastName("Frye")
+                .setFirstName("Billy")
+                .setLastName("Shower")
                 .setStreet("123 Main St")
                 .setCity("Anytown")
                 .setState("CA")
                 .setZip("12345")
-                .setEmail("ianfrye@gmail.com")
+                .setEmail("billy@gmail.com")
                 .setPhone("3368307157")
                 .setCreditLimit(100.00)
                 .build());
@@ -213,8 +224,8 @@ public class CustomerRepository implements ICustomerRepository {
                 .build());
 
         customers.add(new Customer.Builder()
-                .setFirstName("Jim")
-                .setLastName("Beam")
+                .setFirstName("John")
+                .setLastName("Doe")
                 .setStreet("789 Main St")
                 .setCity("Anytown")
                 .setState("CA")

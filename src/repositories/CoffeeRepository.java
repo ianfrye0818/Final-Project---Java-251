@@ -160,28 +160,24 @@ public class CoffeeRepository implements IRepository<Coffee> {
     private List<Coffee> createInitialMenu() {
         List<Coffee> menu = new ArrayList<>();
         menu.add(new Coffee.Builder()
-                .setCoffeeId(1)
                 .setCoffeeName("Latte")
                 .setCoffeeDescription("A latte is a coffee drink made with espresso and steamed milk.")
                 .setPrice(3.50)
                 .setInStock(true)
                 .build());
         menu.add(new Coffee.Builder()
-                .setCoffeeId(2)
                 .setCoffeeName("Cappuccino")
                 .setCoffeeDescription("A cappuccino is a coffee drink made with espresso and steamed milk.")
                 .setPrice(4.00)
                 .setInStock(true)
                 .build());
         menu.add(new Coffee.Builder()
-                .setCoffeeId(3)
                 .setCoffeeName("Americano")
                 .setCoffeeDescription("An americano is a coffee drink made with espresso and water.")
                 .setPrice(2.50)
                 .setInStock(true)
                 .build());
         menu.add(new Coffee.Builder()
-                .setCoffeeId(4)
                 .setCoffeeName("Espresso")
                 .setCoffeeDescription("An espresso is a coffee drink made with espresso and water.")
                 .setPrice(2.00)
@@ -189,7 +185,6 @@ public class CoffeeRepository implements IRepository<Coffee> {
                 .build());
 
         menu.add(new Coffee.Builder()
-                .setCoffeeId(5)
                 .setCoffeeName("Mocha")
                 .setCoffeeDescription("A mocha is a coffee drink made with espresso, chocolate, and steamed milk.")
                 .setPrice(3.00)
@@ -197,7 +192,6 @@ public class CoffeeRepository implements IRepository<Coffee> {
                 .build());
 
         menu.add(new Coffee.Builder()
-                .setCoffeeId(6)
                 .setCoffeeName("Macchiato")
                 .setCoffeeDescription("A macchiato is a coffee drink made with espresso and steamed milk.")
                 .setPrice(2.50)

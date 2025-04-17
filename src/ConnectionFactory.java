@@ -7,9 +7,7 @@ import config.AppConfig;
 public class ConnectionFactory {
     public static Connection getConnection() throws SQLException {
         String url = AppConfig.DB_URL;
-        String user = AppConfig.DB_USER;
-        String password = AppConfig.DB_PASSWORD;
-        return DriverManager.getConnection(url, user, password);
+        return DriverManager.getConnection(url);
     }
 
     public static void closeConnection(Connection conn) {

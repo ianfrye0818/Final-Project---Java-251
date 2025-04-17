@@ -1,5 +1,7 @@
 package models;
 
+import dto.OrderCoffeeDto;
+
 public class Coffee {
 
     private Integer coffeeId;
@@ -105,6 +107,15 @@ public class Coffee {
         public Coffee build() {
             return new Coffee(coffeeId, coffeeName, coffeeDescription, price, isInStock);
         }
+    }
+
+    public OrderCoffeeDto toOrderCoffeeDto(int orderId) {
+        return new OrderCoffeeDto.Builder()
+                .setOrderId(orderId)
+                .setCoffeeId(this.coffeeId)
+                .setCoffeeName(this.coffeeName)
+                .setPrice(this.price)
+                .build();
     }
 
 }

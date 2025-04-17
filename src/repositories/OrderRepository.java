@@ -37,6 +37,10 @@ public class OrderRepository implements IOrderRepository {
 
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createSQL);
+            List<Order> orders = createInitialOrders();
+            for (Order order : orders) {
+                save(order);
+            }
         }
     }
 
@@ -187,6 +191,45 @@ public class OrderRepository implements IOrderRepository {
             System.out.println("Save Order Failed: " + e.getMessage());
             return false;
         }
+    }
+
+    private List<Order> createInitialOrders() {
+        List<Order> orders = new ArrayList<>();
+        int[] coffeeIds = { 1, 2, 3, 4, 5, 6 };
+        int[] customerIds = { 1, 2, 3 };
+        double[] quantities = { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
+        double[] totalPrices = { 3.50, 4.00, 2.50, 2.00, 3.00, 2.50 };
+
+        for (int i = 0; i < 10; i++) {
+            int coffeeId = coffeeIds[getRandomIndex(coffeeIds)];
+            int customerId = customerIds[getRandomIndex(customerIds)];
+            double quantity = quantities[getRandomIndex(quantities)];
+            double totalPrice = totalPrices[getRandomIndex(totalPrices)];
+            String[] coffeeNames = { "Latte", "Cappuccino", "Americano", "Espresso", "Mocha", "Macchiato" };
+            String[] customerNames = { "John Doe", "Jane Smith", "Jim Beam" };
+
+            Order order = new Order.Builder()
+                    .setCoffee(new OrderCoffeeDto.Builder().setCoffeeId(coffeeId)
+                            .setCoffeeName(coffeeNames[getRandomIndex(coffeeNames)]).setPrice(totalPrice).build())
+                    .setCustomer(new OrderCustomerDto.Builder().setCustomerId(customerId)
+                            .setCustomerName(customerNames[getRandomIndex(customerNames)]).build())
+                    .setNumberOrdered(quantity).setTotal(totalPrice).build();
+            orders.add(order);
+        }
+
+        return orders;
+    }
+
+    private int getRandomIndex(int[] array) {
+        return (int) (Math.random() * array.length);
+    }
+
+    private int getRandomIndex(double[] array) {
+        return (int) (Math.random() * array.length);
+    }
+
+    private int getRandomIndex(String[] array) {
+        return (int) (Math.random() * array.length);
     }
 
 }

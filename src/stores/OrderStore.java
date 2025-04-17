@@ -10,6 +10,8 @@ public class OrderStore implements IStore<Order> {
             .setCustomer(new OrderCustomerDto.Builder()
                     .setCustomerName("John Doe")
                     .setCustomerId(1)
+                    .setCustomerEmail("john.doe@example.com")
+                    .setCustomerPhone("123-456-7890")
                     .build())
             .setCoffee(new OrderCoffeeDto.Builder().setCoffeeId(22).setCoffeeName("Espresso").setPrice(4.99).build())
             .setNumberOrdered(4).build();

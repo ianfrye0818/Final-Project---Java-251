@@ -1,5 +1,7 @@
 package models;
 
+import dto.OrderCustomerDto;
+
 public class Customer {
     private Integer customerId;
     private String firstName;
@@ -189,6 +191,16 @@ public class Customer {
 
         public Customer build() {
             return new Customer(customerId, firstName, lastName, street, city, state, zip, email, phone, creditLimit);
+        }
+
+        public OrderCustomerDto toOrderDto(int orderId) {
+            return new OrderCustomerDto.Builder()
+                    .setOrderId(orderId)
+                    .setCustomerId(this.customerId)
+                    .setCustomerName(this.firstName + " " + this.lastName)
+                    .setCustomerEmail(this.email)
+                    .setCustomerPhone(this.phone)
+                    .build();
         }
 
     }

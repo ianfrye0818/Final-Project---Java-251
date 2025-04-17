@@ -4,11 +4,16 @@ public class OrderCustomerDto {
   private int orderId;
   private int customerId;
   private String customerName;
+  private String customerEmail;
+  private String customerPhone;
 
-  public OrderCustomerDto(int orderId, int customerId, String customerName) {
+  public OrderCustomerDto(int orderId, int customerId, String customerName, String customerEmail,
+      String customerPhone) {
     this.orderId = orderId;
     this.customerId = customerId;
     this.customerName = customerName;
+    this.customerEmail = customerEmail;
+    this.customerPhone = customerPhone;
   }
 
   public int getOrderId() {
@@ -17,6 +22,14 @@ public class OrderCustomerDto {
 
   public String getCustomerName() {
     return customerName;
+  }
+
+  public String getCustomerEmail() {
+    return customerEmail;
+  }
+
+  public String getCustomerPhone() {
+    return customerPhone;
   }
 
   @Override
@@ -32,6 +45,8 @@ public class OrderCustomerDto {
     private int orderId;
     private int customerId;
     private String customerName;
+    private String customerEmail;
+    private String customerPhone;
 
     public Builder setOrderId(int orderId) {
       this.orderId = orderId;
@@ -44,11 +59,21 @@ public class OrderCustomerDto {
     }
 
     public OrderCustomerDto build() {
-      return new OrderCustomerDto(orderId, customerId, customerName);
+      return new OrderCustomerDto(orderId, customerId, customerName, customerEmail, customerPhone);
     }
 
     public Builder setCustomerId(int customerId) {
       this.customerId = customerId;
+      return this;
+    }
+
+    public Builder setCustomerEmail(String customerEmail) {
+      this.customerEmail = customerEmail;
+      return this;
+    }
+
+    public Builder setCustomerPhone(String customerPhone) {
+      this.customerPhone = customerPhone;
       return this;
     }
   }
@@ -59,6 +84,14 @@ public class OrderCustomerDto {
 
   public int getCustomerId() {
     return customerId;
+  }
+
+  public void setCustomerEmail(String customerEmail) {
+    this.customerEmail = customerEmail;
+  }
+
+  public void setCustomerPhone(String customerPhone) {
+    this.customerPhone = customerPhone;
   }
 
   public void setCustomerId(int customerId) {

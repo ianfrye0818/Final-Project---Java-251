@@ -52,7 +52,7 @@ public class AppController {
     }
 
     public void start() {
-        viewManager.setDisplay(ViewType.LOGIN_VIEW);
+        viewManager.setDisplay(ViewType.VIEW_ALL_ORDERS_VIEW);
     }
 
     public void setDisplay(ViewType view) {
@@ -98,6 +98,10 @@ public class AppController {
 
     public IOrderRepository getOrderRepository() {
         return (IOrderRepository) this.orderRepository;
+    }
+
+    public ViewManager getViewManager() {
+        return this.viewManager;
     }
 
     public static class Builder {

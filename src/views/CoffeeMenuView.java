@@ -1,11 +1,14 @@
 package views;
 
-import components.CoffeeTable;
 import components.StyledInputs;
 import components.TitlePanel;
+import components.tables.CoffeeTable;
 import controllers.AppController;
 import enums.ViewType;
+import listeners.AccountMenuListeners;
+import listeners.AdminMenuListeners;
 import listeners.CoffeeMenuListeners;
+import models.Coffee;
 import models.Customer;
 
 import javax.swing.*;
@@ -20,67 +23,104 @@ public class CoffeeMenuView extends SuperView {
         this.title = "Coffee Menu";
         this.currentCustomer = controller.getCustomerStore().get();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(850, 650)); // Slightly larger
+        setMinimumSize(new Dimension(850, 650));
         setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(245, 245, 245));
 
         JPanel titlePanel = new TitlePanel("Our Coffee Selection");
         add(titlePanel, BorderLayout.NORTH);
 
-        JTable coffeeTable = new CoffeeTable(controller);
+        CoffeeTable coffeeTable = new CoffeeTable(controller);
 
         JScrollPane scrollPane = new JScrollPane(coffeeTable);
-        scrollPane.setBorder(new EmptyBorder(0, 20, 0, 20)); // Side padding for table
+        scrollPane.setBorder(new EmptyBorder(0, 20, 0, 20));
         this.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
-        buttonPanel.setBackground(new Color(245, 245, 245));
+        // Top Left Menu Bar
+        JMenuBar menuBar = new JMenuBar();
+        JMenu coffeeMenu = new JMenu("Coffee Actions");
+        JMenu accountMenu = new JMenu("Account");
+        JMenu adminMenu = new JMenu("Admin"); // New Admin Menu
 
-        JButton logoutButton = new StyledInputs.StyledButton("Logout");
+        // Coffee Actions Menu Items
+        JMenuItem addNewCoffeeItem = new JMenuItem("Add New Coffee");
+        coffeeMenu.add(addNewCoffeeItem);
+
+        // Account Actions Menu Items
+        JMenuItem currentUserItem = new JMenuItem("Logged in as: " + currentCustomer.getEmail());
+        currentUserItem.setEnabled(false); // Make it non-clickable
+        JMenuItem creditsItem = new JMenuItem("Credits: $" + String.format("%.2f", currentCustomer.getCreditLimit()));
+        creditsItem.setEnabled(false); // Make it non-clickable
+        JMenuItem updateAccountItem = new JMenuItem("Update Account");
+        JMenuItem viewAccountItem = new JMenuItem("View Account");
+        JMenuItem deleteAccountItem = new JMenuItem("Delete Account");
+        JMenuItem addCreditsItem = new JMenuItem("Add Credits");
+        JMenuItem logoutItem = new JMenuItem("Logout");
+
+        accountMenu.add(currentUserItem);
+        accountMenu.add(creditsItem);
+        accountMenu.addSeparator();
+        accountMenu.add(updateAccountItem);
+        accountMenu.add(viewAccountItem);
+        accountMenu.add(deleteAccountItem);
+        accountMenu.add(addCreditsItem);
+        accountMenu.addSeparator();
+        accountMenu.add(logoutItem);
+
+        // Admin Menu Items
+        JMenuItem viewAllCustomersItem = new JMenuItem("View All Customers");
+        JMenuItem viewAllOrdersItem = new JMenuItem("View All Orders");
+        adminMenu.add(viewAllCustomersItem);
+        adminMenu.add(viewAllOrdersItem);
+
+        menuBar.add(coffeeMenu);
+        menuBar.add(accountMenu);
+        menuBar.add(adminMenu); // Add the Admin menu
+        setJMenuBar(menuBar);
+
+        // Bottom Panel with Create Order Button
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        bottomPanel.setBackground(new Color(245, 245, 245));
         JButton createOrderButton = new StyledInputs.StyledButton("Create Order", new Color(109, 81, 70), Color.WHITE);
-        JButton addNewCoffeeButton = new StyledInputs.StyledButton("Add New Coffee");
-        JButton updateAccountButton = new StyledInputs.StyledButton("Update Account");
 
-        buttonPanel.add(logoutButton);
-        buttonPanel.add(createOrderButton);
-        buttonPanel.add(addNewCoffeeButton);
-        buttonPanel.add(updateAccountButton);
+        // View Details button
+        JButton viewDetailsButton = new StyledInputs.StyledButton("Update Coffee");
+        viewDetailsButton.addActionListener(e -> {
+            Coffee selectedCoffee = coffeeTable.getSelectedItem();
+            if (selectedCoffee != null) {
+                coffeeTable.handleViewDetails();
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Please select a coffee to update",
+                        "No Selection",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        });
 
-        JPanel infoPanel = new JPanel(new GridLayout(2, 1, 0, 5));
-        infoPanel.setBackground(new Color(245, 245, 245));
-        infoPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+        bottomPanel.add(createOrderButton);
+        bottomPanel.add(viewDetailsButton);
 
-        JLabel userLabel = new JLabel("Logged in as: " + currentCustomer.getEmail());
-        userLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        userLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        userLabel.setForeground(new Color(79, 55, 48));
-        infoPanel.add(userLabel);
+        this.add(bottomPanel, BorderLayout.SOUTH);
 
-        JLabel creditLabel = getCreditLabel();
-        infoPanel.add(creditLabel);
+        // Listeners
 
-        JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.setBackground(new Color(245, 245, 245));
-        southPanel.add(buttonPanel, BorderLayout.CENTER);
-        southPanel.add(infoPanel, BorderLayout.SOUTH);
+        CoffeeMenuListeners coffeeMenuListeners = new CoffeeMenuListeners(controller);
+        AccountMenuListeners accountMenuListeners = new AccountMenuListeners(controller, this);
+        AdminMenuListeners adminMenuListeners = new AdminMenuListeners(controller);
+        logoutItem.addActionListener(accountMenuListeners.getLogoutActionListener());
+        createOrderButton.addActionListener(e -> controller.setDisplay(ViewType.CREATE_ORDER_VIEW));
+        addNewCoffeeItem.addActionListener(coffeeMenuListeners.getAddNewCoffeeButtonListener());
+        updateAccountItem.addActionListener(accountMenuListeners.getUpdateAccountActionListener());
+        viewAccountItem.addActionListener(accountMenuListeners.getViewAccountActionListener());
+        deleteAccountItem.addActionListener(
+                accountMenuListeners.getDeleteAccountActionListener(currentCustomer.getCustomerId()));
+        addCreditsItem.addActionListener(accountMenuListeners.getAddCreditsActionListener());
+        viewAllCustomersItem.addActionListener(adminMenuListeners.getViewAllCustomersListener());
+        viewAllOrdersItem.addActionListener(adminMenuListeners.getViewAllOrdersListener());
 
-        this.add(southPanel, BorderLayout.SOUTH);
-
-        CoffeeMenuListeners listeners = new CoffeeMenuListeners(controller);
-
-        logoutButton.addActionListener(listeners.getLogoutButtonListener());
-        createOrderButton.addActionListener(listeners.getCreateOrderButtonListener());
-        addNewCoffeeButton.addActionListener(listeners.getAddNewCoffeeButtonListener());
-        updateAccountButton.addActionListener(e -> controller.setDisplay(ViewType.UPDATE_ACCOUNT_VIEW));
-    }
-
-    private JLabel getCreditLabel() {
-        JLabel creditLabel = new JLabel(
-                "Available Credit: $" + String.format("%.2f", currentCustomer.getCreditLimit()));
-        creditLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        creditLabel.setForeground(new Color(79, 55, 48));
-        creditLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        return creditLabel;
+        pack();
+        setLocationRelativeTo(null);
     }
 
     @Override
@@ -88,3 +128,4 @@ public class CoffeeMenuView extends SuperView {
         return super.getTitle() + " - " + title;
     }
 }
+//

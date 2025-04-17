@@ -15,10 +15,6 @@ public class CustomerService {
         this.controller = controller;
     }
 
-    public Customer getCurrentCustomer() {
-        return this.controller.getCustomerStore().get();
-    }
-
     public List<Customer> getAllCustomers() {
         return this.controller.getCustomerRepository().findAll();
     }
@@ -44,13 +40,11 @@ public class CustomerService {
     }
 
     public boolean createCustomer(ValidateCreateAccountDto dto) {
-        Customer customer = this.mapDtoToCustomer(dto);
-        return this.controller.getCustomerRepository().save(customer);
+        return this.controller.getCustomerRepository().save(dto.toCustomer(null));
 
     }
 
-    public boolean updateCustomer(ValidateCreateAccountDto dto) {
-        Customer customer = this.mapDtoToCustomer(dto);
+    public boolean updateCustomer(Customer customer) {
         return this.controller.getCustomerRepository().update(customer);
     }
 
@@ -58,17 +52,4 @@ public class CustomerService {
         return this.controller.getCustomerRepository().deleteById(id);
     }
 
-    private Customer mapDtoToCustomer(ValidateCreateAccountDto dto) {
-        return new Customer.Builder()
-                .setFirstName(dto.getFirstName())
-                .setLastName(dto.getLastName())
-                .setStreet(dto.getStreet())
-                .setCity(dto.getCity())
-                .setState(dto.getState())
-                .setZip(dto.getZip())
-                .setPhone(dto.getPhone())
-                .setEmail(dto.getEmail())
-                .setCreditLimit(50)
-                .build();
-    }
 }

@@ -1,26 +1,18 @@
 package listeners;
 
-import java.awt.event.ActionListener;
-
 import controllers.AppController;
 import enums.ViewType;
 
+import java.awt.event.ActionListener;
+
 public class CoffeeMenuListeners {
-  private final AppController appController;
+    private final AppController controller;
 
-  public CoffeeMenuListeners(AppController appController) {
-    this.appController = appController;
-  }
+    public CoffeeMenuListeners(AppController controller) {
+        this.controller = controller;
+    }
 
-  public ActionListener getLogoutButtonListener() {
-    return e -> appController.getAuthService().logout();
-  }
-
-  public ActionListener getCreateOrderButtonListener() {
-    return e -> appController.setDisplay(ViewType.CREATE_ORDER_VIEW);
-  }
-
-  public ActionListener getAddNewCoffeeButtonListener() {
-    return e -> appController.setDisplay(ViewType.CREATE_COFFEE_VIEW);
-  }
+    public ActionListener getAddNewCoffeeButtonListener() {
+        return e -> controller.setDisplay(ViewType.CREATE_COFFEE_VIEW);
+    }
 }
