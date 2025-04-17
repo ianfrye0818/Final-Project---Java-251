@@ -29,7 +29,7 @@ public class CustomerRepository implements ICustomerRepository {
                 ZIP                 VARCHAR(50)     NOT NULL,
                 EMAIL_ADDRESS       VARCHAR(50)     NOT NULL,
                 PHONE_NUMBER        VARCHAR(50)     NOT NULL,
-                CREDIT_LIMIT        FLOAT           NOT NULL
+                CREDIT_LIMIT        DOUBLE          NOT NULL
                 )
                 """;
 

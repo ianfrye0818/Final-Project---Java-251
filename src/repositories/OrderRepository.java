@@ -24,8 +24,8 @@ public class OrderRepository implements IOrderRepository {
                   ORDER_ID          INTEGER   GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_ORDER_ID PRIMARY KEY,
                   CUSTOMER_ID       INTEGER   NOT NULL,
                   COFFEE_ID         INTEGER   NOT NULL,
-                  QUANTITY_ORDERED  FLOAT     NOT NULL,
-                  TOTAL_PRICE       FLOAT     NOT NULL
+                  QUANTITY_ORDERED  DOUBLE    NOT NULL,
+                  TOTAL_PRICE       DOUBLE    NOT NULL
                 )
                 """;
 
