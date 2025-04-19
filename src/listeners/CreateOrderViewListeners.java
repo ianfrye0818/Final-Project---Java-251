@@ -2,13 +2,9 @@ package listeners;
 
 import controllers.AppController;
 import dto.CreateOrderDto;
-import dto.OrderCoffeeDto;
-import dto.OrderCustomerDto;
 import entites.Coffee;
 import entites.Customer;
-import entites.Order;
 import enums.ViewType;
-import stores.OrderStore;
 import utils.DialogUtils;
 import views.CreateOrderView;
 
@@ -106,6 +102,7 @@ public class CreateOrderViewListeners {
                 message + "\nWould you like to update your account to add more credit?");
 
         if (confirmation) {
+            appController.getSelectedCustomerStore().set(appController.getLoggedinCustomerStore().get());
             DialogUtils.showAddCreditDialog(view, appController);
         }
     }

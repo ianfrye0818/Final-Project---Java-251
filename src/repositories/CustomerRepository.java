@@ -133,20 +133,24 @@ public class CustomerRepository implements ICustomerRepository {
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             setCustomerProps(updateCustomer, stmt);
             stmt.setInt(10, updateCustomer.getCustomerId());
-            stmt.executeUpdate();
+            int result = stmt.executeUpdate();
 
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    int customerId = generatedKeys.getInt(1);
-                    return findById(customerId);
-                }
-            }
+            if (result == 0) throw new RuntimeException("Failed to update customer");
+
+            return findById(updateCustomer.getCustomerId());
+//            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+//                if (generatedKeys.next()) {
+//                    int customerId = generatedKeys.getInt(1);
+//                    Customer cust = findById(customerId);
+//                    System.out.println("Customer in reposiotry: " + cust)
+//                    return cust;
+//                }
+//            }
         } catch (SQLException e) {
             System.out.println("Save Customer Failed: " + e.getMessage());
             return null;
         }
-
-        return null;
+        
     }
 
     @Override
