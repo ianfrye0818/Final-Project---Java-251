@@ -48,7 +48,7 @@ public class CoffeeMenuView extends SuperView {
         JMenuItem currentUserItem = new JMenuItem("Logged in as: " + getLoggedInUser().getEmail());
         currentUserItem.setEnabled(false); // Make it non-clickable
         JMenuItem creditsItem = new JMenuItem(
-                "Credits: $" + String.format("%.2f", controller.getLoggedinCustomerStore().get().getCreditLimit()));
+                "Credits: $" + String.format("%.2f", getLoggedInUser().getCreditLimit()));
         creditsItem.setEnabled(false); // Make it non-clickable
         JMenuItem updateAccountItem = new JMenuItem("Update Account");
         JMenuItem viewAccountItem = new JMenuItem("View Account");

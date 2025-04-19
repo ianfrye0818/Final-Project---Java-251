@@ -73,8 +73,7 @@ public class OrderDetailView extends SuperView {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonPanel.setBackground(Color.WHITE);
 
-        String buttonText = previousView == ViewType.VIEW_ALL_ORDERS_VIEW ? "Back to Orders" : "Back to Menu";
-        JButton backButton = new StyledInputs.StyledButton(buttonText);
+        JButton backButton = new StyledInputs.StyledButton("Back");
         backButton.addActionListener(e -> controller.setDisplay(previousView));
         buttonPanel.add(backButton);
 

@@ -64,7 +64,7 @@ public class AppController {
         // Initialize services
         this.customerService = new CustomerService(this.customerRepository, this);
         this.coffeeService = new CoffeeService((ICoffeeRepository) this.coffeeRepository);
-        this.orderService = new OrderService(this.orderRepository);
+        this.orderService = new OrderService(this.orderRepository, (CustomerRepository) this.customerRepository);
 
         // Initialize view manager
         this.viewManager = new ViewManager(this);

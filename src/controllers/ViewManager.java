@@ -24,19 +24,8 @@ public class ViewManager {
         this.previousView = this.currentView;
         this.currentView = view;
 
-        System.out.println("Setting display to: " + view);
-        System.out.println("Previous view: " + this.previousView);
-        System.out.println("Current view: " + this.currentView);
-
-        Window[] windows = Window.getWindows();
-        for (Window window : windows) {
-            window.dispose();
-        }
-
-        SuperView viewToDisplay = createView(view);
-        viewToDisplay.pack();
-        viewToDisplay.setLocationRelativeTo(null);
-        viewToDisplay.setVisible(true);
+        disposeWindows();
+        displayNewView(view);
     }
 
     public ViewType getPreviousView() {
@@ -47,10 +36,24 @@ public class ViewManager {
         return this.currentView;
     }
 
-    public void setDisplayWithPreviousView(ViewType newView, ViewType previousView) {
-        this.previousView = previousView;
-        this.currentView = newView;
-        setDisplay(newView);
+    public void refreshCurrentView() {
+        disposeWindows();
+        displayNewView(this.currentView);
+    }
+
+    private void disposeWindows() {
+        Window[] windows = Window.getWindows();
+        for (Window window : windows) {
+            window.dispose();
+        }
+    }
+
+    private void displayNewView(ViewType view) {
+        SuperView viewToDisplay = createView(this.currentView);
+        viewToDisplay.pack();
+        viewToDisplay.setLocationRelativeTo(null);
+        viewToDisplay.setVisible(true);
+
     }
 
     private SuperView createView(ViewType viewType) {

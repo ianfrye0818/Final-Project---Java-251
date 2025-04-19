@@ -68,16 +68,6 @@ public class SuperView extends JFrame {
         return true;
     }
 
-    public boolean isUserPresent() {
-        Customer loggedInCustomer = controller.getLoggedinCustomerStore().get();
-        if (loggedInCustomer == null) {
-            DialogUtils.showError(this, "No user found");
-            controller.setDisplay(ViewType.LOGIN_VIEW);
-            return false;
-        }
-        return true;
-    }
-
     public boolean isOrderPresent() {
         ViewType previousView = controller.getViewManager().getPreviousView();
         Order order = controller.getOrderStore().get();
@@ -115,7 +105,11 @@ public class SuperView extends JFrame {
     }
 
     public Customer getLoggedInUser() {
-        Customer customer = controller.getLoggedinCustomerStore().get();
+        int currentCustomerId = controller.getLoggedinCustomerStore().get().getCustomerId();
+        if (currentCustomerId == 0) {
+            throw new RuntimeException("No user found");
+        }
+        Customer customer = controller.getCustomerService().getCustomerById(currentCustomerId);
         System.out.println("Logged in user: " + customer);
         if (customer == null) {
             throw new RuntimeException("No user found");

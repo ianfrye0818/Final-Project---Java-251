@@ -3,7 +3,6 @@ package components;
 import controllers.AppController;
 import dto.UpdateCustomerDto;
 import entites.Customer;
-import enums.ViewType;
 import utils.DialogUtils;
 
 import javax.swing.*;
@@ -150,7 +149,7 @@ public class AddCreditDialog extends JDialog {
                         .updateCustomer(UpdateCustomerDto.fromCustomer(currentCustomer));
                 if (updatedCustomer != null) {
                     dispose();
-                    controller.setDisplay(controller.getViewManager().getPreviousView());
+                    controller.getViewManager().refreshCurrentView();
                 } else {
                     DialogUtils.showError(parentView, "Failed to add credits. Please try again.");
                 }

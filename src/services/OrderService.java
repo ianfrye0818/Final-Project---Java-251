@@ -1,18 +1,24 @@
 package services;
 
+import entites.Customer;
 import entites.Order;
+import repositories.CustomerRepository;
+
 import java.sql.SQLException;
 import java.util.List;
 import Interfaces.IOrderRepository;
 import dto.CreateOrderDto;
+import dto.UpdateCustomerDto;
 import dto.UpdateOrderDto;
 
 public class OrderService {
 
     private final IOrderRepository orderRepository;
+    private final CustomerRepository customerRepository;
 
-    public OrderService(IOrderRepository orderRepository) {
+    public OrderService(IOrderRepository orderRepository, CustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
+        this.customerRepository = customerRepository;
     }
 
     public List<Order> getAllOrders() {
@@ -28,7 +34,15 @@ public class OrderService {
     }
 
     public Order createOrder(CreateOrderDto order) {
-        return this.orderRepository.save(order);
+        // save the order
+        Order newOrder = this.orderRepository.save(order);
+        // update the customer's credit limit
+        Customer orderCustomer = this.customerRepository.findById(order.getCustomerId());
+        UpdateCustomerDto dto = UpdateCustomerDto.fromCustomer(orderCustomer);
+        dto.setCreditLimit(orderCustomer.getCreditLimit() - order.getTotal());
+        this.customerRepository.update(dto);
+        // return the order
+        return newOrder;
     }
 
     public Order updateOrder(UpdateOrderDto order) {
