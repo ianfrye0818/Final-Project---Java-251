@@ -3,23 +3,16 @@ package views;
 import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
-import entites.Order;
 import enums.ViewType;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class OrderDetailView extends SuperView {
-    private final Order order;
-    private final ViewType sourceView;
 
     public OrderDetailView(AppController controller) {
         super(controller, "Order Summary");
-        this.order = controller.getOrderStore().get();
-        this.sourceView = controller.getViewManager().getPreviousView();
-
-        if (!isOrderPresent(ViewType.COFFEE_MENU_VIEW))
-            return;
+        ViewType previousView = controller.getViewManager().getPreviousView();
 
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(800, 600));
@@ -51,18 +44,19 @@ public class OrderDetailView extends SuperView {
 
         // Customer Section
         addSectionHeader(mainPanel, gbc, "Customer Information", 2, 0);
-        addDetailField(mainPanel, gbc, "Name:", order.getCustomer().getCustomerName(), 3, 0);
-        addDetailField(mainPanel, gbc, "Email:", order.getCustomer().getCustomerEmail(), 4, 0);
-        addDetailField(mainPanel, gbc, "Phone:", order.getCustomer().getCustomerPhone(), 5, 0);
+        addDetailField(mainPanel, gbc, "Name:", getSelectedOrder().getCustomer().getCustomerName(), 3, 0);
+        addDetailField(mainPanel, gbc, "Email:", getSelectedOrder().getCustomer().getCustomerEmail(), 4, 0);
+        addDetailField(mainPanel, gbc, "Phone:", getSelectedOrder().getCustomer().getCustomerPhone(), 5, 0);
 
         // Right Column - Order Details
         gbc.gridx = 1;
 
         // Order Section
         addSectionHeader(mainPanel, gbc, "Order Details", 2, 1);
-        addDetailField(mainPanel, gbc, "Coffee:", order.getCoffee().getCoffeeName(), 3, 1);
-        addDetailField(mainPanel, gbc, "Price per Unit:", String.format("$%.2f", order.getCoffee().getPrice()), 4, 1);
-        addDetailField(mainPanel, gbc, "Quantity:", String.valueOf((int) order.getQtyOrdered()), 5, 1);
+        addDetailField(mainPanel, gbc, "Coffee:", getSelectedOrder().getCoffee().getCoffeeName(), 3, 1);
+        addDetailField(mainPanel, gbc, "Price per Unit:",
+                String.format("$%.2f", getSelectedOrder().getCoffee().getPrice()), 4, 1);
+        addDetailField(mainPanel, gbc, "Quantity:", String.valueOf((int) getSelectedOrder().getQtyOrdered()), 5, 1);
 
         // Price Summary (spans both columns)
         gbc.gridx = 0;
@@ -79,9 +73,9 @@ public class OrderDetailView extends SuperView {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonPanel.setBackground(Color.WHITE);
 
-        String buttonText = sourceView == ViewType.VIEW_ALL_ORDERS_VIEW ? "Back to Orders" : "Back to Menu";
+        String buttonText = previousView == ViewType.VIEW_ALL_ORDERS_VIEW ? "Back to Orders" : "Back to Menu";
         JButton backButton = new StyledInputs.StyledButton(buttonText);
-        backButton.addActionListener(e -> controller.setDisplay(sourceView));
+        backButton.addActionListener(e -> controller.setDisplay(previousView));
         buttonPanel.add(backButton);
 
         gbc.gridy = 9;
@@ -160,7 +154,7 @@ public class OrderDetailView extends SuperView {
     }
 
     private double calculateSubTotal() {
-        return order.getCoffee().getPrice() * order.getQtyOrdered();
+        return getSelectedOrder().getCoffee().getPrice() * getSelectedOrder().getQtyOrdered();
     }
 
     private double calculateTax() {

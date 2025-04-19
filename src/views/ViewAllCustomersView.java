@@ -5,14 +5,14 @@ import components.TableJPanel;
 import components.TitlePanel;
 import components.tables.CustomerTable;
 import controllers.AppController;
-import entites.Customer;
 import enums.ViewType;
-import utils.DialogUtils;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class ViewAllCustomersView extends SuperView {
+    private CustomerTable customerTable;
+
     public ViewAllCustomersView(AppController controller) {
         super(controller, "All Customers");
 
@@ -26,7 +26,7 @@ public class ViewAllCustomersView extends SuperView {
         add(titlePanel, BorderLayout.NORTH);
 
         // Customer Table
-        CustomerTable customerTable = new CustomerTable(controller);
+        customerTable = new CustomerTable(controller, this);
         customerTable.loadData(); // Load the customer data
 
         // Add table to scroll pane
@@ -61,16 +61,13 @@ public class ViewAllCustomersView extends SuperView {
 
     private JButton getJButton(CustomerTable customerTable) {
         JButton viewDetailsButton = new StyledInputs.PrimaryButton("View Details");
-        viewDetailsButton.addActionListener(e -> {
-            Customer selectedCustomer = customerTable.getSelectedItem();
-            if (selectedCustomer != null) {
-                controller.getSelectedCustomerStore().set(selectedCustomer);
-                controller.setDisplay(ViewType.CUSTOMER_DETAIL_VIEW);
-            } else {
-                DialogUtils.showError(this, "Please select a customer to view details");
-            }
-        });
+        viewDetailsButton.addActionListener(e -> handleViewDetails());
         return viewDetailsButton;
+    }
+
+    public void handleViewDetails() {
+        setSelectedCustomer(customerTable.getSelectedItem());
+        controller.setDisplay(ViewType.CUSTOMER_DETAIL_VIEW);
     }
 
 }

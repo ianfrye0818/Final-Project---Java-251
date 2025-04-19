@@ -4,9 +4,7 @@ import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
 import entites.Customer;
-import enums.ViewType;
 import listeners.CustomerDetailsListeners;
-import utils.DialogUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,12 +15,6 @@ public class CustomerDetailView extends SuperView {
     public CustomerDetailView(AppController controller) {
         super(controller, "Customer Details");
         Customer selectedCustomer = controller.getSelectedCustomerStore().get();
-
-        if (selectedCustomer == null) {
-            DialogUtils.showError(this, "No customer selected");
-            controller.setDisplay(ViewType.VIEW_ALL_CUSTOMERS_VIEW);
-            return;
-        }
 
         CustomerDetailsListeners listeners = new CustomerDetailsListeners(controller, this);
         setLayout(new BorderLayout());
@@ -98,12 +90,12 @@ public class CustomerDetailView extends SuperView {
         buttonsPanel.setBackground(Color.WHITE);
 
         JButton backButton = new StyledInputs.StyledButton("Back to Menu");
-        backButton.addActionListener(listeners.getBackButtonListener(ViewType.VIEW_ALL_CUSTOMERS_VIEW));
+        backButton.addActionListener(listeners.getBackButtonListener(controller.getViewManager().getPreviousView()));
         buttonsPanel.add(backButton);
 
         JButton deleteAccountButton = new StyledInputs.DestructiveButton("Delete Account");
         deleteAccountButton.addActionListener(listeners.getDeleteAccountButtonListener(selectedCustomer.getCustomerId(),
-                ViewType.VIEW_ALL_CUSTOMERS_VIEW));
+                controller.getViewManager().getPreviousView()));
         buttonsPanel.add(deleteAccountButton);
 
         JButton addCreditButton = new StyledInputs.PrimaryButton("Add Credit");

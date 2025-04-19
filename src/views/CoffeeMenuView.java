@@ -4,8 +4,6 @@ import components.StyledInputs;
 import components.TitlePanel;
 import components.tables.CoffeeTable;
 import controllers.AppController;
-import entites.Customer;
-import enums.ViewType;
 import listeners.CoffeeMenuActionListeners;
 import listeners.CoffeeMenuActionMenus.AccountMenuListeners;
 import listeners.CoffeeMenuActionMenus.AdminMenuListeners;
@@ -24,9 +22,6 @@ public class CoffeeMenuView extends SuperView {
         AccountMenuListeners accountMenuListeners = new AccountMenuListeners(controller, this);
         AdminMenuListeners adminMenuListeners = new AdminMenuListeners(controller);
 
-        if (!isCustomerPresent(ViewType.COFFEE_MENU_VIEW))
-            return;
-        Customer currentCustomer = controller.getLoggedinCustomerStore().get();
         setMinimumSize(new Dimension(850, 650));
         getContentPane().setBackground(new Color(245, 245, 245));
 
@@ -50,9 +45,10 @@ public class CoffeeMenuView extends SuperView {
         coffeeMenu.add(addNewCoffeeItem);
 
         // Account Actions Menu Items
-        JMenuItem currentUserItem = new JMenuItem("Logged in as: " + currentCustomer.getEmail());
+        JMenuItem currentUserItem = new JMenuItem("Logged in as: " + getLoggedInUser().getEmail());
         currentUserItem.setEnabled(false); // Make it non-clickable
-        JMenuItem creditsItem = new JMenuItem("Credits: $" + String.format("%.2f", currentCustomer.getCreditLimit()));
+        JMenuItem creditsItem = new JMenuItem(
+                "Credits: $" + String.format("%.2f", controller.getLoggedinCustomerStore().get().getCreditLimit()));
         creditsItem.setEnabled(false); // Make it non-clickable
         JMenuItem updateAccountItem = new JMenuItem("Update Account");
         JMenuItem viewAccountItem = new JMenuItem("View Account");
@@ -107,7 +103,7 @@ public class CoffeeMenuView extends SuperView {
         updateAccountItem.addActionListener(accountMenuListeners.getUpdateAccountActionListener());
         viewAccountItem.addActionListener(accountMenuListeners.getViewAccountActionListener());
         deleteAccountItem.addActionListener(
-                accountMenuListeners.getDeleteAccountActionListener(currentCustomer.getCustomerId()));
+                accountMenuListeners.getDeleteAccountActionListener(getLoggedInUser().getCustomerId()));
         addCreditsItem.addActionListener(accountMenuListeners.getAddCreditsActionListener());
         viewAllCustomersItem.addActionListener(adminMenuListeners.getViewAllCustomersListener());
         viewAllOrdersItem.addActionListener(adminMenuListeners.getViewAllOrdersListener());

@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class ViewManager {
     private final AppController controller;
-    private ViewType currenView;
+    private ViewType currentView;
     private ViewType previousView;
 
     public ViewManager(AppController controller) {
@@ -15,8 +15,18 @@ public class ViewManager {
     }
 
     public void setDisplay(ViewType view) {
-        this.previousView = this.currenView;
-        this.currenView = view;
+
+        if (this.currentView == view) {
+            System.out.println("Warning: Attempting to set the same view as current view: " + view);
+            return;
+        }
+
+        this.previousView = this.currentView;
+        this.currentView = view;
+
+        System.out.println("Setting display to: " + view);
+        System.out.println("Previous view: " + this.previousView);
+        System.out.println("Current view: " + this.currentView);
 
         Window[] windows = Window.getWindows();
         for (Window window : windows) {
@@ -34,7 +44,13 @@ public class ViewManager {
     }
 
     public ViewType getCurrentView() {
-        return this.currenView;
+        return this.currentView;
+    }
+
+    public void setDisplayWithPreviousView(ViewType newView, ViewType previousView) {
+        this.previousView = previousView;
+        this.currentView = newView;
+        setDisplay(newView);
     }
 
     private SuperView createView(ViewType viewType) {

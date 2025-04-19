@@ -14,9 +14,6 @@ import java.awt.*;
 public class UpdateCoffeeView extends SuperView {
     public UpdateCoffeeView(AppController controller) {
         super(controller, "Update Coffee");
-        if (!isCoffeePresent(ViewType.COFFEE_MENU_VIEW))
-            return;
-        Coffee selectedCoffee = controller.getCoffeeStore().get();
         setMinimumSize(new Dimension(800, 600));
         getContentPane().setBackground(new Color(245, 245, 245));
 
@@ -30,7 +27,7 @@ public class UpdateCoffeeView extends SuperView {
         gbc.gridwidth = 2; // Two columns layout
 
         // Title Section (spans both columns)
-        JLabel titleLabel = new Typography.StyledTitleField("Update Coffee - " + selectedCoffee.getName());
+        JLabel titleLabel = new Typography.StyledTitleField("Update Coffee - " + getSelectedCoffee().getName());
         gbc.gridy = 0;
         mainPanel.add(titleLabel, gbc);
 
@@ -48,12 +45,12 @@ public class UpdateCoffeeView extends SuperView {
 
         // Name Field
         JTextField nameField = new StyledInputs.StyledTextField();
-        nameField.setText(selectedCoffee.getName());
+        nameField.setText(getSelectedCoffee().getName());
         addFormField(mainPanel, gbc, "Coffee Name:", nameField, 3, 0);
 
         // Price Field
         JTextField priceField = new StyledInputs.StyledTextField();
-        priceField.setText(String.valueOf(selectedCoffee.getPrice()));
+        priceField.setText(String.valueOf(getSelectedCoffee().getPrice()));
         addFormField(mainPanel, gbc, "Price ($):", priceField, 4, 0);
 
         // In Stock Checkbox with custom panel
@@ -66,7 +63,7 @@ public class UpdateCoffeeView extends SuperView {
         stockPanel.add(stockLabel, BorderLayout.NORTH);
 
         JCheckBox inStockBox = new JCheckBox("In Stock");
-        inStockBox.setSelected(selectedCoffee.getIsInStock());
+        inStockBox.setSelected(getSelectedCoffee().getIsInStock());
         inStockBox.setBackground(Color.WHITE);
         inStockBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         stockPanel.add(inStockBox, BorderLayout.CENTER);
@@ -81,7 +78,7 @@ public class UpdateCoffeeView extends SuperView {
 
         // Description Field
         JTextArea descriptionField = new StyledInputs.StyledTextArea(20);
-        descriptionField.setText(selectedCoffee.getDescription());
+        descriptionField.setText(getSelectedCoffee().getDescription());
         descriptionField.setRows(8); // Set a fixed number of rows
         JScrollPane scrollPane = new JScrollPane(descriptionField);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -129,8 +126,8 @@ public class UpdateCoffeeView extends SuperView {
                 inStockBox);
 
         backButton.addActionListener(listeners.getBackButtonListener());
-        updateButton.addActionListener(listeners.getUpdateButtonListener(selectedCoffee.getCoffeeId()));
-        deleteButton.addActionListener(listeners.getDeleteButtonListener(selectedCoffee.getCoffeeId()));
+        updateButton.addActionListener(listeners.getUpdateButtonListener(getSelectedCoffee().getCoffeeId()));
+        deleteButton.addActionListener(listeners.getDeleteButtonListener(getSelectedCoffee().getCoffeeId()));
         pack();
         setLocationRelativeTo(null);
     }

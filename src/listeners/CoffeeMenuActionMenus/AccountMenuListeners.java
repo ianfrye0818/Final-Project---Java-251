@@ -1,7 +1,6 @@
 package listeners.CoffeeMenuActionMenus;
 
 import controllers.AppController;
-import entites.Customer;
 import enums.ViewType;
 import utils.DialogUtils;
 import views.SuperView;
@@ -19,7 +18,7 @@ public class AccountMenuListeners {
 
     public ActionListener getUpdateAccountActionListener() {
         return e -> {
-            setSelectedCustomer();
+            view.setSelectedCustomer(view.getLoggedInUser());
             controller.setDisplay(ViewType.UPDATE_ACCOUNT_VIEW);
         };
     }
@@ -27,14 +26,14 @@ public class AccountMenuListeners {
     public ActionListener getViewAccountActionListener() {
 
         return e -> {
-            setSelectedCustomer();
+            view.setSelectedCustomer(view.getLoggedInUser());
             controller.setDisplay(ViewType.CUSTOMER_DETAIL_VIEW);
         };
     }
 
     public ActionListener getDeleteAccountActionListener(int customerId) {
         return e -> {
-            setSelectedCustomer();
+            view.setSelectedCustomer(view.getLoggedInUser());
             boolean confirmation = DialogUtils.showConfirmation(
                     view,
                     "You are trying to delete your own account.\nPlease note that this action is irreversible.\nAfter deletion, you current session will persist, but you will not be able to login again.");
@@ -58,17 +57,20 @@ public class AccountMenuListeners {
 
     public ActionListener getAddCreditsActionListener() {
         return e -> {
-            setSelectedCustomer();
+            view.setSelectedCustomer(view.getLoggedInUser());
             DialogUtils.showAddCreditDialog(view, controller);
         };
     }
 
-    private void setSelectedCustomer() {
-        Customer loggedInCustomer = controller.getLoggedinCustomerStore().get();
-        if (loggedInCustomer == null) {
-            DialogUtils.showError(view, "No customer logged in");
-            return;
-        }
-        controller.getSelectedCustomerStore().set(loggedInCustomer);
-    }
+    // private void setSelectedCustomer() {
+    // Customer loggedInCustomer = controller.getLoggedinCustomerStore().get();
+    // if (loggedInCustomer == null) {
+    // DialogUtils.showError(view, "No customer logged in");
+    // return;
+    // }
+    // System.out.println("Setting selected customer: " + loggedInCustomer);
+    // controller.getSelectedCustomerStore().set(loggedInCustomer);
+    // System.out.println("Selected customer: " +
+    // controller.getSelectedCustomerStore().get());
+    // }
 }

@@ -112,6 +112,7 @@ public class OrderRepository implements IOrderRepository {
     // }
 
     public Order save(CreateOrderDto order) {
+        System.out.println("Saving order: " + order);
         String sql = """
                 INSERT INTO COFFEE_ORDER (CUSTOMER_ID, COFFEE_ID, QUANTITY_ORDERED, TOTAL_PRICE)
                 VALUES (?, ?, ?, ?)
@@ -123,7 +124,10 @@ public class OrderRepository implements IOrderRepository {
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int orderId = generatedKeys.getInt(1);
-                    return findById(orderId);
+                    System.out.println("Order ID: " + orderId);
+                    Order foundOrder = findById(orderId);
+                    System.out.println("Found order: " + foundOrder);
+                    return foundOrder;
                 }
             }
         } catch (SQLException e) {

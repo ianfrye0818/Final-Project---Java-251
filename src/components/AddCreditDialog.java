@@ -150,7 +150,7 @@ public class AddCreditDialog extends JDialog {
                         .updateCustomer(UpdateCustomerDto.fromCustomer(currentCustomer));
                 if (updatedCustomer != null) {
                     dispose();
-                    controller.setDisplay(controller.getViewManager().getCurrentView());
+                    controller.setDisplay(controller.getViewManager().getPreviousView());
                 } else {
                     DialogUtils.showError(parentView, "Failed to add credits. Please try again.");
                 }

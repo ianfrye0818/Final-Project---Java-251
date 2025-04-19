@@ -18,10 +18,8 @@ public class CustomerOrderHistoryView extends SuperView {
 
     public CustomerOrderHistoryView(AppController controller) {
         super(controller, "Order History");
-        if (!isCustomerPresent(ViewType.VIEW_ALL_CUSTOMERS_VIEW))
-            return;
-        this.currentCustomer = controller.getSelectedCustomerStore().get();
-        this.customerOrders = controller.getOrderService().getOrdersByCustomerId(currentCustomer.getCustomerId());
+
+        this.customerOrders = controller.getOrderService().getOrdersByCustomerId(getLoggedInUser().getCustomerId());
 
         setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());

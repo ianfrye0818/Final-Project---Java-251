@@ -6,8 +6,6 @@ import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
 import entites.Coffee;
-import entites.Customer;
-import enums.ViewType;
 import listeners.CreateOrderViewListeners;
 
 import javax.swing.*;
@@ -21,9 +19,6 @@ public class CreateOrderView extends SuperView {
 
     public CreateOrderView(AppController controller) {
         super(controller, "Create Order");
-        if (!isCustomerPresent(ViewType.COFFEE_MENU_VIEW))
-            return;
-        Customer currentCustomer = controller.getLoggedinCustomerStore().get();
 
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(800, 600));
@@ -55,10 +50,10 @@ public class CreateOrderView extends SuperView {
 
         addSectionHeader(mainPanel, gbc, "Customer Information", 2, 0);
 
-        JTextField firstNameField = new StyledInputs.StyledTextField(true, currentCustomer.getFirstName());
+        JTextField firstNameField = new StyledInputs.StyledTextField(true, getLoggedInUser().getFirstName());
         addFormField(mainPanel, gbc, "First Name:", firstNameField, 3, 0);
 
-        JTextField lastNameField = new StyledInputs.StyledTextField(true, currentCustomer.getLastName());
+        JTextField lastNameField = new StyledInputs.StyledTextField(true, getLoggedInUser().getLastName());
         addFormField(mainPanel, gbc, "Last Name:", lastNameField, 4, 0);
 
         // Right Column - Order Details

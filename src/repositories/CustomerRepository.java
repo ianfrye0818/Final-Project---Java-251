@@ -68,7 +68,7 @@ public class CustomerRepository implements ICustomerRepository {
     @Override
     public Customer findByEmail(String email) {
         String sql = """
-                SELECT * FROM CUSTOMER WHERE EMAIL_ADDRESS = ?
+                SELECT * FROM CUSTOMER WHERE LOWER(EMAIL_ADDRESS) = LOWER(?)
                 """;
         Customer customer = null;
 
@@ -135,22 +135,23 @@ public class CustomerRepository implements ICustomerRepository {
             stmt.setInt(10, updateCustomer.getCustomerId());
             int result = stmt.executeUpdate();
 
-            if (result == 0) throw new RuntimeException("Failed to update customer");
+            if (result == 0)
+                throw new RuntimeException("Failed to update customer");
 
             return findById(updateCustomer.getCustomerId());
-//            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-//                if (generatedKeys.next()) {
-//                    int customerId = generatedKeys.getInt(1);
-//                    Customer cust = findById(customerId);
-//                    System.out.println("Customer in reposiotry: " + cust)
-//                    return cust;
-//                }
-//            }
+            // try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+            // if (generatedKeys.next()) {
+            // int customerId = generatedKeys.getInt(1);
+            // Customer cust = findById(customerId);
+            // System.out.println("Customer in reposiotry: " + cust)
+            // return cust;
+            // }
+            // }
         } catch (SQLException e) {
             System.out.println("Save Customer Failed: " + e.getMessage());
             return null;
         }
-        
+
     }
 
     @Override
@@ -206,7 +207,7 @@ public class CustomerRepository implements ICustomerRepository {
                 .setZip("12345")
                 .setEmail("billy@gmail.com")
                 .setPhone("3368307157")
-                .setCreditLimit(0.00)
+                .setCreditLimit(10.00)
                 .build());
 
         customers.add(new CreateCustomerDto.Builder()
@@ -216,7 +217,7 @@ public class CustomerRepository implements ICustomerRepository {
                 .setCity("Anytown")
                 .setState("CA")
                 .setZip("12345")
-                .setEmail("jane.doe@example.com")
+                .setEmail("jane@gmail.com")
                 .setPhone("3368307157")
                 .setCreditLimit(50.00)
                 .build());
@@ -228,7 +229,7 @@ public class CustomerRepository implements ICustomerRepository {
                 .setCity("Anytown")
                 .setState("CA")
                 .setZip("12345")
-                .setEmail("jim.beam@example.com")
+                .setEmail("john@gmail.com")
                 .setPhone("3368307157")
                 .setCreditLimit(20.00)
                 .build());

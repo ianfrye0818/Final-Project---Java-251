@@ -4,6 +4,7 @@ import controllers.AppController;
 import dto.CreateOrderDto;
 import entites.Coffee;
 import entites.Customer;
+import entites.Order;
 import enums.ViewType;
 import utils.DialogUtils;
 import views.CreateOrderView;
@@ -57,19 +58,22 @@ public class CreateOrderViewListeners {
 
             CreateOrderDto order = new CreateOrderDto.Builder()
                     .setCoffeeId(selectedCoffee.getCoffeeId())
+                    .setCustomerId(view.getLoggedInUser().getCustomerId())
                     .setQtyOrdered(quantity)
                     .setTotal(total)
                     .build();
 
-            Customer currentCustomer = appController.getLoggedinCustomerStore().get();
-            if (total > currentCustomer.getCreditLimit()) {
-                handleInsufficientCredit(currentCustomer.getCreditLimit());
+            Customer loggedInCustomer = view.getLoggedInUser();
+            if (total > loggedInCustomer.getCreditLimit()) {
+                handleInsufficientCredit(loggedInCustomer.getCreditLimit());
                 return;
             }
 
             try {
 
-                appController.getOrderService().createOrder(order);
+                Order createdOrder = appController.getOrderService().createOrder(order);
+                System.out.println("Created order: " + createdOrder);
+                view.setSelectedOrder(createdOrder);
                 appController.setDisplay(ViewType.ORDER_DETAIL_VIEW);
             } catch (Exception ex) {
                 DialogUtils.showError(view, "Error placing order: " + ex.getMessage());

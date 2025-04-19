@@ -3,7 +3,8 @@ package components.tables;
 import components.StyledTable;
 import controllers.AppController;
 import entites.Customer;
-import enums.ViewType;
+import views.SuperView;
+import views.ViewAllCustomersView;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -12,15 +13,15 @@ import java.util.List;
 public class CustomerTable extends StyledTable<Customer> {
     private final AppController controller;
 
-    public CustomerTable(AppController controller) {
+    public CustomerTable(AppController controller, SuperView view) {
         super(List.of("Name", "Street", "City", "State", "Zip", "Email", "Phone", "Credit Limit"), false);
         this.controller = controller;
-
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2 && getSelectedRow() != -1) {
-                    handleViewDetails();
+                    // TODO: Make sure this works
+                    ((ViewAllCustomersView) view).handleViewDetails();
                 }
             }
         });
@@ -42,12 +43,6 @@ public class CustomerTable extends StyledTable<Customer> {
                     String.format("$%.2f", customer.getCreditLimit())
             });
         }
-    }
-
-    public void handleViewDetails() {
-        Customer selectedCustomer = getSelectedItem();
-        controller.getSelectedCustomerStore().set(selectedCustomer);
-        controller.setDisplay(ViewType.CUSTOMER_DETAIL_VIEW);
     }
 
 }

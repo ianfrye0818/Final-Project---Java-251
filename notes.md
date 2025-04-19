@@ -57,3 +57,13 @@
 - Change up p design of pages to make them more wider and the UI/UX better
 - Create a view to display all customers
 - Create a view to display all orders
+
+#### Tests 04/19/2025
+
+~~ - Create Coffee ~~ ~~ - View Coffees~~ ~~ - Delete Coffee~~ ~~ - Update Coffee~~
+
+- Create Account
+- Add Credits from account menu
+- Add credits from view account details menu
+- Update Account
+-

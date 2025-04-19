@@ -29,9 +29,6 @@ public class UpdateAccountView extends SuperView {
 
     public UpdateAccountView(AppController controller) {
         super(controller, "Update Account");
-        if (!isCustomerPresent(ViewType.COFFEE_MENU_VIEW))
-            return;
-        Customer currentCustomer = controller.getLoggedinCustomerStore().get();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -67,22 +64,22 @@ public class UpdateAccountView extends SuperView {
 
         // First Name
         this.firstNameField = new StyledInputs.StyledTextField();
-        firstNameField.setText(currentCustomer.getFirstName());
+        firstNameField.setText(getLoggedInUser().getFirstName());
         addFormField(mainPanel, gbc, "First Name:", firstNameField, 3, 0);
 
         // Last Name
         this.lastNameField = new StyledInputs.StyledTextField();
-        lastNameField.setText(currentCustomer.getLastName());
+        lastNameField.setText(getLoggedInUser().getLastName());
         addFormField(mainPanel, gbc, "Last Name:", lastNameField, 4, 0);
 
         // Email
         this.emailField = new StyledInputs.StyledTextField();
-        emailField.setText(currentCustomer.getEmail());
+        emailField.setText(getLoggedInUser().getEmail());
         addFormField(mainPanel, gbc, "Email:", emailField, 5, 0);
 
         // Phone
         this.phoneField = new StyledInputs.StyledTextField();
-        phoneField.setText(currentCustomer.getPhone());
+        phoneField.setText(getLoggedInUser().getPhone());
         addFormField(mainPanel, gbc, "Phone:", phoneField, 6, 0);
 
         // Right Column - Address Information
@@ -93,12 +90,12 @@ public class UpdateAccountView extends SuperView {
 
         // Street
         this.streetField = new StyledInputs.StyledTextField();
-        streetField.setText(currentCustomer.getStreet());
+        streetField.setText(getLoggedInUser().getStreet());
         addFormField(mainPanel, gbc, "Street:", streetField, 3, 1);
 
         // City
         this.cityField = new StyledInputs.StyledTextField();
-        cityField.setText(currentCustomer.getCity());
+        cityField.setText(getLoggedInUser().getCity());
         addFormField(mainPanel, gbc, "City:", cityField, 4, 1);
 
         // State and Zip (in one panel)
@@ -112,7 +109,7 @@ public class UpdateAccountView extends SuperView {
         stateLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         statePanel.add(stateLabel, BorderLayout.NORTH);
         this.stateField = new StyledInputs.StyledTextField();
-        stateField.setText(currentCustomer.getState());
+        stateField.setText(getLoggedInUser().getState());
         statePanel.add(stateField, BorderLayout.CENTER);
         stateZipPanel.add(statePanel);
 
@@ -123,7 +120,7 @@ public class UpdateAccountView extends SuperView {
         zipLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         zipPanel.add(zipLabel, BorderLayout.NORTH);
         this.zipField = new StyledInputs.StyledTextField();
-        zipField.setText(currentCustomer.getZip());
+        zipField.setText(getLoggedInUser().getZip());
         zipPanel.add(zipField, BorderLayout.CENTER);
         stateZipPanel.add(zipPanel);
 
@@ -173,7 +170,7 @@ public class UpdateAccountView extends SuperView {
                 passwordField);
 
         backButton.addActionListener(listeners.getBackButtonListener(ViewType.COFFEE_MENU_VIEW));
-        updateButton.addActionListener(listeners.getUpdateAccountButtonListener(currentCustomer.getCustomerId()));
+        updateButton.addActionListener(listeners.getUpdateAccountButtonListener(getLoggedInUser().getCustomerId()));
 
         tabOrder.add(firstNameField);
         tabOrder.add(lastNameField);
