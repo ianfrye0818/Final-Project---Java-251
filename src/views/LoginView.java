@@ -3,19 +3,15 @@ package views;
 import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
-import listeners.LoginActionListeners;
+import listeners.LoginViewListeners;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class LoginView extends SuperView {
-    private String title;
-    private JTextField emailField;
-    private JPasswordField passwordField;
-
     public LoginView(AppController controller) {
-        this.title = "Login";
+        super(controller, "Login");
 
         setMinimumSize(new Dimension(400, 220));
         setLayout(new BorderLayout());
@@ -31,12 +27,12 @@ public class LoginView extends SuperView {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
 
-        JLabel titleLablel = new Typography.StyledTitleField("Welcome to Coffee Ordering");
+        JLabel titleLabel = new Typography.StyledTitleField("Welcome to Coffee Ordering");
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(titleLablel, gbc);
+        mainPanel.add(titleLabel, gbc);
 
         JLabel subtitleLabel = new Typography.StyledSubtitleField("Please log in to continue");
         gbc.gridy = 1;
@@ -44,12 +40,12 @@ public class LoginView extends SuperView {
         mainPanel.add(subtitleLabel, gbc);
 
         // Email
-        emailField = new StyledInputs.StyledTextField(20);
-        addFormField(mainPanel, gbc, "Email:", emailField, 2, 0, 1.0, GridBagConstraints.REMAINDER);
+        JTextField emailField = new StyledInputs.StyledTextField();
+        addFormField(mainPanel, gbc, "Email:", emailField, 2);
 
         // Password
-        passwordField = new StyledInputs.StyledPasswordField(20);
-        addFormField(mainPanel, gbc, "Password:", passwordField, 4, 0, 1.0, GridBagConstraints.REMAINDER);
+        JPasswordField passwordField = new StyledInputs.StyledPasswordField(20);
+        addFormField(mainPanel, gbc, "Password:", passwordField, 4);
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonsPanel.setBackground(Color.WHITE);
@@ -57,8 +53,7 @@ public class LoginView extends SuperView {
         JButton createAccountButton = new StyledInputs.StyledButton("Create Account");
         buttonsPanel.add(createAccountButton);
 
-        JButton loginButton = new StyledInputs.StyledButton("Login", new Color(79, 55, 48), Color.WHITE, 14);
-
+        JButton loginButton = new StyledInputs.PrimaryButton("Login");
         buttonsPanel.add(loginButton);
 
         gbc.gridy = 6;
@@ -68,25 +63,25 @@ public class LoginView extends SuperView {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        LoginActionListeners listeners = new LoginActionListeners(controller, this, emailField, passwordField);
+        LoginViewListeners listeners = new LoginViewListeners(controller, this, emailField, passwordField);
 
         createAccountButton.addActionListener(listeners.getCreateAccountButtonListener());
 
         loginButton.addActionListener(listeners.getLoginButtonListener());
+        getRootPane().setDefaultButton(loginButton);
         pack();
         setLocationRelativeTo(null);
     }
 
     private void addFormField(JPanel panel, GridBagConstraints gbc,
             String labelText, JComponent field,
-            int gridY, int gridX,
-            double weightX, int gridWidth) {
+            int gridY) {
 
         JLabel label = new Typography.StyledLabel(labelText);
         gbc.gridy = gridY;
-        gbc.gridx = gridX;
-        gbc.weightx = weightX;
-        gbc.gridwidth = gridWidth;
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.anchor = GridBagConstraints.WEST;
         panel.add(label, gbc);
 
@@ -94,8 +89,4 @@ public class LoginView extends SuperView {
         panel.add(field, gbc);
     }
 
-    @Override
-    public String getTitle() {
-        return super.getTitle() + " - " + title;
-    }
 }

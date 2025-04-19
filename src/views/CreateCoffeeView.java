@@ -10,16 +10,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class CreateCoffeeView extends SuperView {
-    private final String title;
-    private JTextField nameField;
-    private JTextArea descriptionField;
-    private JTextField priceField;
-    private JCheckBox inStockBox;
 
-    public CreateCoffeeView(AppController appController) {
-        this.title = "Create Coffee";
+    public CreateCoffeeView(AppController controller) {
+        super(controller, "Create Coffee");
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(800, 600));
         getContentPane().setBackground(new Color(245, 245, 245));
@@ -48,15 +42,15 @@ public class CreateCoffeeView extends SuperView {
         gbc.weightx = 0.5;
         gbc.gridx = 0;
 
-        addSectionHeader(mainPanel, gbc, "Basic Information", 2, 0);
+        addSectionHeader(mainPanel, gbc, "Basic Information", 0);
 
         // Name Field
-        nameField = new StyledInputs.StyledTextField(20);
-        addFormField(mainPanel, gbc, "Coffee Name:", nameField, 3, 0);
+        JTextField nameField = new StyledInputs.StyledTextField();
+        addFormField(mainPanel, gbc, "Coffee Name:", nameField, 3);
 
         // Price Field
-        priceField = new StyledInputs.StyledTextField(10);
-        addFormField(mainPanel, gbc, "Price ($):", priceField, 4, 0);
+        JTextField priceField = new StyledInputs.StyledTextField();
+        addFormField(mainPanel, gbc, "Price ($):", priceField, 4);
 
         // In Stock Checkbox with custom panel
         JPanel stockPanel = new JPanel(new BorderLayout(0, 5));
@@ -67,7 +61,7 @@ public class CreateCoffeeView extends SuperView {
         stockLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         stockPanel.add(stockLabel, BorderLayout.NORTH);
 
-        inStockBox = new JCheckBox("In Stock");
+        JCheckBox inStockBox = new JCheckBox("In Stock");
         inStockBox.setSelected(true);
         inStockBox.setBackground(Color.WHITE);
         inStockBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -79,10 +73,10 @@ public class CreateCoffeeView extends SuperView {
         // Right Column - Description
         gbc.gridx = 1;
         gbc.gridy = 2;
-        addSectionHeader(mainPanel, gbc, "Description", 2, 1);
+        addSectionHeader(mainPanel, gbc, "Description", 1);
 
         // Description Field
-        descriptionField = new StyledInputs.StyledTextArea(20);
+        JTextArea descriptionField = new StyledInputs.StyledTextArea(20);
         descriptionField.setRows(8); // Set a fixed number of rows
         JScrollPane scrollPane = new JScrollPane(descriptionField);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -110,7 +104,7 @@ public class CreateCoffeeView extends SuperView {
         JButton backButton = new StyledInputs.StyledButton("Back to Menu");
         buttonsPanel.add(backButton);
 
-        JButton createButton = new StyledInputs.StyledButton("Create Coffee", new Color(79, 55, 48), Color.WHITE);
+        JButton createButton = new StyledInputs.PrimaryButton("Create Coffee");
         buttonsPanel.add(createButton);
 
         mainPanel.add(buttonsPanel, gbc);
@@ -119,7 +113,7 @@ public class CreateCoffeeView extends SuperView {
 
         // Add listeners
         CoffeeListeners listeners = new CoffeeListeners(
-                appController,
+                controller,
                 this,
                 nameField,
                 descriptionField,
@@ -133,21 +127,24 @@ public class CreateCoffeeView extends SuperView {
         setLocationRelativeTo(null);
     }
 
-    private void addSectionHeader(JPanel panel, GridBagConstraints gbc, String text, int gridy, int gridx) {
+    private void addSectionHeader(JPanel panel, GridBagConstraints gbc, String text, int gridx) {
         JLabel header = new JLabel(text);
         header.setFont(new Font("Segoe UI", Font.BOLD, 16));
         header.setForeground(new Color(79, 55, 48));
-        gbc.gridy = gridy;
+        gbc.gridy = 2;
         gbc.gridx = gridx;
         gbc.insets = new Insets(20, 8, 8, 8);
         panel.add(header, gbc);
     }
 
-    private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field, int gridy,
-            int gridx) {
+    private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field, int gridy) {
         gbc.gridy = gridy;
-        gbc.gridx = gridx;
+        gbc.gridx = 0;
 
+        setFormFieldProps(panel, gbc, labelText, field);
+    }
+
+    static void setFormFieldProps(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field) {
         JPanel fieldPanel = new JPanel(new BorderLayout(0, 5));
         fieldPanel.setBackground(Color.WHITE);
         fieldPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 15));
@@ -160,8 +157,4 @@ public class CreateCoffeeView extends SuperView {
         panel.add(fieldPanel, gbc);
     }
 
-    @Override
-    public String getTitle() {
-        return super.getTitle() + " - " + title;
-    }
 }

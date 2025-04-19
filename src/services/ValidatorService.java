@@ -3,10 +3,9 @@ package services;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import dto.ValidateCreateAccountDto;
-import models.Coffee;
-import models.Customer;
-import models.Order;
+import dto.CreateCoffeeDto;
+import dto.CreateCustomerDto;
+import dto.CreateOrderDto;
 
 public class ValidatorService {
   public static boolean isValidEmail(String email) {
@@ -59,7 +58,7 @@ public class ValidatorService {
     return true;
   }
 
-  public static boolean isValidCustomer(ValidateCreateAccountDto customer) {
+  public static boolean isValidCustomer(CreateCustomerDto customer) {
     return customer != null
         && isValidNotEmpty(
             customer.getFirstName(),
@@ -73,18 +72,18 @@ public class ValidatorService {
   }
 
   // Specific validator for Coffee
-  public static boolean isValidCoffee(Coffee coffee) {
+  public static boolean isValidCoffee(CreateCoffeeDto coffee) {
     return coffee != null
         && isValidNotEmpty(
-            coffee.getCoffeeName(),
-            coffee.getCoffeeDescription())
+            coffee.getName(),
+            coffee.getDescription())
         && isValidNotZero(coffee.getPrice());
   }
 
   // Specific validator for Order
-  public static boolean isValidOrder(Order order) {
+  public static boolean isValidOrder(CreateOrderDto order) {
     return order != null
-        && isValidNotNull(order.getCustomer(), order.getCoffee())
-        && isValidNotZero(order.getNumberOrdered(), order.getTotal());
+        && isValidNotNull(order.getCustomerId(), order.getCoffeeId())
+        && isValidNotZero(order.getQtyOrdered(), order.getTotal());
   }
 }

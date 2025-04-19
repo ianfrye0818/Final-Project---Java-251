@@ -1,4 +1,4 @@
-package listeners;
+package listeners.CoffeeMenuActionMenus;
 
 import controllers.AppController;
 import enums.ViewType;
@@ -13,6 +13,7 @@ public class CoffeeMenuListeners {
     }
 
     public ActionListener getAddNewCoffeeButtonListener() {
+
         return e -> controller.setDisplay(ViewType.CREATE_COFFEE_VIEW);
     }
 }

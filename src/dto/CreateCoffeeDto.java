@@ -1,31 +1,18 @@
-package entites;
+package dto;
 
-public class CoffeeEntity {
-  private int coffeeId;
+import entites.Coffee;
+
+public class CreateCoffeeDto {
   private String name;
   private String description;
   private double price;
   private boolean inStock;
 
-  public CoffeeEntity() {
-
-  }
-
-  public CoffeeEntity(int coffeeId, String name, String description, double price, boolean inStock) {
-
-    this.coffeeId = coffeeId;
+  public CreateCoffeeDto(String name, String description, double price, boolean inStock) {
     this.name = name;
     this.description = description;
     this.price = price;
     this.inStock = inStock;
-  }
-
-  public int getCoffeeId() {
-    return coffeeId;
-  }
-
-  public void setCoffeeId(int coffeeId) {
-    this.coffeeId = coffeeId;
   }
 
   public String getName() {
@@ -60,23 +47,11 @@ public class CoffeeEntity {
     this.inStock = inStock;
   }
 
-  @Override
-  public String toString() {
-    return "CoffeeEntity [coffeeId=" + coffeeId + ", name=" + name + ", description=" + description + ", price=" + price
-        + ", inStock=" + inStock + "]";
-  }
-
-  public class Builder {
-    private int coffeeId;
+  public static class Builder {
     private String name;
     private String description;
     private double price;
     private boolean inStock;
-
-    public Builder setCoffeeId(int coffeeId) {
-      this.coffeeId = coffeeId;
-      return this;
-    }
 
     public Builder setName(String name) {
       this.name = name;
@@ -98,9 +73,28 @@ public class CoffeeEntity {
       return this;
     }
 
-    public CoffeeEntity build() {
-      return new CoffeeEntity(coffeeId, name, description, price, inStock);
+    public CreateCoffeeDto build() {
+      return new CreateCoffeeDto(name, description, price, inStock);
     }
   }
 
+  @Override
+  public String toString() {
+    return "CreateCoffeeDto{" +
+        "name='" + name + '\'' +
+        ", description='" + description + '\'' +
+        ", price=" + price +
+        ", inStock=" + inStock +
+        '}';
+  }
+
+  public Coffee toCoffee(Integer coffeeId) {
+    return new Coffee.Builder()
+        .setCoffeeId(coffeeId)
+        .setName(name)
+        .setDescription(description)
+        .setPrice(price)
+        .setInStock(inStock)
+        .build();
+  }
 }

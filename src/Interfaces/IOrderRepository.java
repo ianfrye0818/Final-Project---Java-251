@@ -2,8 +2,9 @@ package Interfaces;
 
 import java.util.List;
 
-import models.Order;
+import dto.CreateOrderDto;
+import entites.Order;
 
-public interface IOrderRepository extends IRepository<Order> {
+public interface IOrderRepository extends IRepository<Order, CreateOrderDto> {
   List<Order> findByCustomerId(int customerId);
 }

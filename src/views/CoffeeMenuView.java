@@ -4,27 +4,30 @@ import components.StyledInputs;
 import components.TitlePanel;
 import components.tables.CoffeeTable;
 import controllers.AppController;
+import entites.Customer;
 import enums.ViewType;
-import listeners.AccountMenuListeners;
-import listeners.AdminMenuListeners;
-import listeners.CoffeeMenuListeners;
-import models.Coffee;
-import models.Customer;
-
+import listeners.CoffeeMenuActionListeners;
+import listeners.CoffeeMenuActionMenus.AccountMenuListeners;
+import listeners.CoffeeMenuActionMenus.AdminMenuListeners;
+import listeners.CoffeeMenuActionMenus.CoffeeMenuListeners;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class CoffeeMenuView extends SuperView {
-    private final String title;
-    private final Customer currentCustomer;
 
     public CoffeeMenuView(AppController controller) {
-        this.title = "Coffee Menu";
-        this.currentCustomer = controller.getCustomerStore().get();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        super(controller, "Coffee Menu");
+
+        CoffeeMenuActionListeners coffeeMenuActionListeners = new CoffeeMenuActionListeners(controller);
+        CoffeeMenuListeners coffeeMenuListeners = new CoffeeMenuListeners(controller);
+        AccountMenuListeners accountMenuListeners = new AccountMenuListeners(controller, this);
+        AdminMenuListeners adminMenuListeners = new AdminMenuListeners(controller);
+
+        if (!isCustomerPresent(ViewType.COFFEE_MENU_VIEW))
+            return;
+        Customer currentCustomer = controller.getLoggedinCustomerStore().get();
         setMinimumSize(new Dimension(850, 650));
-        setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(245, 245, 245));
 
         JPanel titlePanel = new TitlePanel("Our Coffee Selection");
@@ -70,8 +73,12 @@ public class CoffeeMenuView extends SuperView {
         // Admin Menu Items
         JMenuItem viewAllCustomersItem = new JMenuItem("View All Customers");
         JMenuItem viewAllOrdersItem = new JMenuItem("View All Orders");
+        JMenuItem resetDatabaseItem = new JMenuItem("Clear Database");
+        JMenuItem populateDatabaseItem = new JMenuItem("Clear/Populate Database");
         adminMenu.add(viewAllCustomersItem);
         adminMenu.add(viewAllOrdersItem);
+        adminMenu.add(resetDatabaseItem);
+        adminMenu.add(populateDatabaseItem);
 
         menuBar.add(coffeeMenu);
         menuBar.add(accountMenu);
@@ -81,22 +88,11 @@ public class CoffeeMenuView extends SuperView {
         // Bottom Panel with Create Order Button
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
         bottomPanel.setBackground(new Color(245, 245, 245));
-        JButton createOrderButton = new StyledInputs.StyledButton("Create Order", new Color(109, 81, 70), Color.WHITE);
-
+        JButton createOrderButton = new StyledInputs.PrimaryButton("Create Order");
         // View Details button
         JButton viewDetailsButton = new StyledInputs.StyledButton("Update Coffee");
-        viewDetailsButton.addActionListener(e -> {
-            Coffee selectedCoffee = coffeeTable.getSelectedItem();
-            if (selectedCoffee != null) {
-                coffeeTable.handleViewDetails();
-            } else {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Please select a coffee to update",
-                        "No Selection",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        });
+        viewDetailsButton.addActionListener(coffeeMenuActionListeners.getCoffeeTableSelectedItemListener(coffeeTable,
+                this));
 
         bottomPanel.add(createOrderButton);
         bottomPanel.add(viewDetailsButton);
@@ -105,11 +101,8 @@ public class CoffeeMenuView extends SuperView {
 
         // Listeners
 
-        CoffeeMenuListeners coffeeMenuListeners = new CoffeeMenuListeners(controller);
-        AccountMenuListeners accountMenuListeners = new AccountMenuListeners(controller, this);
-        AdminMenuListeners adminMenuListeners = new AdminMenuListeners(controller);
+        // Top Menu Listeners
         logoutItem.addActionListener(accountMenuListeners.getLogoutActionListener());
-        createOrderButton.addActionListener(e -> controller.setDisplay(ViewType.CREATE_ORDER_VIEW));
         addNewCoffeeItem.addActionListener(coffeeMenuListeners.getAddNewCoffeeButtonListener());
         updateAccountItem.addActionListener(accountMenuListeners.getUpdateAccountActionListener());
         viewAccountItem.addActionListener(accountMenuListeners.getViewAccountActionListener());
@@ -118,14 +111,13 @@ public class CoffeeMenuView extends SuperView {
         addCreditsItem.addActionListener(accountMenuListeners.getAddCreditsActionListener());
         viewAllCustomersItem.addActionListener(adminMenuListeners.getViewAllCustomersListener());
         viewAllOrdersItem.addActionListener(adminMenuListeners.getViewAllOrdersListener());
+        resetDatabaseItem.addActionListener(adminMenuListeners.getClearDatabaseListener(this));
+        populateDatabaseItem.addActionListener(adminMenuListeners.resetDatabaseListener(this));
+
+        // Bottom Panel Listeners
+        createOrderButton.addActionListener(coffeeMenuActionListeners.getCreateOrderButtonActionListener());
 
         pack();
         setLocationRelativeTo(null);
     }
-
-    @Override
-    public String getTitle() {
-        return super.getTitle() + " - " + title;
-    }
 }
-//

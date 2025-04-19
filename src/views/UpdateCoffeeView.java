@@ -3,27 +3,20 @@ package views;
 import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
+import entites.Coffee;
+import enums.ViewType;
 import listeners.CoffeeListeners;
-import models.Coffee;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class UpdateCoffeeView extends SuperView {
-    private final String title;
-    private JTextField nameField;
-    private JTextArea descriptionField;
-    private JTextField priceField;
-    private JCheckBox inStockBox;
-    private final Coffee selectedCoffee;
-
-    public UpdateCoffeeView(AppController appController) {
-        this.title = "Update Coffee";
-        this.selectedCoffee = appController.getCoffeeStore().get();
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+    public UpdateCoffeeView(AppController controller) {
+        super(controller, "Update Coffee");
+        if (!isCoffeePresent(ViewType.COFFEE_MENU_VIEW))
+            return;
+        Coffee selectedCoffee = controller.getCoffeeStore().get();
         setMinimumSize(new Dimension(800, 600));
         getContentPane().setBackground(new Color(245, 245, 245));
 
@@ -37,11 +30,11 @@ public class UpdateCoffeeView extends SuperView {
         gbc.gridwidth = 2; // Two columns layout
 
         // Title Section (spans both columns)
-        JLabel titleLabel = new Typography.StyledTitleField("Create New Coffee");
+        JLabel titleLabel = new Typography.StyledTitleField("Update Coffee - " + selectedCoffee.getName());
         gbc.gridy = 0;
         mainPanel.add(titleLabel, gbc);
 
-        JLabel subtitleLabel = new Typography.StyledSubtitleField("Add a new coffee to the menu");
+        JLabel subtitleLabel = new Typography.StyledSubtitleField("Update the coffee details");
         gbc.gridy = 1;
         gbc.insets = new Insets(0, 10, 25, 10);
         mainPanel.add(subtitleLabel, gbc);
@@ -54,12 +47,12 @@ public class UpdateCoffeeView extends SuperView {
         addSectionHeader(mainPanel, gbc, "Basic Information", 2, 0);
 
         // Name Field
-        nameField = new StyledInputs.StyledTextField(20);
-        nameField.setText(selectedCoffee.getCoffeeName());
+        JTextField nameField = new StyledInputs.StyledTextField();
+        nameField.setText(selectedCoffee.getName());
         addFormField(mainPanel, gbc, "Coffee Name:", nameField, 3, 0);
 
         // Price Field
-        priceField = new StyledInputs.StyledTextField(10);
+        JTextField priceField = new StyledInputs.StyledTextField();
         priceField.setText(String.valueOf(selectedCoffee.getPrice()));
         addFormField(mainPanel, gbc, "Price ($):", priceField, 4, 0);
 
@@ -72,7 +65,7 @@ public class UpdateCoffeeView extends SuperView {
         stockLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         stockPanel.add(stockLabel, BorderLayout.NORTH);
 
-        inStockBox = new JCheckBox("In Stock");
+        JCheckBox inStockBox = new JCheckBox("In Stock");
         inStockBox.setSelected(selectedCoffee.getIsInStock());
         inStockBox.setBackground(Color.WHITE);
         inStockBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -87,8 +80,8 @@ public class UpdateCoffeeView extends SuperView {
         addSectionHeader(mainPanel, gbc, "Description", 2, 1);
 
         // Description Field
-        descriptionField = new StyledInputs.StyledTextArea(20);
-        descriptionField.setText(selectedCoffee.getCoffeeDescription());
+        JTextArea descriptionField = new StyledInputs.StyledTextArea(20);
+        descriptionField.setText(selectedCoffee.getDescription());
         descriptionField.setRows(8); // Set a fixed number of rows
         JScrollPane scrollPane = new JScrollPane(descriptionField);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -116,8 +109,11 @@ public class UpdateCoffeeView extends SuperView {
         JButton backButton = new StyledInputs.StyledButton("Back to Menu");
         buttonsPanel.add(backButton);
 
-        JButton updateButton = new StyledInputs.StyledButton("Update Coffee", new Color(79, 55, 48), Color.WHITE);
+        JButton updateButton = new StyledInputs.PrimaryButton("Update Coffee");
         buttonsPanel.add(updateButton);
+
+        JButton deleteButton = new StyledInputs.DestructiveButton("Delete Coffee");
+        buttonsPanel.add(deleteButton);
 
         mainPanel.add(buttonsPanel, gbc);
 
@@ -125,7 +121,7 @@ public class UpdateCoffeeView extends SuperView {
 
         // Add listeners
         CoffeeListeners listeners = new CoffeeListeners(
-                appController,
+                controller,
                 this,
                 nameField,
                 descriptionField,
@@ -133,41 +129,10 @@ public class UpdateCoffeeView extends SuperView {
                 inStockBox);
 
         backButton.addActionListener(listeners.getBackButtonListener());
-        updateButton.addActionListener(listeners.getUpdateButtonListener());
-
+        updateButton.addActionListener(listeners.getUpdateButtonListener(selectedCoffee.getCoffeeId()));
+        deleteButton.addActionListener(listeners.getDeleteButtonListener(selectedCoffee.getCoffeeId()));
         pack();
         setLocationRelativeTo(null);
     }
 
-    private void addSectionHeader(JPanel panel, GridBagConstraints gbc, String text, int gridy, int gridx) {
-        JLabel header = new JLabel(text);
-        header.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        header.setForeground(new Color(79, 55, 48));
-        gbc.gridy = gridy;
-        gbc.gridx = gridx;
-        gbc.insets = new Insets(20, 8, 8, 8);
-        panel.add(header, gbc);
-    }
-
-    private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field, int gridy,
-            int gridx) {
-        gbc.gridy = gridy;
-        gbc.gridx = gridx;
-
-        JPanel fieldPanel = new JPanel(new BorderLayout(0, 5));
-        fieldPanel.setBackground(Color.WHITE);
-        fieldPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 15));
-
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        fieldPanel.add(label, BorderLayout.NORTH);
-        fieldPanel.add(field, BorderLayout.CENTER);
-
-        panel.add(fieldPanel, gbc);
-    }
-
-    @Override
-    public String getTitle() {
-        return super.getTitle() + " - " + title;
-    }
 }

@@ -1,42 +1,30 @@
-package entites;
+package dto;
 
-public class Customer {
-  private int customerId;
+public class CreateCustomerDto {
   private String firstName;
   private String lastName;
+  private String email;
+  private String phone;
   private String street;
   private String city;
   private String state;
   private String zip;
-  private String email;
-  private String password;
-  private String phone;
   private double creditLimit;
 
-  public Customer() {
-  }
-
-  public Customer(int customerId, String firstName, String lastName, String street, String city, String state,
-      String zip, String email, String password, String phone, double creditLimit) {
-    this.customerId = customerId;
+  public CreateCustomerDto(String firstName, String lastName, String email, String phone, String street, String city,
+      String state, String zip, double creditLimit) {
     this.firstName = firstName;
     this.lastName = lastName;
+    this.email = email;
+    this.phone = phone;
     this.street = street;
     this.city = city;
     this.state = state;
     this.zip = zip;
-    this.email = email;
-    this.password = password;
-    this.phone = phone;
     this.creditLimit = creditLimit;
   }
 
-  public int getCustomerId() {
-    return customerId;
-  }
-
-  public void setCustomerId(int customerId) {
-    this.customerId = customerId;
+  public CreateCustomerDto() {
   }
 
   public String getFirstName() {
@@ -53,6 +41,22 @@ public class Customer {
 
   public void setLastName(String lastName) {
     this.lastName = lastName;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
   }
 
   public String getStreet() {
@@ -87,30 +91,6 @@ public class Customer {
     this.zip = zip;
   }
 
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public String getPhone() {
-    return phone;
-  }
-
-  public void setPhone(String phone) {
-    this.phone = phone;
-  }
-
   public double getCreditLimit() {
     return creditLimit;
   }
@@ -121,28 +101,21 @@ public class Customer {
 
   @Override
   public String toString() {
-    return "Customer [customerId=" + customerId + ", firstName=" + firstName + ", lastName=" + lastName + ", street="
-        + street + ", city=" + city + ", state=" + state + ", zip=" + zip + ", email=" + email + ", password="
-        + password + ", phone=" + phone + ", creditLimit=" + creditLimit + "]";
+    return "CreateCustomerDto [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", phone="
+        + phone + ", street=" + street + ", city=" + city + ", state=" + state + ", zip=" + zip + ", creditLimit="
+        + creditLimit + "]";
   }
 
-  public class Builder {
-    private int customerId;
+  public static class Builder {
     private String firstName;
     private String lastName;
+    private String email;
+    private String phone;
     private String street;
     private String city;
     private String state;
     private String zip;
-    private String email;
-    private String password;
-    private String phone;
     private double creditLimit;
-
-    public Builder setCustomerId(int customerId) {
-      this.customerId = customerId;
-      return this;
-    }
 
     public Builder setFirstName(String firstName) {
       this.firstName = firstName;
@@ -151,6 +124,16 @@ public class Customer {
 
     public Builder setLastName(String lastName) {
       this.lastName = lastName;
+      return this;
+    }
+
+    public Builder setEmail(String email) {
+      this.email = email;
+      return this;
+    }
+
+    public Builder setPhone(String phone) {
+      this.phone = phone;
       return this;
     }
 
@@ -174,29 +157,13 @@ public class Customer {
       return this;
     }
 
-    public Builder setEmail(String email) {
-      this.email = email;
-      return this;
-    }
-
-    public Builder setPassword(String password) {
-      this.password = password;
-      return this;
-    }
-
-    public Builder setPhone(String phone) {
-      this.phone = phone;
-      return this;
-    }
-
     public Builder setCreditLimit(double creditLimit) {
       this.creditLimit = creditLimit;
       return this;
     }
 
-    public Customer build() {
-      return new Customer(customerId, firstName, lastName, street, city, state, zip, email, password, phone,
-          creditLimit);
+    public CreateCustomerDto build() {
+      return new CreateCustomerDto(firstName, lastName, email, phone, street, city, state, zip, creditLimit);
     }
   }
 

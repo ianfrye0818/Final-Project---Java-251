@@ -1,7 +1,6 @@
 package components;
 
 import javax.swing.*;
-import javax.swing.JTextField;
 import java.awt.*;
 import java.util.Objects;
 
@@ -18,15 +17,12 @@ public class StyledInputs {
     }
 
     public static class StyledTextField extends JTextField {
-        public StyledTextField(int columns, boolean isDisabled) {
-            // setFont(new Font("Segoe UI", Font.PLAIN, 16));
-            // setBorder(BorderFactory.createCompoundBorder(
-            // getBorder(),
-            // BorderFactory.createEmptyBorder(8, 5, 8, 5)));
-            this(columns, isDisabled, "");
+
+        public StyledTextField(boolean isDisabled) {
+            this(isDisabled, "");
         }
 
-        public StyledTextField(int columns, boolean isDisabled, String text) {
+        public StyledTextField(boolean isDisabled, String text) {
             setFont(new Font("Segoe UI", Font.PLAIN, 16));
             setBorder(BorderFactory.createCompoundBorder(
                     getBorder(),
@@ -35,13 +31,10 @@ public class StyledInputs {
             setEditable(!isDisabled);
         }
 
-        public StyledTextField(int columns) {
-            this(columns, false);
+        public StyledTextField() {
+            this(false);
         }
 
-        public StyledTextField() {
-            this(20, false);
-        }
     }
 
     public static class StyledTextArea extends JTextArea {
@@ -66,9 +59,6 @@ public class StyledInputs {
             this(columns, false);
         }
 
-        public StyledTextArea() {
-            this(20, false);
-        }
     }
 
     public static class StyledButton extends JButton {
@@ -143,6 +133,27 @@ public class StyledInputs {
             setBorder(BorderFactory.createCompoundBorder(
                     getBorder(),
                     BorderFactory.createEmptyBorder(8, 5, 8, 5)));
+        }
+    }
+
+    public static class PrimaryButton extends StyledButton {
+        public PrimaryButton(String text) {
+            super(text, new Color(109, 81, 70), Color.WHITE);
+        }
+
+        public PrimaryButton(String text, int fontSize) {
+            super(text, new Color(109, 81, 70), Color.WHITE, fontSize);
+        }
+
+    }
+
+    public static class DestructiveButton extends StyledButton {
+        public DestructiveButton(String text) {
+            super(text, new Color(239, 68, 68), Color.WHITE);
+        }
+
+        public DestructiveButton(String text, int fontSize) {
+            super(text, new Color(239, 68, 68), Color.WHITE, fontSize);
         }
     }
 

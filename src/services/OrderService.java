@@ -1,40 +1,50 @@
 package services;
 
-import controllers.AppController;
-import models.Order;
-
+import entites.Order;
+import java.sql.SQLException;
 import java.util.List;
+import Interfaces.IOrderRepository;
+import dto.CreateOrderDto;
+import dto.UpdateOrderDto;
 
 public class OrderService {
 
-    private final AppController controller;
+    private final IOrderRepository orderRepository;
 
-    public OrderService(AppController controller) {
-        this.controller = controller;
+    public OrderService(IOrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
     }
 
     public List<Order> getAllOrders() {
-        return this.controller.getOrderRepository().findAll();
+        return this.orderRepository.findAll();
     }
 
     public Order getOrderById(int id) {
-        return this.controller.getOrderRepository().findById(id);
+        return this.orderRepository.findById(id);
     }
 
     public List<Order> getOrdersByCustomerId(int customerId) {
-        return this.controller.getOrderRepository().findByCustomerId(customerId);
+        return this.orderRepository.findByCustomerId(customerId);
     }
 
-    public boolean createOrder(Order order) {
-        return this.controller.getOrderRepository().save(order);
+    public Order createOrder(CreateOrderDto order) {
+        return this.orderRepository.save(order);
     }
 
-    public boolean updateOrder(Order order) {
-        return this.controller.getOrderRepository().save(order);
+    public Order updateOrder(UpdateOrderDto order) {
+        return this.orderRepository.update(order);
 
     }
 
     public boolean deleteOrder(int id) {
-        return this.controller.getOrderRepository().deleteById(id);
+        return this.orderRepository.deleteById(id);
+    }
+
+    public void resetDatabase() throws SQLException {
+        this.orderRepository.resetDatabase();
+    }
+
+    public void populateDatabase() throws SQLException {
+        this.orderRepository.populateDatabase();
     }
 }

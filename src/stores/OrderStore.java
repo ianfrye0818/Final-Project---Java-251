@@ -1,20 +1,10 @@
 package stores;
 
 import Interfaces.IStore;
-import dto.OrderCoffeeDto;
-import dto.OrderCustomerDto;
-import models.Order;
+import entites.Order;
 
 public class OrderStore implements IStore<Order> {
-    private Order currentOrder = new Order.Builder()
-            .setCustomer(new OrderCustomerDto.Builder()
-                    .setCustomerName("John Doe")
-                    .setCustomerId(1)
-                    .setCustomerEmail("john.doe@example.com")
-                    .setCustomerPhone("123-456-7890")
-                    .build())
-            .setCoffee(new OrderCoffeeDto.Builder().setCoffeeId(22).setCoffeeName("Espresso").setPrice(4.99).build())
-            .setNumberOrdered(4).build();
+    private Order currentOrder;
 
     @Override
     public void set(Order order) {

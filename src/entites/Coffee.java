@@ -5,15 +5,15 @@ import dto.OrderCoffeeDto;
 public class Coffee {
 
     private Integer coffeeId;
-    private String coffeeName;
-    private String coffeeDescription;
+    private String name;
+    private String description;
     private double price;
     private boolean isInStock;
 
-    public Coffee(Integer coffeeId, String coffeeName, String coffeeDescription, double price, boolean isInStock) {
+    public Coffee(Integer coffeeId, String name, String description, double price, boolean isInStock) {
         this.coffeeId = coffeeId;
-        this.coffeeName = coffeeName;
-        this.coffeeDescription = coffeeDescription;
+        this.name = name;
+        this.description = description;
         this.price = price;
         this.isInStock = isInStock;
     }
@@ -29,20 +29,20 @@ public class Coffee {
         this.coffeeId = coffeeId;
     }
 
-    public String getCoffeeName() {
-        return coffeeName;
+    public String getName() {
+        return name;
     }
 
-    public void setCoffeeName(String coffeeName) {
-        this.coffeeName = coffeeName;
+    public void setName(String coffeeName) {
+        this.name = coffeeName;
     }
 
-    public String getCoffeeDescription() {
-        return coffeeDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCoffeeDescription(String coffeeDescription) {
-        this.coffeeDescription = coffeeDescription;
+    public void setDescription(String coffeeDescription) {
+        this.description = coffeeDescription;
     }
 
     public double getPrice() {
@@ -65,8 +65,8 @@ public class Coffee {
     public String toString() {
         return "Coffee{" +
                 "coffeeId=" + coffeeId +
-                ", coffeeName='" + coffeeName + '\'' +
-                ", coffeeDescription='" + coffeeDescription + '\'' +
+                ", coffeeName='" + name + '\'' +
+                ", coffeeDescription='" + description + '\'' +
                 ", price=" + price +
                 ", isInStock=" + isInStock +
                 '}';
@@ -74,8 +74,8 @@ public class Coffee {
 
     public static class Builder {
         private Integer coffeeId;
-        private String coffeeName;
-        private String coffeeDescription;
+        private String name;
+        private String description;
         private double price;
         private boolean isInStock;
 
@@ -84,13 +84,13 @@ public class Coffee {
             return this;
         }
 
-        public Builder setCoffeeName(String coffeeName) {
-            this.coffeeName = coffeeName;
+        public Builder setName(String name) {
+            this.name = name;
             return this;
         }
 
-        public Builder setCoffeeDescription(String coffeeDescription) {
-            this.coffeeDescription = coffeeDescription;
+        public Builder setDescription(String description) {
+            this.description = description;
             return this;
         }
 
@@ -105,7 +105,7 @@ public class Coffee {
         }
 
         public Coffee build() {
-            return new Coffee(coffeeId, coffeeName, coffeeDescription, price, isInStock);
+            return new Coffee(coffeeId, name, description, price, isInStock);
         }
     }
 
@@ -113,7 +113,7 @@ public class Coffee {
         return new OrderCoffeeDto.Builder()
                 .setOrderId(orderId)
                 .setCoffeeId(this.coffeeId)
-                .setCoffeeName(this.coffeeName)
+                .setCoffeeName(this.name)
                 .setPrice(this.price)
                 .build();
     }

@@ -3,16 +3,20 @@ package Interfaces;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface IRepository<T> {
+public interface IRepository<M, D> {
     void initTable() throws SQLException;
 
-    List<T> findAll();
+    List<M> findAll();
 
-    T findById(int id);
+    M findById(int id);
 
-    boolean save(T obj);
+    M save(D obj);
 
-    boolean update(T obj);
+    M update(D obj);
 
     boolean deleteById(int id);
+
+    void resetDatabase() throws SQLException;
+
+    void populateDatabase() throws SQLException;
 }

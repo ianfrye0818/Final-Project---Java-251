@@ -12,7 +12,7 @@ public class TableJPanel extends JPanel {
         setBackground(new Color(245, 245, 245));
 
 
-        JButton backButton = new JButton("Back to menu");
+        JButton backButton = new StyledInputs.StyledButton("Back to menu");
         backButton.addActionListener(e -> controller.setDisplay(ViewType.COFFEE_MENU_VIEW));
 
         add(backButton);

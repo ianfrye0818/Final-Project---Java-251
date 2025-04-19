@@ -1,58 +1,77 @@
 package controllers;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import Interfaces.ICoffeeRepository;
 import Interfaces.ICustomerRepository;
 import Interfaces.IOrderRepository;
-import Interfaces.IRepository;
 import Interfaces.IStore;
+import entites.Coffee;
+import entites.Customer;
+import entites.Order;
 import enums.ViewType;
-import models.Coffee;
-import models.Customer;
-import models.Order;
-import services.AuthService;
+import repositories.CoffeeRepository;
+import repositories.CustomerRepository;
+import repositories.OrderRepository;
 import services.CoffeeService;
 import services.CustomerService;
 import services.OrderService;
 import stores.CoffeeStore;
-import stores.CustomerStore;
+import stores.AuthStore;
 import stores.OrderStore;
+import utils.ConnectionFactory;
+import stores.SelectedCustomerStore;
 
 public class AppController {
-    private final IRepository<Customer> customerRepository;
-    private final IRepository<Coffee> coffeeRepository;
-    private final IRepository<Order> orderRepository;
+    private ICustomerRepository customerRepository;
+    private ICoffeeRepository coffeeRepository;
+    private IOrderRepository orderRepository;
     private final ViewManager viewManager;
-    private final AuthService authService;
     private final CustomerService customerService;
     private final CoffeeService coffeeService;
     private final OrderService orderService;
     private final IStore<Customer> customerStore;
+    private final IStore<Customer> selectedCustomerStore;
     private final IStore<Order> orderStore;
     private final IStore<Coffee> coffeeStore;
 
     public static final double TAX_RATE = 0.08;
 
-    private AppController(Builder builder) {
-        this.customerRepository = builder.customerRepository;
-        this.coffeeRepository = builder.coffeeRepository;
-        this.orderRepository = builder.orderRepository;
+    private static AppController instance;
+
+    public static AppController getInstance() {
+        if (instance == null) {
+            instance = new AppController();
+        }
+        return instance;
+    }
+
+    private AppController() {
+        try {
+            Connection conn = ConnectionFactory.getConnection();
+            initializeRepositories(conn);
+        } catch (SQLException e) {
+            System.out.println("Failed to initialize repositories: " + e.getMessage());
+            System.out.println("Exiting....");
+            System.exit(1);
+        }
 
         // Initialize stores
-        this.customerStore = new CustomerStore();
+        this.customerStore = new AuthStore();
         this.orderStore = new OrderStore();
         this.coffeeStore = new CoffeeStore();
-
+        this.selectedCustomerStore = new SelectedCustomerStore();
         // Initialize services
-        this.customerService = new CustomerService(this);
-        this.authService = new AuthService(this);
-        this.coffeeService = new CoffeeService(this);
-        this.orderService = new OrderService(this);
+        this.customerService = new CustomerService(this.customerRepository, this);
+        this.coffeeService = new CoffeeService((ICoffeeRepository) this.coffeeRepository);
+        this.orderService = new OrderService(this.orderRepository);
 
         // Initialize view manager
         this.viewManager = new ViewManager(this);
     }
 
     public void start() {
-        viewManager.setDisplay(ViewType.VIEW_ALL_ORDERS_VIEW);
+        viewManager.setDisplay(ViewType.LOGIN_VIEW);
     }
 
     public void setDisplay(ViewType view) {
@@ -72,12 +91,12 @@ public class AppController {
         return this.orderService;
     }
 
-    public AuthService getAuthService() {
-        return this.authService;
+    public IStore<Customer> getLoggedinCustomerStore() {
+        return this.customerStore;
     }
 
-    public IStore<Customer> getCustomerStore() {
-        return this.customerStore;
+    public IStore<Customer> getSelectedCustomerStore() {
+        return this.selectedCustomerStore;
     }
 
     public IStore<Order> getOrderStore() {
@@ -88,11 +107,7 @@ public class AppController {
         return this.coffeeStore;
     }
 
-    public ICustomerRepository getCustomerRepository() {
-        return (ICustomerRepository) this.customerRepository;
-    }
-
-    public IRepository<Coffee> getCoffeeRepository() {
+    public ICoffeeRepository getCoffeeRepository() {
         return this.coffeeRepository;
     }
 
@@ -104,28 +119,18 @@ public class AppController {
         return this.viewManager;
     }
 
-    public static class Builder {
-        private IRepository<Customer> customerRepository;
-        private IRepository<Coffee> coffeeRepository;
-        private IRepository<Order> orderRepository;
+    private void initializeRepositories(Connection conn) throws SQLException {
+        customerRepository = new CustomerRepository(conn);
+        coffeeRepository = new CoffeeRepository(conn);
+        orderRepository = new OrderRepository(conn);
 
-        public Builder customerRepository(IRepository<Customer> customerRepository) {
-            this.customerRepository = customerRepository;
-            return this;
-        }
+        customerRepository.initTable();
+        System.out.println("Customer table initialized");
 
-        public Builder coffeeRepository(IRepository<Coffee> coffeeRepository) {
-            this.coffeeRepository = coffeeRepository;
-            return this;
-        }
+        coffeeRepository.initTable();
+        System.out.println("Coffee table initialized");
 
-        public Builder orderRepository(IRepository<Order> orderRepository) {
-            this.orderRepository = orderRepository;
-            return this;
-        }
-
-        public AppController build() {
-            return new AppController(this);
-        }
+        orderRepository.initTable();
+        System.out.println("Order table initialized");
     }
 }

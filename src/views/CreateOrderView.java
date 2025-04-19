@@ -5,30 +5,26 @@ import components.QuantitySpinner;
 import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
-import listeners.CreateOrderListeners;
-import models.Coffee;
-import models.Customer;
+import entites.Coffee;
+import entites.Customer;
+import enums.ViewType;
+import listeners.CreateOrderViewListeners;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class CreateOrderView extends SuperView {
-    private final String title;
-    private JComboBox<Coffee> coffeeComboBox;
-    private JSpinner quantitySpinner;
     private JLabel subtotalLabel;
     private JLabel taxLabel;
     private JLabel totalLabel;
-    private JTextField firstNameField;
-    private JTextField lastNameField;
-    private Customer currentCustomer;
 
-    public CreateOrderView(AppController appController) {
-        this.title = "Create Order";
-        this.currentCustomer = appController.getCustomerStore().get();
+    public CreateOrderView(AppController controller) {
+        super(controller, "Create Order");
+        if (!isCustomerPresent(ViewType.COFFEE_MENU_VIEW))
+            return;
+        Customer currentCustomer = controller.getLoggedinCustomerStore().get();
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(800, 600));
         getContentPane().setBackground(new Color(245, 245, 245));
@@ -59,10 +55,10 @@ public class CreateOrderView extends SuperView {
 
         addSectionHeader(mainPanel, gbc, "Customer Information", 2, 0);
 
-        firstNameField = new StyledInputs.StyledTextField(15, true, currentCustomer.getFirstName());
+        JTextField firstNameField = new StyledInputs.StyledTextField(true, currentCustomer.getFirstName());
         addFormField(mainPanel, gbc, "First Name:", firstNameField, 3, 0);
 
-        lastNameField = new StyledInputs.StyledTextField(15, true, currentCustomer.getLastName());
+        JTextField lastNameField = new StyledInputs.StyledTextField(true, currentCustomer.getLastName());
         addFormField(mainPanel, gbc, "Last Name:", lastNameField, 4, 0);
 
         // Right Column - Order Details
@@ -70,10 +66,10 @@ public class CreateOrderView extends SuperView {
 
         addSectionHeader(mainPanel, gbc, "Order Details", 2, 1);
 
-        coffeeComboBox = new CoffeeSelectComboBox(appController);
+        JComboBox<Coffee> coffeeComboBox = new CoffeeSelectComboBox(controller);
         addFormField(mainPanel, gbc, "Select Coffee:", coffeeComboBox, 3, 1);
 
-        quantitySpinner = new QuantitySpinner();
+        JSpinner quantitySpinner = new QuantitySpinner();
         addFormField(mainPanel, gbc, "Quantity:", quantitySpinner, 4, 1);
 
         // Price Summary (spans both columns)
@@ -95,7 +91,7 @@ public class CreateOrderView extends SuperView {
         JButton backButton = new StyledInputs.StyledButton("Back to Menu");
         buttonsPanel.add(backButton);
 
-        JButton placeOrderButton = new StyledInputs.StyledButton("Place Order", new Color(79, 55, 48), Color.WHITE);
+        JButton placeOrderButton = new StyledInputs.PrimaryButton("Place Order");
         buttonsPanel.add(placeOrderButton);
 
         gbc.gridy = 8;
@@ -104,8 +100,8 @@ public class CreateOrderView extends SuperView {
         add(mainPanel, BorderLayout.CENTER);
 
         // Add listeners
-        CreateOrderListeners listeners = new CreateOrderListeners(
-                appController,
+        CreateOrderViewListeners listeners = new CreateOrderViewListeners(
+                controller,
                 this,
                 coffeeComboBox,
                 quantitySpinner,
@@ -114,7 +110,7 @@ public class CreateOrderView extends SuperView {
                 totalLabel);
 
         backButton.addActionListener(listeners.getBackButtonListener());
-        placeOrderButton.addActionListener(listeners.getPlaceOrderListener());
+        placeOrderButton.addActionListener(listeners.getPlaceOrderButtonListener());
         coffeeComboBox.addItemListener(listeners.getCoffeeSelectionListener());
         quantitySpinner.addChangeListener(e -> listeners.updateOrderPrice());
 
@@ -127,31 +123,12 @@ public class CreateOrderView extends SuperView {
         setLocationRelativeTo(null);
     }
 
-    private void addSectionHeader(JPanel panel, GridBagConstraints gbc, String text, int gridy, int gridx) {
-        JLabel header = new JLabel(text);
-        header.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        header.setForeground(new Color(79, 55, 48));
-        gbc.gridy = gridy;
-        gbc.gridx = gridx;
-        gbc.insets = new Insets(20, 8, 8, 8);
-        panel.add(header, gbc);
-    }
-
     private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field, int gridy,
             int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 
-        JPanel fieldPanel = new JPanel(new BorderLayout(0, 5));
-        fieldPanel.setBackground(Color.WHITE);
-        fieldPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 15));
-
-        JLabel label = new JLabel(labelText);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        fieldPanel.add(label, BorderLayout.NORTH);
-        fieldPanel.add(field, BorderLayout.CENTER);
-
-        panel.add(fieldPanel, gbc);
+        CreateCoffeeView.setFormFieldProps(panel, gbc, labelText, field);
     }
 
     private JPanel createPricePanel() {
@@ -174,18 +151,12 @@ public class CreateOrderView extends SuperView {
         addPriceRow(panel, labelText, valueLabel, false);
     }
 
-    private void addPriceRow(JPanel panel, String labelText, JLabel valueLabel, boolean isBold) {
+    protected void addPriceRow(JPanel panel, String labelText, JLabel valueLabel, boolean isBold) {
         JLabel label = new JLabel(labelText);
         label.setHorizontalAlignment(SwingConstants.RIGHT);
         valueLabel.setHorizontalAlignment(SwingConstants.RIGHT); // Right align the values
 
-        if (isBold) {
-            label.setFont(new Font("Segoe UI", Font.BOLD, 16));
-            valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        } else {
-            label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            valueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        }
+        checkIsBold(isBold, label, valueLabel);
 
         // Add some horizontal padding to the price values
         valueLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
@@ -194,8 +165,4 @@ public class CreateOrderView extends SuperView {
         panel.add(valueLabel);
     }
 
-    @Override
-    public String getTitle() {
-        return super.getTitle() + " - " + title;
-    }
 }

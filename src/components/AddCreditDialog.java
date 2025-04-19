@@ -1,8 +1,10 @@
 package components;
 
 import controllers.AppController;
+import dto.UpdateCustomerDto;
+import entites.Customer;
 import enums.ViewType;
-import models.Customer;
+import utils.DialogUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,12 +12,12 @@ import java.awt.*;
 
 public class AddCreditDialog extends JDialog {
     private final Customer currentCustomer;
-    private JTextField addCreditTextField;
-    private JLabel errorLabel;
+    private final JTextField addCreditTextField;
+    private final JLabel errorLabel;
 
-    public AddCreditDialog(JFrame parentView, AppController controller, Customer customer) {
+    public AddCreditDialog(JFrame parentView, AppController controller) {
         super(parentView, "Add Credit", true);
-        this.currentCustomer = customer;
+        this.currentCustomer = controller.getSelectedCustomerStore().get();
 
         // Set dialog styling
         setBackground(new Color(245, 245, 245));
@@ -86,7 +88,7 @@ public class AddCreditDialog extends JDialog {
         gbc.insets = new Insets(8, 8, 4, 8);
         mainPanel.add(addCreditLabel, gbc);
 
-        addCreditTextField = new StyledInputs.StyledTextField(10);
+        addCreditTextField = new StyledInputs.StyledTextField();
         gbc.gridy = 3;
         mainPanel.add(addCreditTextField, gbc);
 
@@ -103,7 +105,7 @@ public class AddCreditDialog extends JDialog {
         buttonPanel.setBackground(Color.WHITE);
 
         JButton cancelButton = new StyledInputs.StyledButton("Cancel");
-        JButton addButton = new StyledInputs.StyledButton("Add Credit", new Color(79, 55, 48), Color.WHITE);
+        JButton addButton = new StyledInputs.PrimaryButton("Add Credit");
 
         buttonPanel.add(cancelButton);
         buttonPanel.add(addButton);
@@ -121,13 +123,15 @@ public class AddCreditDialog extends JDialog {
 
                 // Validate that the credits entered are a positive number
                 if (creditToAdd <= 0) {
-                    errorLabel.setText("Please enter a positive amount.");
+                    // errorLabel.setText("Please enter a positive amount.");
+                    DialogUtils.showValidationError(parentView, "Please enter a positive amount.");
                     return;
                 }
 
                 // Validate that the credits entered are a whole number
                 if (creditToAdd != Math.floor(creditToAdd)) {
-                    errorLabel.setText("Please enter a whole number amount.");
+                    // errorLabel.setText("Please enter a whole number amount.");
+                    DialogUtils.showValidationError(parentView, "Please enter a whole number amount.");
                     return;
                 }
 
@@ -135,22 +139,24 @@ public class AddCreditDialog extends JDialog {
 
                 // Validate that current credits + added don't exceed 100.00 credits
                 if (newCreditLimit > 100.00) {
-                    errorLabel.setText("Credit limit cannot exceed $100.00.");
+                    // errorLabel.setText("Credit limit cannot exceed $100.00.");
+                    DialogUtils.showValidationError(parentView, "Credit limit cannot exceed $100.00.");
                     return;
                 }
 
                 // If everything is successful, update the credit and close the dialog
                 currentCustomer.setCreditLimit(newCreditLimit);
-                boolean updated = controller.getCustomerService().updateCustomer(currentCustomer);
-                if (updated) {
+                Customer updatedCustomer = controller.getCustomerService()
+                        .updateCustomer(UpdateCustomerDto.fromCustomer(currentCustomer));
+                if (updatedCustomer != null) {
                     dispose();
-                    controller.setDisplay(ViewType.COFFEE_MENU_VIEW);
+                    controller.setDisplay(controller.getViewManager().getCurrentView());
                 } else {
-                    errorLabel.setText("Failed to add credits. Please try again.");
+                    DialogUtils.showError(parentView, "Failed to add credits. Please try again.");
                 }
 
             } catch (NumberFormatException ex) {
-                errorLabel.setText("Please enter a valid number.");
+                DialogUtils.showValidationError(parentView, "Please enter a valid number.");
             }
         });
 

@@ -1,21 +1,19 @@
 package views;
 
 import components.StyledInputs;
+import components.TableJPanel;
 import components.TitlePanel;
 import components.tables.OrderTable;
 import controllers.AppController;
-import enums.ViewType;
-import dto.OrderTableDto;
-
+import entites.Order;
+import utils.DialogUtils;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class ViewAllOrdersView extends SuperView {
-    private final String title;
-
     public ViewAllOrdersView(AppController controller) {
-        this.title = "All Orders";
+        super(controller, "All Orders");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1000, 650));
@@ -36,30 +34,9 @@ public class ViewAllOrdersView extends SuperView {
         add(scrollPane, BorderLayout.CENTER);
 
         // Bottom Panel with Back Button
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
-        bottomPanel.setBackground(new Color(245, 245, 245));
-
-        // Back to Menu Button
-        JButton backButton = new StyledInputs.StyledButton("Back to Menu");
-        backButton.addActionListener(e -> controller.setDisplay(ViewType.COFFEE_MENU_VIEW));
-
-        // View Details Button
-        JButton viewDetailsButton = new StyledInputs.StyledButton("View Details", new Color(109, 81, 70), Color.WHITE);
-        viewDetailsButton.addActionListener(e -> {
-            OrderTableDto selectedOrder = orderTable.getSelectedItem();
-            if (selectedOrder != null) {
-                orderTable.handleViewDetails();
-            } else {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Please select an order to view details",
-                        "No Selection",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        bottomPanel.add(backButton);
-        bottomPanel.add(viewDetailsButton);
+        // JPanel bottomPanel = getJPanel(controller, orderTable);
+        JButton viewDetailsButton = getJButton(orderTable);
+        JPanel bottomPanel = new TableJPanel(controller, viewDetailsButton);
 
         // Info Panel
         JPanel infoPanel = new JPanel(new GridLayout(2, 1, 0, 5));
@@ -74,7 +51,7 @@ public class ViewAllOrdersView extends SuperView {
 
         // Total Revenue
         double totalRevenue = controller.getOrderService().getAllOrders().stream()
-                .mapToDouble(order -> order.getTotal())
+                .mapToDouble(Order::getTotal)
                 .sum();
         JLabel revenueLabel = new JLabel(
                 String.format("Total Revenue: $%.2f", totalRevenue),
@@ -96,8 +73,17 @@ public class ViewAllOrdersView extends SuperView {
         setLocationRelativeTo(null);
     }
 
-    @Override
-    public String getTitle() {
-        return super.getTitle() + " - " + title;
+    private JButton getJButton(OrderTable orderTable) {
+        JButton viewDetailsButton = new StyledInputs.PrimaryButton("View Details");
+        viewDetailsButton.addActionListener(e -> {
+            Order selectedOrder = orderTable.getSelectedItem();
+            if (selectedOrder != null) {
+                orderTable.handleViewDetails();
+            } else {
+                DialogUtils.showError(this, "Please select an order to view details");
+            }
+        });
+        return viewDetailsButton;
     }
+
 }

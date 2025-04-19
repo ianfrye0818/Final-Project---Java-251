@@ -1,8 +1,10 @@
 package listeners;
 
 import controllers.AppController;
+import dto.CreateCoffeeDto;
+import dto.UpdateCoffeeDto;
 import enums.ViewType;
-import models.Coffee;
+import utils.DialogUtils;
 import views.SuperView;
 
 import javax.swing.*;
@@ -16,23 +18,6 @@ public class CoffeeListeners {
     private final JTextComponent descriptionField;
     private final JTextField priceField;
     private final JCheckBox inStockBox;
-    private int coffeeId;
-
-    public CoffeeListeners(AppController appController,
-            SuperView view,
-            JTextField nameField,
-            JTextComponent descriptionField,
-            JTextField priceField,
-            JCheckBox inStockBox,
-            int coffeeId) {
-        this.appController = appController;
-        this.view = view;
-        this.nameField = nameField;
-        this.descriptionField = descriptionField;
-        this.priceField = priceField;
-        this.inStockBox = inStockBox;
-        this.coffeeId = coffeeId;
-    }
 
     public CoffeeListeners(AppController appController,
             SuperView view,
@@ -52,14 +37,13 @@ public class CoffeeListeners {
         return e -> appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
     }
 
-    public ActionListener getDeleteButtonListener() {
+    public ActionListener getDeleteButtonListener(int coffeeId) {
         return e -> {
-            int confirmation = JOptionPane.showConfirmDialog(view,
-                    "Are you sure you want to delete this coffee?",
-                    "Confirm Deletion",
-                    JOptionPane.YES_NO_OPTION);
-            if (confirmation == JOptionPane.YES_OPTION) {
+            boolean confirmation = DialogUtils.showConfirmation(view,
+                    "Are you sure you want to delete this coffee?");
+            if (confirmation) {
                 appController.getCoffeeService().deleteCoffee(coffeeId);
+                DialogUtils.showSuccess(view, "Coffee deleted successfully");
                 appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
             }
         };
@@ -72,39 +56,42 @@ public class CoffeeListeners {
             }
 
             try {
-                Coffee coffee = new Coffee.Builder()
-                        .setCoffeeName(nameField.getText().trim())
-                        .setCoffeeDescription(descriptionField.getText().trim())
+                CreateCoffeeDto coffee = new CreateCoffeeDto.Builder()
+                        .setName(nameField.getText().trim())
+                        .setDescription(descriptionField.getText().trim())
                         .setPrice(Double.parseDouble(priceField.getText().trim()))
                         .setInStock(inStockBox.isSelected())
                         .build();
 
                 appController.getCoffeeService().createCoffee(coffee);
+                DialogUtils.showSuccess(view, "Coffee created successfully");
                 appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
             } catch (Exception ex) {
-                showError("Failed to create coffee: " + ex.getMessage());
+                DialogUtils.showError(view, "Failed to create coffee: " + ex.getMessage());
             }
         };
     }
 
-    public ActionListener getUpdateButtonListener() {
+    public ActionListener getUpdateButtonListener(int coffeeId) {
         return e -> {
             if (validateInputs()) {
                 return;
             }
 
             try {
-                Coffee coffee = new Coffee.Builder()
+                UpdateCoffeeDto coffee = new UpdateCoffeeDto.Builder()
                         .setCoffeeId(coffeeId)
-                        .setCoffeeName(nameField.getText().trim())
-                        .setCoffeeDescription(descriptionField.getText().trim())
+                        .setName(nameField.getText().trim())
+                        .setDescription(descriptionField.getText().trim())
                         .setPrice(Double.parseDouble(priceField.getText().trim()))
                         .setInStock(inStockBox.isSelected())
                         .build();
 
                 appController.getCoffeeService().updateCoffee(coffee);
+                DialogUtils.showSuccess(view, "Coffee updated successfully");
+                appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
             } catch (Exception ex) {
-                showError("Failed to create coffee: " + ex.getMessage());
+                DialogUtils.showError(view, "Failed to update coffee: " + ex.getMessage());
             }
         };
     }
@@ -115,26 +102,22 @@ public class CoffeeListeners {
         String priceStr = priceField.getText().trim();
 
         if (name.isEmpty() || description.isEmpty() || priceStr.isEmpty()) {
-            showError("All fields are required.");
+            DialogUtils.showValidationError(view, "All fields are required.");
             return true;
         }
 
         try {
             double price = Double.parseDouble(priceStr);
             if (price <= 0) {
-                showError("Price must be greater than zero.");
+                DialogUtils.showValidationError(view, "Price must be greater than zero.");
                 return true;
             }
         } catch (NumberFormatException e) {
-            showError("Price must be a valid number.");
+            DialogUtils.showValidationError(view, "Price must be a valid number.");
             return true;
         }
 
         return false;
     }
 
-    private void showError(String message) {
-        JOptionPane.showMessageDialog(view, message, "Validation Error",
-                JOptionPane.ERROR_MESSAGE);
-    }
 }

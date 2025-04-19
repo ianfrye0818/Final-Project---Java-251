@@ -1,10 +1,11 @@
 package listeners;
 
 import controllers.AppController;
-import dto.ValidateCreateAccountDto;
+import dto.CreateCustomerDto;
+import dto.UpdateCustomerDto;
 import enums.ViewType;
-import models.Customer;
 import services.ValidatorService;
+import utils.DialogUtils;
 import views.SuperView;
 
 import javax.swing.*;
@@ -21,7 +22,6 @@ public class AccountListeners {
     private final JTextField zipField;
     private final JTextField phoneField;
     private final JTextField emailField;
-    private final JPasswordField passwordField;
 
     public AccountListeners(
             AppController appController,
@@ -45,52 +45,56 @@ public class AccountListeners {
         this.zipField = zipField;
         this.phoneField = phoneField;
         this.emailField = emailField;
-        this.passwordField = passwordField;
     }
 
     public ActionListener getBackButtonListener(ViewType viewType) {
         return e -> appController.setDisplay(viewType);
     }
 
-    public ActionListener getMutateButtonListener() {
+    public ActionListener getCreateAccountButtonListener() {
         return e -> {
-            ValidateCreateAccountDto dto = buildDto();
+            CreateCustomerDto dto = buildDto();
 
-            if (validateDto(dto)) {
+            if (!isValidDto(dto) || doesCustomerExist(dto)) {
                 return;
             }
 
             try {
-                appController.getAuthService().register(dto);
+                // create customer
+                appController.getCustomerService().createCustomer(dto);
+                DialogUtils.showSuccess(view, "Account created successfully");
+                // login customer
+                appController.getCustomerService().login(dto.getEmail());
+                // set display to coffee menu
                 appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
             } catch (Exception e1) {
                 System.out.println(e1.getMessage());
-                showError("Failed to create account.");
+                DialogUtils.showError(view, "Failed to create account.");
             }
         };
     }
 
-    public ActionListener getUpdateCoffeeButtonListener(int customerId) {
+    public ActionListener getUpdateAccountButtonListener(int customerId) {
         return e -> {
-            ValidateCreateAccountDto dto = buildDto();
+            UpdateCustomerDto dto = buildUpdateDto(customerId);
 
-            if (validateDto(dto)) {
+            if (!isValidDto(dto)) {
                 return;
             }
 
             try {
-                Customer customer = dto.toCustomer(customerId);
-                appController.getCustomerService().updateCustomer(customer);
+                appController.getCustomerService().updateCustomer(dto);
+                DialogUtils.showSuccess(view, "Account updated successfully");
                 appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
             } catch (Exception e1) {
                 System.out.println(e1.getMessage());
-                showError("Failed to create account.");
+                DialogUtils.showError(view, "Failed to update account.");
             }
         };
     }
 
-    private ValidateCreateAccountDto buildDto() {
-        return new ValidateCreateAccountDto.Builder()
+    private CreateCustomerDto buildDto() {
+        return new CreateCustomerDto.Builder()
                 .setFirstName(firstNameField.getText().trim())
                 .setLastName(lastNameField.getText().trim())
                 .setStreet(streetField.getText().trim())
@@ -99,47 +103,56 @@ public class AccountListeners {
                 .setZip(zipField.getText().trim())
                 .setPhone(phoneField.getText().trim())
                 .setEmail(emailField.getText().trim())
-                .setPassword(new String(passwordField.getPassword()))
                 .build();
     }
 
-    private boolean validateDto(ValidateCreateAccountDto dto) {
+    private UpdateCustomerDto buildUpdateDto(int customerId) {
+        return new UpdateCustomerDto.Builder()
+                .setCustomerId(customerId)
+                .setFirstName(firstNameField.getText().trim())
+                .setLastName(lastNameField.getText().trim())
+                .setStreet(streetField.getText().trim())
+                .setCity(cityField.getText().trim())
+                .setState(stateField.getText().trim())
+                .setZip(zipField.getText().trim())
+                .setPhone(phoneField.getText().trim())
+                .setEmail(emailField.getText().trim())
+                .build();
+    }
+
+    private boolean isValidDto(CreateCustomerDto dto) {
         if (!ValidatorService.isValidCustomer(dto)) {
-            showError("All fields are required.");
-            return true;
+            DialogUtils.showValidationError(view, "All fields are required.");
+            return false;
         }
 
         if (!ValidatorService.isValidEmail(dto.getEmail())) {
-            showError("Invalid email format.");
-            return true;
+            DialogUtils.showValidationError(view, "Invalid email format.");
+            return false;
         }
 
         if (!ValidatorService.isValidPhoneNumber(dto.getPhone())) {
-            showError("Phone number must be 10 digits (e.g., 1234567890)");
-            return true;
+            DialogUtils.showValidationError(view, "Phone number must be 10 digits (e.g., 1234567890)");
+            return false;
         }
 
         if (!ValidatorService.isValidZipCode(dto.getZip())) {
-            showError("Zip code must be 5 digits (e.g., 12345)");
-            return true;
+            DialogUtils.showValidationError(view, "Zip code must be 5 digits (e.g., 12345)");
+            return false;
         }
 
-        if (doesCustomerExist(dto)) {
-            showError("Customer already exists.");
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
-    private void showError(String message) {
-        JOptionPane.showMessageDialog(view, message, "Validation Error",
-                JOptionPane.ERROR_MESSAGE);
-    }
-
-    private boolean doesCustomerExist(ValidateCreateAccountDto dto) {
+    private boolean doesCustomerExist(CreateCustomerDto dto) {
         try {
-            return appController.getCustomerService().getCustomerByEmail(dto.getEmail()) != null;
+            boolean exsists = appController.getCustomerService().getCustomerByEmail(dto.getEmail()) != null;
+            if (exsists) {
+                DialogUtils.showValidationError(view, "Customer already exists.");
+                return true;
+            }
+
+            return false;
         } catch (Exception e) {
             return false;
         }

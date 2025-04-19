@@ -1,11 +1,10 @@
 package stores;
 
 import Interfaces.IStore;
-import models.Coffee;
+import entites.Coffee;
 
 public class CoffeeStore implements IStore<Coffee> {
-    private Coffee currentCoffee = new Coffee.Builder().setCoffeeId(1).setCoffeeName("Coffee")
-            .setCoffeeDescription("Coffee").setPrice(1.00).setInStock(true).build();
+    private Coffee currentCoffee;
 
     @Override
     public void set(Coffee coffee) {

@@ -3,30 +3,24 @@ package views;
 import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
+import entites.Order;
 import enums.ViewType;
-import models.Order;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class OrderDetailView extends SuperView {
-    private final String title;
     private final Order order;
     private final ViewType sourceView;
 
     public OrderDetailView(AppController controller) {
-        this.title = "Order Summary";
+        super(controller, "Order Summary");
         this.order = controller.getOrderStore().get();
         this.sourceView = controller.getViewManager().getPreviousView();
 
-        if (order == null) {
-            JOptionPane.showMessageDialog(this, "No order found", "Error", JOptionPane.ERROR_MESSAGE);
-            controller.setDisplay(ViewType.COFFEE_MENU_VIEW);
+        if (!isOrderPresent(ViewType.COFFEE_MENU_VIEW))
             return;
-        }
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(800, 600));
         getContentPane().setBackground(new Color(245, 245, 245));
@@ -68,7 +62,7 @@ public class OrderDetailView extends SuperView {
         addSectionHeader(mainPanel, gbc, "Order Details", 2, 1);
         addDetailField(mainPanel, gbc, "Coffee:", order.getCoffee().getCoffeeName(), 3, 1);
         addDetailField(mainPanel, gbc, "Price per Unit:", String.format("$%.2f", order.getCoffee().getPrice()), 4, 1);
-        addDetailField(mainPanel, gbc, "Quantity:", String.valueOf((int) order.getNumberOrdered()), 5, 1);
+        addDetailField(mainPanel, gbc, "Quantity:", String.valueOf((int) order.getQtyOrdered()), 5, 1);
 
         // Price Summary (spans both columns)
         gbc.gridx = 0;
@@ -98,16 +92,6 @@ public class OrderDetailView extends SuperView {
         setLocationRelativeTo(null);
     }
 
-    private void addSectionHeader(JPanel panel, GridBagConstraints gbc, String text, int gridy, int gridx) {
-        JLabel header = new JLabel(text);
-        header.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        header.setForeground(new Color(79, 55, 48));
-        gbc.gridy = gridy;
-        gbc.gridx = gridx;
-        gbc.insets = new Insets(20, 8, 8, 8);
-        panel.add(header, gbc);
-    }
-
     private void addDetailField(JPanel panel, GridBagConstraints gbc, String labelText, String value, int gridy,
             int gridx) {
         gbc.gridy = gridy;
@@ -135,9 +119,11 @@ public class OrderDetailView extends SuperView {
                 BorderFactory.createLineBorder(new Color(230, 230, 230)),
                 BorderFactory.createEmptyBorder(15, 25, 15, 25)));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
+        // TODO: Check to make sure this didn't effect anything
+
+        // GridBagConstraints gbc = new GridBagConstraints();
+        // gbc.fill = GridBagConstraints.HORIZONTAL;
+        // gbc.insets = new Insets(5, 5, 5, 5);
 
         addPriceRow(pricePanel, "Subtotal:", String.format("$%.2f", calculateSubTotal()), 0);
         addPriceRow(pricePanel, "Tax:", String.format("$%.2f", calculateTax()), 1);
@@ -158,13 +144,7 @@ public class OrderDetailView extends SuperView {
         JLabel label = new JLabel(labelText);
         JLabel valueLabel = new JLabel(value);
 
-        if (isBold) {
-            label.setFont(new Font("Segoe UI", Font.BOLD, 16));
-            valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        } else {
-            label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            valueLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        }
+        checkIsBold(isBold, label, valueLabel);
 
         // Label (left-aligned)
         gbc.gridx = 0;
@@ -180,7 +160,7 @@ public class OrderDetailView extends SuperView {
     }
 
     private double calculateSubTotal() {
-        return order.getCoffee().getPrice() * order.getNumberOrdered();
+        return order.getCoffee().getPrice() * order.getQtyOrdered();
     }
 
     private double calculateTax() {
@@ -191,8 +171,4 @@ public class OrderDetailView extends SuperView {
         return calculateSubTotal() + calculateTax();
     }
 
-    @Override
-    public String getTitle() {
-        return super.getTitle() + " - " + title;
-    }
 }

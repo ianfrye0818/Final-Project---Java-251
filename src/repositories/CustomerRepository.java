@@ -1,7 +1,9 @@
 package repositories;
 
 import Interfaces.ICustomerRepository;
-import models.Customer;
+import dto.CreateCustomerDto;
+import dto.UpdateCustomerDto;
+import entites.Customer;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,32 +19,8 @@ public class CustomerRepository implements ICustomerRepository {
 
     @Override
     public void initTable() throws SQLException {
-        String dropSql = "DROP TABLE CUSTOMER";
-        String createSql = """
-                CREATE TABLE CUSTOMER (
-                CUSTOMER_ID         INTEGER         GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_CUSTOMER_ID PRIMARY KEY,
-                FIRST_NAME          VARCHAR(50)     NOT NULL,
-                LAST_NAME           VARCHAR(50)     NOT NULL,
-                STREET              VARCHAR(50)     NOT NULL,
-                CITY                VARCHAR(50)     NOT NULL,
-                STATE               VARCHAR(50)     NOT NULL,
-                ZIP                 VARCHAR(50)     NOT NULL,
-                EMAIL_ADDRESS       VARCHAR(50)     NOT NULL,
-                PHONE_NUMBER        VARCHAR(50)     NOT NULL,
-                CREDIT_LIMIT        DOUBLE          NOT NULL
-                )
-                """;
-
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(dropSql);
-        } catch (SQLException ex) {
-            System.out.println("Failed to drop table CUSTOMER: " + ex.getMessage());
-        }
-
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(createSql);
-            seed();
-        }
+        resetDatabase();
+        populateDatabase();
     }
 
     @Override
@@ -109,25 +87,36 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public boolean save(Customer customer) {
+    public Customer save(CreateCustomerDto customer) {
         String sql = """
                 INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME, STREET, CITY, STATE, ZIP, EMAIL_ADDRESS, PHONE_NUMBER, CREDIT_LIMIT)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             setCustomerProps(customer, stmt);
-            int result = stmt.executeUpdate();
+            stmt.executeUpdate();
 
-            return result > 0;
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int customerId = generatedKeys.getInt(1);
+                    return findById(customerId);
+                }
+            }
         } catch (SQLException e) {
             System.out.println("Save Customer Failed: " + e.getMessage());
-            return false;
+            return null;
         }
+
+        return null;
 
     }
 
     @Override
-    public boolean update(Customer customer) {
+    public Customer update(CreateCustomerDto customer) {
+        if (!(customer instanceof UpdateCustomerDto)) {
+            throw new IllegalArgumentException("Customer must be an instance of UpdateCustomerDto");
+        }
+        UpdateCustomerDto updateCustomer = (UpdateCustomerDto) customer;
         String sql = """
                 UPDATE CUSTOMER
                 SET FIRST_NAME = ?,
@@ -141,16 +130,23 @@ public class CustomerRepository implements ICustomerRepository {
                 CREDIT_LIMIT = ?
                 WHERE CUSTOMER_ID = ?
                 """;
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            setCustomerProps(customer, stmt);
-            stmt.setInt(10, customer.getCustomerId());
-            int result = stmt.executeUpdate();
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            setCustomerProps(updateCustomer, stmt);
+            stmt.setInt(10, updateCustomer.getCustomerId());
+            stmt.executeUpdate();
 
-            return result > 0;
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int customerId = generatedKeys.getInt(1);
+                    return findById(customerId);
+                }
+            }
         } catch (SQLException e) {
             System.out.println("Save Customer Failed: " + e.getMessage());
-            return false;
+            return null;
         }
+
+        return null;
     }
 
     @Override
@@ -183,8 +179,7 @@ public class CustomerRepository implements ICustomerRepository {
                 .build();
     }
 
-
-    private void setCustomerProps(Customer customer, PreparedStatement stmt) throws SQLException {
+    private void setCustomerProps(CreateCustomerDto customer, PreparedStatement stmt) throws SQLException {
         stmt.setString(1, customer.getFirstName());
         stmt.setString(2, customer.getLastName());
         stmt.setString(3, customer.getStreet());
@@ -196,10 +191,9 @@ public class CustomerRepository implements ICustomerRepository {
         stmt.setDouble(9, customer.getCreditLimit());
     }
 
-
-    private void seed() {
-        List<Customer> customers = new ArrayList<>();
-        customers.add(new Customer.Builder()
+    private List<CreateCustomerDto> generateInitialCustomers() {
+        List<CreateCustomerDto> customers = new ArrayList<>();
+        customers.add(new CreateCustomerDto.Builder()
                 .setFirstName("Billy")
                 .setLastName("Shower")
                 .setStreet("123 Main St")
@@ -208,10 +202,10 @@ public class CustomerRepository implements ICustomerRepository {
                 .setZip("12345")
                 .setEmail("billy@gmail.com")
                 .setPhone("3368307157")
-                .setCreditLimit(100.00)
+                .setCreditLimit(0.00)
                 .build());
 
-        customers.add(new Customer.Builder()
+        customers.add(new CreateCustomerDto.Builder()
                 .setFirstName("Jane")
                 .setLastName("Doe")
                 .setStreet("456 Main St")
@@ -220,10 +214,10 @@ public class CustomerRepository implements ICustomerRepository {
                 .setZip("12345")
                 .setEmail("jane.doe@example.com")
                 .setPhone("3368307157")
-                .setCreditLimit(100.00)
+                .setCreditLimit(50.00)
                 .build());
 
-        customers.add(new Customer.Builder()
+        customers.add(new CreateCustomerDto.Builder()
                 .setFirstName("John")
                 .setLastName("Doe")
                 .setStreet("789 Main St")
@@ -232,10 +226,46 @@ public class CustomerRepository implements ICustomerRepository {
                 .setZip("12345")
                 .setEmail("jim.beam@example.com")
                 .setPhone("3368307157")
-                .setCreditLimit(100.00)
+                .setCreditLimit(20.00)
                 .build());
 
-        for (Customer customer : customers) {
+        return customers;
+    }
+
+    @Override
+    public void resetDatabase() throws SQLException {
+        String dropSQL = "DROP TABLE CUSTOMER";
+        String createSQL = """
+                CREATE TABLE CUSTOMER (
+                  CUSTOMER_ID         INTEGER         GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_CUSTOMER_ID PRIMARY KEY,
+                  FIRST_NAME          VARCHAR(50)     NOT NULL,
+                  LAST_NAME           VARCHAR(50)     NOT NULL,
+                  STREET              VARCHAR(50)     NOT NULL,
+                  CITY                VARCHAR(50)     NOT NULL,
+                  STATE               VARCHAR(50)     NOT NULL,
+                  ZIP                 VARCHAR(50)     NOT NULL,
+                  EMAIL_ADDRESS       VARCHAR(50)     NOT NULL,
+                  PHONE_NUMBER        VARCHAR(50)     NOT NULL,
+                  CREDIT_LIMIT        DOUBLE          NOT NULL
+                )
+                """;
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(dropSQL);
+        } catch (SQLException ex) {
+            System.out.println("Failed to drop table CUSTOMER: " + ex.getMessage());
+        }
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(createSQL);
+        } catch (SQLException ex) {
+            System.out.println("Failed to create table CUSTOMER: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    public void populateDatabase() throws SQLException {
+        List<CreateCustomerDto> customers = generateInitialCustomers();
+        for (CreateCustomerDto customer : customers) {
             save(customer);
         }
     }

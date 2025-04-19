@@ -1,34 +1,44 @@
 package services;
 
-import controllers.AppController;
-import models.Coffee;
+import entites.Coffee;
+import java.sql.SQLException;
 import java.util.List;
+import Interfaces.ICoffeeRepository;
+import dto.CreateCoffeeDto;
+import dto.UpdateCoffeeDto;
 
 public class CoffeeService {
-    private final AppController controller;
+    private final ICoffeeRepository coffeeRepository;
 
-    public CoffeeService(AppController controller) {
-        this.controller = controller;
+    public CoffeeService(ICoffeeRepository coffeeRepository) {
+        this.coffeeRepository = coffeeRepository;
     }
 
     public List<Coffee> getAllCoffees() {
-        return this.controller.getCoffeeRepository().findAll();
+        return this.coffeeRepository.findAll();
     }
 
     public Coffee getCoffeeById(int id) {
-        return this.controller.getCoffeeRepository().findById(id);
+        return this.coffeeRepository.findById(id);
     }
 
-    public boolean createCoffee(Coffee coffee) {
-        return this.controller.getCoffeeRepository().save(coffee);
+    public Coffee createCoffee(CreateCoffeeDto coffee) {
+        return this.coffeeRepository.save(coffee);
     }
 
-    public boolean updateCoffee(Coffee coffee) {
-        return this.controller.getCoffeeRepository().update(coffee);
+    public Coffee updateCoffee(UpdateCoffeeDto coffee) {
+        return this.coffeeRepository.update(coffee);
     }
 
     public boolean deleteCoffee(int id) {
-        return this.controller.getCoffeeRepository().deleteById(id);
+        return this.coffeeRepository.deleteById(id);
+    }
 
+    public void resetDatabase() throws SQLException {
+        this.coffeeRepository.resetDatabase();
+    }
+
+    public void populateDatabase() throws SQLException {
+        this.coffeeRepository.populateDatabase();
     }
 }

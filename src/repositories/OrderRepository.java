@@ -1,10 +1,11 @@
 package repositories;
 
 import Interfaces.IOrderRepository;
+import dto.CreateOrderDto;
+import dto.UpdateOrderDto;
 import dto.OrderCoffeeDto;
 import dto.OrderCustomerDto;
-import models.Order;
-
+import entites.Order;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,30 +19,8 @@ public class OrderRepository implements IOrderRepository {
 
     @Override
     public void initTable() throws SQLException {
-        String dropSQL = "DROP TABLE COFFEE_ORDER";
-        String createSQL = """
-                CREATE TABLE COFFEE_ORDER (
-                  ORDER_ID          INTEGER   GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_ORDER_ID PRIMARY KEY,
-                  CUSTOMER_ID       INTEGER   NOT NULL,
-                  COFFEE_ID         INTEGER   NOT NULL,
-                  QUANTITY_ORDERED  DOUBLE    NOT NULL,
-                  TOTAL_PRICE       DOUBLE    NOT NULL
-                )
-                """;
-
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(dropSQL);
-        } catch (SQLException ex) {
-            System.out.println("Failed to drop table COFFEE_ORDER: " + ex.getMessage());
-        }
-
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(createSQL);
-            List<Order> orders = createInitialOrders();
-            for (Order order : orders) {
-                save(order);
-            }
-        }
+        resetDatabase();
+        populateDatabase();
     }
 
     @Override
@@ -115,18 +94,51 @@ public class OrderRepository implements IOrderRepository {
         return orders;
     }
 
-    @Override
-    public boolean save(Order obj) {
+    // @Override
+    // public boolean save(CreateOrderDto order) {
+    // String sql = """
+    // INSERT INTO COFFEE_ORDER (CUSTOMER_ID, COFFEE_ID, QUANTITY_ORDERED,
+    // TOTAL_PRICE)
+    // VALUES (?, ?, ?, ?)
+    // """;
+    // try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+    // setOrderProps(order, stmt);
+    // stmt.executeUpdate();
+    // } catch (SQLException e) {
+    // System.out.println("Save Order Failed: " + e.getMessage());
+    // return false;
+    // }
+    // return true;
+    // }
+
+    public Order save(CreateOrderDto order) {
         String sql = """
                 INSERT INTO COFFEE_ORDER (CUSTOMER_ID, COFFEE_ID, QUANTITY_ORDERED, TOTAL_PRICE)
                 VALUES (?, ?, ?, ?)
                 """;
-        return saveOrder(obj, sql);
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            setOrderProps(order, stmt);
+            stmt.executeUpdate();
 
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int orderId = generatedKeys.getInt(1);
+                    return findById(orderId);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Save Order Failed: " + e.getMessage());
+            return null;
+        }
+        return null;
     }
 
     @Override
-    public boolean update(Order obj) {
+    public Order update(CreateOrderDto order) {
+        if (!(order instanceof UpdateOrderDto)) {
+            throw new IllegalArgumentException("Order must be an instance of UpdateOrderDto");
+        }
+        UpdateOrderDto updateOrder = (UpdateOrderDto) order;
 
         String sql = """
                 UPDATE COFFEE_ORDER
@@ -137,8 +149,22 @@ public class OrderRepository implements IOrderRepository {
                 WHERE ORDER_ID = ?
                 """;
 
-        return saveOrder(obj, sql);
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            setOrderProps(updateOrder, stmt);
+            stmt.setInt(5, updateOrder.getOrderId());
+            stmt.executeUpdate();
 
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int orderId = generatedKeys.getInt(1);
+                    return findById(orderId);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Update Order Failed: " + e.getMessage());
+            return null;
+        }
+        return null;
     }
 
     @Override
@@ -174,27 +200,19 @@ public class OrderRepository implements IOrderRepository {
                 .setCustomer(customer)
                 .setCoffee(coffee)
                 .setTotal(rs.getDouble("TOTAL_PRICE"))
-                .setNumberOrdered(rs.getDouble("QUANTITY_ORDERED"))
+                .setQtyOrdered(rs.getDouble("QUANTITY_ORDERED"))
                 .build();
     }
 
-    private boolean saveOrder(Order order, String sql) {
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, order.getCustomer().getCustomerId());
-            stmt.setInt(2, order.getCoffee().getCoffeeId());
-            stmt.setDouble(3, order.getNumberOrdered());
-            stmt.setDouble(4, order.getTotal());
-            int result = stmt.executeUpdate();
-
-            return result > 0;
-        } catch (SQLException e) {
-            System.out.println("Save Order Failed: " + e.getMessage());
-            return false;
-        }
+    private void setOrderProps(CreateOrderDto order, PreparedStatement stmt) throws SQLException {
+        stmt.setInt(1, order.getCustomerId());
+        stmt.setInt(2, order.getCoffeeId());
+        stmt.setDouble(3, order.getQtyOrdered());
+        stmt.setDouble(4, order.getTotal());
     }
 
-    private List<Order> createInitialOrders() {
-        List<Order> orders = new ArrayList<>();
+    private List<CreateOrderDto> createInitialOrders() {
+        List<CreateOrderDto> orders = new ArrayList<>();
         int[] coffeeIds = { 1, 2, 3, 4, 5, 6 };
         int[] customerIds = { 1, 2, 3 };
         double[] quantities = { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
@@ -205,18 +223,15 @@ public class OrderRepository implements IOrderRepository {
             int customerId = customerIds[getRandomIndex(customerIds)];
             double quantity = quantities[getRandomIndex(quantities)];
             double totalPrice = totalPrices[getRandomIndex(totalPrices)];
-            String[] coffeeNames = { "Latte", "Cappuccino", "Americano", "Espresso", "Mocha", "Macchiato" };
-            String[] customerNames = { "John Doe", "Jane Smith", "Jim Beam" };
 
-            Order order = new Order.Builder()
-                    .setCoffee(new OrderCoffeeDto.Builder().setCoffeeId(coffeeId)
-                            .setCoffeeName(coffeeNames[getRandomIndex(coffeeNames)]).setPrice(totalPrice).build())
-                    .setCustomer(new OrderCustomerDto.Builder().setCustomerId(customerId)
-                            .setCustomerName(customerNames[getRandomIndex(customerNames)]).build())
-                    .setNumberOrdered(quantity).setTotal(totalPrice).build();
+            CreateOrderDto order = new CreateOrderDto.Builder()
+                    .setCoffeeId(coffeeId)
+                    .setCustomerId(customerId)
+                    .setQtyOrdered(quantity)
+                    .setTotal(totalPrice)
+                    .build();
             orders.add(order);
         }
-
         return orders;
     }
 
@@ -228,8 +243,35 @@ public class OrderRepository implements IOrderRepository {
         return (int) (Math.random() * array.length);
     }
 
-    private int getRandomIndex(String[] array) {
-        return (int) (Math.random() * array.length);
+    public void resetDatabase() {
+        String dropSQL = "DROP TABLE COFFEE_ORDER";
+        String createSQL = """
+                CREATE TABLE COFFEE_ORDER (
+                  ORDER_ID          INTEGER   GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_ORDER_ID PRIMARY KEY,
+                  CUSTOMER_ID       INTEGER   NOT NULL,
+                  COFFEE_ID         INTEGER   NOT NULL,
+                  QUANTITY_ORDERED  DOUBLE    NOT NULL,
+                  TOTAL_PRICE       DOUBLE    NOT NULL
+                )
+                """;
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(dropSQL);
+        } catch (SQLException ex) {
+            System.out.println("Failed to drop table COFFEE_ORDER: " + ex.getMessage());
+        }
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(createSQL);
+        } catch (SQLException ex) {
+            System.out.println("Failed to create table COFFEE_ORDER: " + ex.getMessage());
+        }
     }
 
+    public void populateDatabase() {
+        List<CreateOrderDto> orders = createInitialOrders();
+        for (CreateOrderDto order : orders) {
+            save(order);
+        }
+    }
 }

@@ -1,21 +1,19 @@
 package components.tables;
 
+import components.StyledTable;
 import controllers.AppController;
+import entites.Coffee;
 import enums.ViewType;
-import models.Coffee;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-
-import components.StyledTable;
 
 public class CoffeeTable extends StyledTable<Coffee> {
     private final AppController controller;
 
     public CoffeeTable(AppController controller) {
         super(
-                null, // We'll load the data later
                 List.of("Name", "Description", "Price", "In Stock"));
 
         this.controller = controller;
@@ -43,8 +41,8 @@ public class CoffeeTable extends StyledTable<Coffee> {
 
         for (Coffee coffee : this.data) {
             addRow(new Object[] {
-                    coffee.getCoffeeName(),
-                    coffee.getCoffeeDescription(),
+                    coffee.getName(),
+                    coffee.getDescription(),
                     String.format("%.2f", coffee.getPrice()),
                     coffee.getIsInStock() ? "Yes" : "No"
             });

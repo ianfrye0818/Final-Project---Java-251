@@ -1,22 +1,22 @@
 package listeners;
 
 import controllers.AppController;
+import dto.CreateOrderDto;
 import dto.OrderCoffeeDto;
 import dto.OrderCustomerDto;
+import entites.Coffee;
+import entites.Customer;
+import entites.Order;
 import enums.ViewType;
-import models.Coffee;
-import models.Customer;
-import models.Order;
+import stores.OrderStore;
+import utils.DialogUtils;
 import views.CreateOrderView;
 
 import javax.swing.*;
-
-import components.AddCreditDialog;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 
-public class CreateOrderListeners {
+public class CreateOrderViewListeners {
 
     private final AppController appController;
     private final CreateOrderView view;
@@ -26,7 +26,7 @@ public class CreateOrderListeners {
     private final JLabel taxLabel;
     private final JLabel totalLabel;
 
-    public CreateOrderListeners(
+    public CreateOrderViewListeners(
             AppController appController,
             CreateOrderView view,
             JComboBox<Coffee> coffeeComboBox,
@@ -47,10 +47,11 @@ public class CreateOrderListeners {
         return e -> appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
     }
 
-    public ActionListener getPlaceOrderListener() {
+    public ActionListener getPlaceOrderButtonListener() {
         return e -> {
+
             if (coffeeComboBox.getItemCount() == 0) {
-                showError("No coffee available to order");
+                DialogUtils.showError(view, "No coffee available to order");
                 return;
             }
 
@@ -58,38 +59,24 @@ public class CreateOrderListeners {
             int quantity = (int) quantitySpinner.getValue();
             double total = Double.parseDouble(totalLabel.getText());
 
-            Customer currentCustomer = appController.getCustomerStore().get();
+            CreateOrderDto order = new CreateOrderDto.Builder()
+                    .setCoffeeId(selectedCoffee.getCoffeeId())
+                    .setQtyOrdered(quantity)
+                    .setTotal(total)
+                    .build();
+
+            Customer currentCustomer = appController.getLoggedinCustomerStore().get();
             if (total > currentCustomer.getCreditLimit()) {
                 handleInsufficientCredit(currentCustomer.getCreditLimit());
                 return;
             }
 
             try {
-                OrderCustomerDto customerDto = new OrderCustomerDto.Builder()
-                        .setCustomerId(currentCustomer.getCustomerId())
-                        .setCustomerName(currentCustomer.getFirstName() + " " +
-                                currentCustomer.getLastName())
-                        .setCustomerEmail(currentCustomer.getEmail())
-                        .setCustomerPhone(currentCustomer.getPhone())
-                        .build();
-
-                OrderCoffeeDto coffeeDto = new OrderCoffeeDto.Builder()
-                        .setCoffeeId(selectedCoffee.getCoffeeId())
-                        .setCoffeeName(selectedCoffee.getCoffeeName())
-                        .setPrice(selectedCoffee.getPrice())
-                        .build();
-
-                Order order = new Order.Builder()
-                        .setCustomer(customerDto)
-                        .setCoffee(coffeeDto)
-                        .setNumberOrdered(quantity)
-                        .setTotal(total)
-                        .build();
 
                 appController.getOrderService().createOrder(order);
                 appController.setDisplay(ViewType.ORDER_DETAIL_VIEW);
             } catch (Exception ex) {
-                showError("Error placing order: " + ex.getMessage());
+                DialogUtils.showError(view, "Error placing order: " + ex.getMessage());
             }
         };
     }
@@ -109,24 +96,37 @@ public class CreateOrderListeners {
             subtotalLabel.setText(String.format("%.2f", subtotal));
             taxLabel.setText(String.format("%.2f", tax));
             totalLabel.setText(String.format("%.2f", total));
+
         }
     }
 
     private void handleInsufficientCredit(double creditLimit) {
         String message = String.format("Your order exceeds your available credit limit of $%.2f", creditLimit);
-        int option = JOptionPane.showConfirmDialog(view,
-                message + "\nWould you like to update your account to add more credit?",
-                "Insufficient Credit",
-                JOptionPane.YES_NO_OPTION);
+        boolean confirmation = DialogUtils.showConfirmation(view,
+                message + "\nWould you like to update your account to add more credit?");
 
-        if (option == JOptionPane.YES_OPTION) {
-            JDialog addCreditDialog = new AddCreditDialog(view, appController, appController.getCustomerStore().get());
-            addCreditDialog.setVisible(true);
-
+        if (confirmation) {
+            DialogUtils.showAddCreditDialog(view, appController);
         }
     }
 
-    private void showError(String message) {
-        JOptionPane.showMessageDialog(view, message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
+    // private void setOrder(CreateOrderDto dto) {
+    // Customer currentCustomer = appController.getLoggedinCustomerStore().get();
+    // appController.getOrderStore().set(
+    // new Order.Builder()
+    // .setQtyOrdered(dto.getQtyOrdered())
+    // .setTotal(dto.getTotal())
+    // .setCustomer(new OrderCustomerDto.Builder()
+    // .setCustomerId(currentCustomer.getCustomerId())
+    // .setCustomerEmail(currentCustomer.getEmail())
+    // .setCustomerName(currentCustomer.getFirstName() + " " +
+    // currentCustomer.getLastName())
+    // .setCustomerPhone(currentCustomer.getPhone())
+    // .build())
+    // .setCoffee(new OrderCoffeeDto.Builder()
+    // .setCoffeeId(dto.getCoffeeId())
+    // .build())
+    // .build());
+    // }
+
 }

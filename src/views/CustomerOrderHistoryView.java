@@ -3,29 +3,25 @@ package views;
 import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
-import dto.OrderCoffeeDto;
-import dto.OrderCustomerDto;
+import entites.Customer;
+import entites.Order;
 import enums.ViewType;
-import models.Customer;
-import models.Order;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerOrderHistoryView extends SuperView {
-    private final String title;
-    private final Customer currentCustomer;
-    private final List<Order> customerOrders;
+    private Customer currentCustomer;
+    private List<Order> customerOrders;
 
     public CustomerOrderHistoryView(AppController controller) {
-
-        this.title = "Order History";
-        this.currentCustomer = controller.getCustomerStore().get();
+        super(controller, "Order History");
+        if (!isCustomerPresent(ViewType.VIEW_ALL_CUSTOMERS_VIEW))
+            return;
+        this.currentCustomer = controller.getSelectedCustomerStore().get();
         this.customerOrders = controller.getOrderService().getOrdersByCustomerId(currentCustomer.getCustomerId());
-        // this.customerOrders = fakeCustomerOrders();
 
         setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
@@ -153,7 +149,7 @@ public class CustomerOrderHistoryView extends SuperView {
         gbc.weightx = 1.0;
         card.add(coffeeLabel, gbc);
 
-        JLabel quantityLabel = new JLabel(String.format("Qty: %.0f", order.getNumberOrdered()));
+        JLabel quantityLabel = new JLabel(String.format("Qty: %.0f", order.getQtyOrdered()));
         quantityLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 1;
         gbc.weightx = 0.0;
@@ -169,28 +165,4 @@ public class CustomerOrderHistoryView extends SuperView {
         return card;
     }
 
-    @Override
-    public String getTitle() {
-        return super.getTitle() + " - " + title;
-    }
-
-    private List<Order> fakeCustomerOrders() {
-        List<Order> orders = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Order order = new Order();
-            order.setOrderId(i);
-            order.setCustomer(new OrderCustomerDto.Builder()
-                    .setOrderId(i)
-                    .setCustomerId(currentCustomer.getCustomerId())
-                    .setCustomerName(currentCustomer.getFirstName() + currentCustomer.getLastName())
-                    .setCustomerEmail(currentCustomer.getEmail())
-                    .setCustomerPhone(currentCustomer.getPhone())
-                    .build());
-            order.setCoffee(new OrderCoffeeDto(i, i + 5, "Coffee " + i, i * 5.0));
-            order.setNumberOrdered(i + 5);
-            order.setTotal(i * 5.0);
-            orders.add(order);
-        }
-        return orders;
-    }
 }

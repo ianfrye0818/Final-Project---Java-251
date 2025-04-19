@@ -8,15 +8,15 @@ public class Order {
     private OrderCustomerDto customer;
     private OrderCoffeeDto coffee;
     private double total;
-    private double numberOrdered;
+    private double qtyOrdered;
 
     public Order(Integer orderId, OrderCustomerDto customer, OrderCoffeeDto coffee, double total,
-            double numberOrdered) {
+            double qtyOrdered) {
         this.orderId = orderId;
         this.customer = customer;
         this.coffee = coffee;
         this.total = total;
-        this.numberOrdered = numberOrdered;
+        this.qtyOrdered = qtyOrdered;
     }
 
     public Order() {
@@ -54,21 +54,18 @@ public class Order {
         this.total = total;
     }
 
-    public double getNumberOrdered() {
-        return numberOrdered;
+    public double getQtyOrdered() {
+        return qtyOrdered;
     }
 
-    public void setNumberOrdered(double numberOrdered) {
-        this.numberOrdered = numberOrdered;
+    public void setQtyOrdered(double qtyOrdered) {
+        this.qtyOrdered = qtyOrdered;
     }
 
     @Override
     public String toString() {
-        return "";
-        // return String.format("Order ID: %d, Customer Name: %s, Coffee Name: %s,
-        // Number Ordered: %.2f, Total: %.2f",
-        // orderId, customer.getCustomerName(), coffee.getCoffeeName(), numberOrdered,
-        // total);
+        return String.format("Order ID: %d, Customer Name: %s, Coffee Name: %s, Quantity Ordered: %.2f, Total: %.2f",
+                orderId, customer.getCustomerName(), coffee.getCoffeeName(), qtyOrdered, total);
     }
 
     public static class Builder {
@@ -76,7 +73,7 @@ public class Order {
         private OrderCustomerDto customer;
         private OrderCoffeeDto coffee;
         private double total;
-        private double numberOrdered;
+        private double qtyOrdered;
 
         public Builder setOrderId(Integer orderId) {
             this.orderId = orderId;
@@ -98,13 +95,13 @@ public class Order {
             return this;
         }
 
-        public Builder setNumberOrdered(double numberOrdered) {
-            this.numberOrdered = numberOrdered;
+        public Builder setQtyOrdered(double qtyOrdered) {
+            this.qtyOrdered = qtyOrdered;
             return this;
         }
 
         public Order build() {
-            return new Order(orderId, customer, coffee, total, numberOrdered);
+            return new Order(orderId, customer, coffee, total, qtyOrdered);
         }
 
     }
