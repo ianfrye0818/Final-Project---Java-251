@@ -1,11 +1,6 @@
 package controllers;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import Interfaces.ICoffeeRepository;
-import Interfaces.ICustomerRepository;
-import Interfaces.IOrderRepository;
-import Interfaces.IStore;
+import Interfaces.*;
 import entites.Coffee;
 import entites.Customer;
 import entites.Order;
@@ -14,30 +9,47 @@ import repositories.CoffeeRepository;
 import repositories.CustomerRepository;
 import repositories.OrderRepository;
 import services.CoffeeService;
-import services.CustomerService;
 import services.OrderService;
-import stores.CoffeeStore;
 import stores.AuthStore;
+import stores.CoffeeStore;
 import stores.OrderStore;
-import utils.ConnectionFactory;
 import stores.SelectedCustomerStore;
+import utils.ConnectionFactory;
+
+import java.sql.Connection;
 
 public class AppController {
-    private ICustomerRepository customerRepository;
-    private ICoffeeRepository coffeeRepository;
-    private IOrderRepository orderRepository;
-    private final ViewManager viewManager;
-    private final CustomerService customerService;
-    private final CoffeeService coffeeService;
-    private final OrderService orderService;
-    private final IStore<Customer> customerStore;
-    private final IStore<Customer> selectedCustomerStore;
-    private final IStore<Order> orderStore;
-    private final IStore<Coffee> coffeeStore;
+
+    private static AppController instance;
+
+    private final Container container;
 
     public static final double TAX_RATE = 0.08;
 
-    private static AppController instance;
+    private AppController() {
+        container = new IOCContainer();
+
+        container.registerFactory(Connection.class, c -> {
+            try {
+                return ConnectionFactory.getConnection();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create connection", e);
+            }
+        });
+
+        container.register(ICustomerRepository.class, CustomerRepository.class);
+        container.register(ICoffeeRepository.class, CoffeeRepository.class);
+        container.register(IOrderRepository.class, OrderRepository.class);
+
+        container.register(IStore.class, null);
+
+        container.registerSingleton(ViewManager.class, new ViewManager());
+        container.registerFactory(IStore.class, c -> new AuthStore());
+        container.registerFactory(IStore.class, c -> new SelectedCustomerStore());
+        container.registerFactory(IStore.class, c -> new OrderStore());
+        container.registerFactory(IStore.class, c -> new CoffeeStore());
+    }
+
 
     public static AppController getInstance() {
         if (instance == null) {
@@ -46,91 +58,57 @@ public class AppController {
         return instance;
     }
 
-    private AppController() {
-        try {
-            Connection conn = ConnectionFactory.getConnection();
-            initializeRepositories(conn);
-        } catch (SQLException e) {
-            System.out.println("Failed to initialize repositories: " + e.getMessage());
-            System.out.println("Exiting....");
-            System.exit(1);
-        }
-
-        // Initialize stores
-        this.customerStore = new AuthStore();
-        this.orderStore = new OrderStore();
-        this.coffeeStore = new CoffeeStore();
-        this.selectedCustomerStore = new SelectedCustomerStore();
-        // Initialize services
-        this.customerService = new CustomerService(this.customerRepository, this);
-        this.coffeeService = new CoffeeService((ICoffeeRepository) this.coffeeRepository);
-        this.orderService = new OrderService(this.orderRepository);
-
-        // Initialize view manager
-        this.viewManager = new ViewManager(this);
-    }
-
     public void start() {
-        viewManager.setDisplay(ViewType.LOGIN_VIEW);
+        getViewManager().showMainView();
     }
 
     public void setDisplay(ViewType view) {
-        viewManager.setDisplay(view);
+        getViewManager().setDisplay(view);
     }
 
-    // Getters for services
     public CoffeeService getCoffeeService() {
-        return this.coffeeService;
-    }
-
-    public CustomerService getCustomerService() {
-        return this.customerService;
-    }
-
-    public OrderService getOrderService() {
-        return this.orderService;
-    }
-
-    public IStore<Customer> getLoggedinCustomerStore() {
-        return this.customerStore;
-    }
-
-    public IStore<Customer> getSelectedCustomerStore() {
-        return this.selectedCustomerStore;
-    }
-
-    public IStore<Order> getOrderStore() {
-        return this.orderStore;
-    }
-
-    public IStore<Coffee> getCoffeeStore() {
-        return this.coffeeStore;
-    }
-
-    public ICoffeeRepository getCoffeeRepository() {
-        return this.coffeeRepository;
-    }
-
-    public IOrderRepository getOrderRepository() {
-        return (IOrderRepository) this.orderRepository;
+        return container.resolve(CoffeeService.class);
     }
 
     public ViewManager getViewManager() {
-        return this.viewManager;
+        return container.resolve(ViewManager.class);
     }
 
-    private void initializeRepositories(Connection conn) throws SQLException {
-        customerRepository = new CustomerRepository(conn);
-        coffeeRepository = new CoffeeRepository(conn);
-        orderRepository = new OrderRepository(conn);
-
-        customerRepository.initTable();
-        System.out.println("Customer table initialized");
-
-        coffeeRepository.initTable();
-        System.out.println("Coffee table initialized");
-
-        orderRepository.initTable();
-        System.out.println("Order table initialized");
+    public OrderService getOrderService() {
+        return container.resolve(OrderService.class);
     }
+
+    public IStore<Customer> getLoggedCustomerStore() {
+        return (IStore<Customer>) container.resolve(IStore.class);
+    }
+
+    public IStore<Customer> getSelectedCustomerStore() {
+        return (IStore<Customer>) container.resolve(IStore.class);
+    }
+
+    public IStore<Order> getOrderStore() {
+        return (IStore<Order>) container.resolve(IStore.class);
+    }
+
+    public IStore<Coffee> getCoffeeStore() {
+        return (IStore<Coffee>) container.resolve(IStore.class);
+    }
+
+    public ICoffeeRepository getCoffeeRepository() {
+        return container.resolve(ICoffeeRepository.class);
+    }
+
+    public IOrderRepository getOrderRepository() {
+        return container.resolve(IOrderRepository.class);
+    }
+
+    public ICustomerRepository getCustomerRepository() {
+        return container.resolve(ICustomerRepository.class);
+    }
+
+    public Container getContainer() {
+        return container;
+    }
+
+
 }

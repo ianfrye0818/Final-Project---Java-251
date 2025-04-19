@@ -1,11 +1,14 @@
 package views;
 
+import Interfaces.Container;
+import Interfaces.IStore;
 import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
 import entites.Customer;
 import enums.ViewType;
 import listeners.CustomerDetailsListeners;
+import stores.SelectedCustomerStore;
 import utils.DialogUtils;
 
 import javax.swing.*;
@@ -13,9 +16,17 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class CustomerDetailView extends SuperView {
+    private final IStore<Customer> selectedCustomerStore;
+    //NEED to make customer service an interface to make this work.
+//    private final CustomerService customerService;
 
     public CustomerDetailView(AppController controller) {
         super(controller, "Customer Details");
+
+        Container container = AppController.getInstance().getContainer();
+        this.selectedCustomerStore = container.resolve((SelectedCustomerStore.class));
+
+
         Customer selectedCustomer = controller.getSelectedCustomerStore().get();
 
         if (selectedCustomer == null) {
@@ -120,7 +131,7 @@ public class CustomerDetailView extends SuperView {
     }
 
     private void addReadOnlyField(JPanel panel, GridBagConstraints gbc, String labelText, String value, int gridy,
-            int gridx) {
+                                  int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 

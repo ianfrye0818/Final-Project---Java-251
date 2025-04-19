@@ -1,4 +1,6 @@
 package Interfaces;
 
-public @interface DependencyFactory {
+@FunctionalInterface
+public interface DependencyFactory<T> {
+    T create(Container container);
 }

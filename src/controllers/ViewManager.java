@@ -10,8 +10,8 @@ public class ViewManager {
     private ViewType currenView;
     private ViewType previousView;
 
-    public ViewManager(AppController controller) {
-        this.controller = controller;
+    public ViewManager() {
+        this.controller = AppController.getInstance();
     }
 
     public void setDisplay(ViewType view) {
@@ -27,6 +27,10 @@ public class ViewManager {
         viewToDisplay.pack();
         viewToDisplay.setLocationRelativeTo(null);
         viewToDisplay.setVisible(true);
+    }
+
+    public void showMainView() {
+        setDisplay(ViewType.LOGIN_VIEW);
     }
 
     public ViewType getPreviousView() {
