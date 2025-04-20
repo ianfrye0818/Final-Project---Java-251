@@ -3,6 +3,16 @@ package entites;
 import dto.OrderCoffeeDto;
 import dto.OrderCustomerDto;
 
+/**
+ * A class representing an order entity.
+ * It contains the order ID, customer, coffee, total price, and quantity
+ * ordered.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class Order {
     private Integer orderId;
     private OrderCustomerDto customer;

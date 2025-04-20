@@ -1,5 +1,15 @@
 package dto;
 
+/**
+ * A data transfer object (DTO) class for creating a new customer.
+ * It contains the first name, last name, email, phone, street, city, state,
+ * zip, and credit limit of a customer.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class CreateCustomerDto {
   private String firstName;
   private String lastName;

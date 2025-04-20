@@ -1,5 +1,13 @@
 package enums;
 
+/**
+ * An enum representing the different views in the application.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public enum ViewType {
 
     COFFEE_MENU_VIEW,

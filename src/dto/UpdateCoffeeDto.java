@@ -2,6 +2,15 @@ package dto;
 
 import entites.Coffee;
 
+/**
+ * A data transfer object (DTO) class for updating a coffee.
+ * It contains the coffee ID, name, description, price, and in-stock status.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class UpdateCoffeeDto extends CreateCoffeeDto {
   private final int coffeeId;
 

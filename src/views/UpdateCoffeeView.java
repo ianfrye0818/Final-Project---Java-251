@@ -9,7 +9,29 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The view for updating the details of an existing coffee item. It retrieves
+ * the selected coffee's information from the {@link CoffeeStore} and populates
+ * the form fields. Administrators can modify the coffee's name, price,
+ * availability
+ * ("In Stock"), and description. Buttons are provided to submit the updates,
+ * delete the coffee item, and navigate back to the coffee menu. This view
+ * utilizes a {@link GridBagLayout} for flexible layout management and reuses
+ * custom styled input components.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class UpdateCoffeeView extends SuperView {
+
+    /**
+     * Constructs the {@code UpdateCoffeeView}, initializing its UI components,
+     * layout, and pre-filling the form fields with the selected coffee's
+     * information
+     * obtained from the {@link CoffeeStore}. It also attaches the necessary action
+     * listeners for updating, deleting, and navigating back.
+     */
     public UpdateCoffeeView() {
         super("Update Coffee");
         CoffeeStore coffeeStore = CoffeeStore.getInstance();
@@ -131,5 +153,4 @@ public class UpdateCoffeeView extends SuperView {
         pack();
         setLocationRelativeTo(null);
     }
-
 }

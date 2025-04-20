@@ -16,6 +16,19 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 
+/**
+ * Provides {@code ActionListener} and {@code ItemListener} implementations for
+ * actions
+ * within the {@code CreateOrderView}. This includes handling navigation,
+ * placing a new
+ * order, and updating the displayed order price based on coffee selection and
+ * quantity.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class CreateOrderViewListeners {
 
     private final AppController appController;
@@ -26,6 +39,22 @@ public class CreateOrderViewListeners {
     private final JLabel taxLabel;
     private final JLabel totalLabel;
 
+    /**
+     * Constructs a new {@code CreateOrderViewListeners} with references to the
+     * application
+     * controller, the create order view, and the UI components used for input and
+     * display.
+     *
+     * @param appController   The application controller providing access to
+     *                        services and navigation.
+     * @param view            The {@code CreateOrderView} where the order creation
+     *                        is performed.
+     * @param coffeeComboBox  The combo box for selecting the coffee to order.
+     * @param quantitySpinner The spinner for selecting the quantity of the coffee.
+     * @param subtotalLabel   The label displaying the subtotal of the order.
+     * @param taxLabel        The label displaying the calculated tax for the order.
+     * @param totalLabel      The label displaying the total price of the order.
+     */
     public CreateOrderViewListeners(
             AppController appController,
             CreateOrderView view,
@@ -43,10 +72,30 @@ public class CreateOrderViewListeners {
         this.totalLabel = totalLabel;
     }
 
+    /**
+     * Returns an {@code ActionListener} that navigates the application back to the
+     * coffee menu view.
+     *
+     * @return An {@code ActionListener} for navigating back to the coffee menu.
+     */
     public ActionListener getBackButtonListener() {
         return e -> appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
     }
 
+    /**
+     * Returns an {@code ActionListener} that handles the placement of a new order.
+     * It retrieves the selected coffee and quantity from the input components,
+     * calculates the total order price, and creates a {@link CreateOrderDto}.
+     * It checks if the logged-in customer has sufficient credit before attempting
+     * to create the order using the order service. If the credit is insufficient,
+     * it calls {@link #handleInsufficientCredit(double)}. Upon successful order
+     * creation, it stores the created order in the {@link OrderStore} and navigates
+     * to the order detail view. If any error occurs during order placement, an
+     * error
+     * message is displayed.
+     *
+     * @return An {@code ActionListener} for placing a new order.
+     */
     public ActionListener getPlaceOrderButtonListener() {
         return e -> {
 
@@ -84,10 +133,25 @@ public class CreateOrderViewListeners {
         };
     }
 
+    /**
+     * Returns an {@code ItemListener} that is triggered when the selected coffee
+     * in the combo box changes. It calls the {@link #updateOrderPrice()} method
+     * to recalculate and update the displayed order price.
+     *
+     * @return An {@code ItemListener} for handling coffee selection changes.
+     */
     public ItemListener getCoffeeSelectionListener() {
         return e -> updateOrderPrice();
     }
 
+    /**
+     * Updates the displayed subtotal, tax, and total labels based on the currently
+     * selected coffee and quantity. It retrieves the selected coffee from the combo
+     * box and the quantity from the spinner, calculates the subtotal, tax (using
+     * the
+     * application's tax rate), and the total price, and then formats and sets these
+     * values to the respective labels.
+     */
     public void updateOrderPrice() {
         Coffee selectedCoffee = (Coffee) coffeeComboBox.getSelectedItem();
         if (selectedCoffee != null) {
@@ -103,13 +167,23 @@ public class CreateOrderViewListeners {
         }
     }
 
+    /**
+     * Handles the scenario where the logged-in customer has insufficient credit to
+     * place the order. It displays a confirmation dialog informing the customer
+     * about
+     * their credit limit and asking if they would like to add more credit. If the
+     * customer confirms, it sets the logged-in customer in the
+     * {@link SelectedCustomerStore} and displays the add credit dialog using
+     * {@link DialogUtils#showAddCreditDialog(java.awt.Frame, AppController)}.
+     *
+     * @param creditLimit The current credit limit of the logged-in customer.
+     */
     private void handleInsufficientCredit(double creditLimit) {
         String message = String.format("Your order exceeds your available credit limit of $%.2f", creditLimit);
         boolean confirmation = DialogUtils.showConfirmation(view,
                 message + "\nWould you like to update your account to add more credit?");
 
         if (confirmation) {
-            // appController.getSelectedCustomerStore().set(appController.getLoggedinCustomerStore().get());
             SelectedCustomerStore.getInstance().set(AuthStore.getInstance().get());
             DialogUtils.showAddCreditDialog(view, appController);
         }

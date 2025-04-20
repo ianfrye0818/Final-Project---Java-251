@@ -7,6 +7,14 @@ import entites.Customer;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * An interface for a service that manages customer entities.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public interface ICustomerService {
     List<Customer> getAllCustomers();
 

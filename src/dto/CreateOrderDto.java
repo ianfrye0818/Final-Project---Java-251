@@ -1,5 +1,14 @@
 package dto;
 
+/**
+ * A data transfer object (DTO) class for creating a new order.
+ * It contains the quantity ordered, total price, coffee ID, and customer ID.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class CreateOrderDto {
   private double qtyOrdered;
   private double total;

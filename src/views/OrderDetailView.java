@@ -11,10 +11,27 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The view displaying the details of a placed order. It retrieves the selected
+ * order from the {@link OrderStore} and presents information about the
+ * customer,
+ * the ordered coffee, the quantity, and a breakdown of the price, including
+ * subtotal, tax, and total. A "Back" button allows navigation to the previous
+ * view. This view utilizes a {@link GridBagLayout} for structured layout.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class OrderDetailView extends SuperView {
 
     private final Order selectedOrder;
 
+    /**
+     * Constructs the {@code OrderDetailView}, retrieving the selected order
+     * from the store and initializing the UI components to display the order's
+     * details and the associated customer information.
+     */
     public OrderDetailView() {
         super("Order Summary");
         ViewType previousView = controller.getViewManager().getPreviousView();
@@ -91,8 +108,18 @@ public class OrderDetailView extends SuperView {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Helper method to add a labeled detail field to the panel.
+     *
+     * @param panel     The panel to add the field to.
+     * @param gbc       The {@code GridBagConstraints} to use for layout.
+     * @param labelText The text for the label.
+     * @param value     The value to display.
+     * @param gridy     The grid y-coordinate for the field.
+     * @param gridx     The grid x-coordinate for the field.
+     */
     private void addDetailField(JPanel panel, GridBagConstraints gbc, String labelText, String value, int gridy,
-                                int gridx) {
+            int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 
@@ -111,18 +138,18 @@ public class OrderDetailView extends SuperView {
         panel.add(fieldPanel, gbc);
     }
 
+    /**
+     * Helper method to create the panel displaying the price summary.
+     *
+     * @return A {@code JPanel} containing labels for subtotal, tax, and total
+     *         amounts.
+     */
     private JPanel createPricePanel() {
         JPanel pricePanel = new JPanel(new GridBagLayout());
         pricePanel.setBackground(Color.WHITE);
         pricePanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(230, 230, 230)),
                 BorderFactory.createEmptyBorder(15, 25, 15, 25)));
-
-        // TODO: Check to make sure this didn't effect anything
-
-        // GridBagConstraints gbc = new GridBagConstraints();
-        // gbc.fill = GridBagConstraints.HORIZONTAL;
-        // gbc.insets = new Insets(5, 5, 5, 5);
 
         addPriceRow(pricePanel, "Subtotal:", String.format("$%.2f", calculateSubTotal()), 0);
         addPriceRow(pricePanel, "Tax:", String.format("$%.2f", calculateTax()), 1);
@@ -131,10 +158,29 @@ public class OrderDetailView extends SuperView {
         return pricePanel;
     }
 
+    /**
+     * Helper method to add a row to the price panel.
+     *
+     * @param panel     The panel to add the row to.
+     * @param labelText The text for the label (e.g., "Subtotal:").
+     * @param value     The price value to display as a string.
+     * @param gridy     The grid y-coordinate for the row.
+     */
     private void addPriceRow(JPanel panel, String labelText, String value, int gridy) {
         addPriceRow(panel, labelText, value, gridy, false);
     }
 
+    /**
+     * Helper method to add a row to the price panel with an option to make the
+     * label and value bold.
+     *
+     * @param panel     The panel to add the row to.
+     * @param labelText The text for the label.
+     * @param value     The price value to display as a string.
+     * @param gridy     The grid y-coordinate for the row.
+     * @param isBold    A boolean indicating whether the label and value should be
+     *                  bold.
+     */
     private void addPriceRow(JPanel panel, String labelText, String value, int gridy, boolean isBold) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = gridy;
@@ -158,16 +204,30 @@ public class OrderDetailView extends SuperView {
         panel.add(valueLabel, gbc);
     }
 
+    /**
+     * Calculates the subtotal of the order.
+     *
+     * @return The subtotal amount.
+     */
     private double calculateSubTotal() {
         return selectedOrder.getCoffee().getPrice() * selectedOrder.getQtyOrdered();
     }
 
+    /**
+     * Calculates the tax amount for the order.
+     *
+     * @return The tax amount.
+     */
     private double calculateTax() {
         return calculateSubTotal() * AppController.TAX_RATE;
     }
 
+    /**
+     * Calculates the total amount for the order, including tax.
+     *
+     * @return The total amount.
+     */
     private double calculateTotal() {
         return calculateSubTotal() + calculateTax();
     }
-
 }

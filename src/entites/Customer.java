@@ -2,6 +2,16 @@ package entites;
 
 import dto.OrderCustomerDto;
 
+/**
+ * A class representing a customer entity.
+ * It contains the customer ID, first name, last name, street, city, state,
+ * zip, email, phone, and credit limit.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class Customer {
     private Integer customerId;
     private String firstName;

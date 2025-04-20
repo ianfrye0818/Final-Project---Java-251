@@ -8,6 +8,19 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The view for creating a new coffee item. It provides a form with fields for
+ * the coffee's name, price, a checkbox for availability ("In Stock"), and a
+ * multi-line text area for the description. It includes buttons to navigate
+ * back to the coffee menu and to submit the new coffee details for creation.
+ * This view utilizes a {@link GridBagLayout} for flexible layout management
+ * and custom styled input components.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class CreateCoffeeView extends SuperView {
 
     public CreateCoffeeView() {
@@ -126,6 +139,14 @@ public class CreateCoffeeView extends SuperView {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Helper method to add a section header to the form.
+     *
+     * @param panel The panel to add the header to.
+     * @param gbc   The {@code GridBagConstraints} to use for layout.
+     * @param text  The text of the section header.
+     * @param gridx The grid x-coordinate for the header.
+     */
     private void addSectionHeader(JPanel panel, GridBagConstraints gbc, String text, int gridx) {
         JLabel header = new JLabel(text);
         header.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -136,6 +157,15 @@ public class CreateCoffeeView extends SuperView {
         panel.add(header, gbc);
     }
 
+    /**
+     * Helper method to add a labeled form field to the panel.
+     *
+     * @param panel     The panel to add the field to.
+     * @param gbc       The {@code GridBagConstraints} to use for layout.
+     * @param labelText The text for the label.
+     * @param field     The {@code JComponent} to add (e.g., JTextField, JTextArea).
+     * @param gridy     The grid y-coordinate for the field.
+     */
     private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field, int gridy) {
         gbc.gridy = gridy;
         gbc.gridx = 0;
@@ -143,6 +173,14 @@ public class CreateCoffeeView extends SuperView {
         setFormFieldProps(panel, gbc, labelText, field);
     }
 
+    /**
+     * Static helper method to set the properties for a labeled form field panel.
+     *
+     * @param panel     The panel to add the field to.
+     * @param gbc       The {@code GridBagConstraints} to use for layout.
+     * @param labelText The text for the label.
+     * @param field     The {@code JComponent} to add.
+     */
     static void setFormFieldProps(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field) {
         JPanel fieldPanel = new JPanel(new BorderLayout(0, 5));
         fieldPanel.setBackground(Color.WHITE);

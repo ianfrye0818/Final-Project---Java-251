@@ -7,6 +7,13 @@ import entites.Order;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * An interface for a service that manages order entities.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public interface IOrderService {
     List<Order> getAllOrders();
 

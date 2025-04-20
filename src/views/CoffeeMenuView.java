@@ -13,11 +13,31 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The main view displaying the coffee menu and providing actions related to
+ * coffee orders, user accounts, and administrative functions. It includes a
+ * table of available coffees, a menu bar with options for coffee actions,
+ * account management, and admin controls, as well as a bottom panel for
+ * initiating order creation and viewing coffee details. This view updates
+ * dynamically based on the authentication state managed by the
+ * {@link AuthStore}.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ * 
+ */
+
 public class CoffeeMenuView extends SuperView {
     private final JMenuItem currentUserItem;
     private final JMenuItem creditsItem;
     private final AuthStore authStore;
 
+    /**
+     * Constructs the {@code CoffeeMenuView}, initializing its UI components,
+     * action listeners, and subscribing to changes in the authentication store
+     * to update user-specific information.
+     */
     public CoffeeMenuView() {
         super("Coffee Menu");
         authStore = AuthStore.getInstance();
@@ -50,10 +70,12 @@ public class CoffeeMenuView extends SuperView {
         coffeeMenu.add(addNewCoffeeItem);
 
         // Account Actions Menu Items
-        currentUserItem = new JMenuItem("Logged in as: " + authStore.get().getEmail());
+        currentUserItem = new JMenuItem(
+                "Logged in as: " + (authStore.get() != null ? authStore.get().getEmail() : "Not logged in"));
         currentUserItem.setEnabled(false); // Make it non-clickable
         creditsItem = new JMenuItem(
-                "Credits: $" + String.format("%.2f", authStore.get().getCreditLimit()));
+                "Credits: $"
+                        + String.format("%.2f", (authStore.get() != null ? authStore.get().getCreditLimit() : 0.00)));
         creditsItem.setEnabled(false); // Make it non-clickable
         JMenuItem updateAccountItem = new JMenuItem("Update Account");
         JMenuItem viewAccountItem = new JMenuItem("View Account");
@@ -109,7 +131,8 @@ public class CoffeeMenuView extends SuperView {
         updateAccountItem.addActionListener(accountMenuListeners.getUpdateAccountActionListener());
         viewAccountItem.addActionListener(accountMenuListeners.getViewAccountActionListener());
         deleteAccountItem.addActionListener(
-                accountMenuListeners.getDeleteAccountActionListener(authStore.get().getCustomerId()));
+                accountMenuListeners.getDeleteAccountActionListener(
+                        authStore.get() != null ? authStore.get().getCustomerId() : -1));
         addCreditsItem.addActionListener(accountMenuListeners.getAddCreditsActionListener());
         viewAllCustomersItem.addActionListener(adminMenuListeners.getViewAllCustomersListener());
         viewAllOrdersItem.addActionListener(adminMenuListeners.getViewAllOrdersListener());
@@ -123,15 +146,19 @@ public class CoffeeMenuView extends SuperView {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Updates the displayed customer information (email and credits) in the menu
+     * bar. This method is called whenever the authenticated customer in the
+     * {@link AuthStore} changes.
+     */
     private void updateCustomerInfo() {
         if (authStore.get() != null) {
-
             currentUserItem.setText("Logged in as: " + authStore.get().getEmail());
             creditsItem.setText(
                     "Credits: $" + String.format("%.2f", authStore.get().getCreditLimit()));
         } else {
-            currentUserItem.setText("User not found");
-            creditsItem.setText("");
+            currentUserItem.setText("Not logged in");
+            creditsItem.setText("Credits: $0.00");
         }
     }
 }

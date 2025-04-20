@@ -10,8 +10,27 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The view displaying detailed information about a selected customer. It
+ * retrieves
+ * the customer data from the {@link SelectedCustomerStore} and presents it in a
+ * read-only format, including contact information, address, and available
+ * credit.
+ * It also provides actions to navigate back to the previous view, delete the
+ * displayed account, and add credit to the account. This view utilizes a
+ * {@link GridBagLayout} for structured layout.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class CustomerDetailView extends SuperView {
 
+    /**
+     * Constructs the {@code CustomerDetailView}, retrieving the selected customer
+     * from the store and initializing the UI components to display the customer's
+     * details and provide relevant actions.
+     */
     public CustomerDetailView() {
         super("Customer Details");
         Customer selectedCustomer = SelectedCustomerStore.getInstance().get();
@@ -111,8 +130,18 @@ public class CustomerDetailView extends SuperView {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Helper method to add a read-only labeled field to the panel.
+     *
+     * @param panel     The panel to add the field to.
+     * @param gbc       The {@code GridBagConstraints} to use for layout.
+     * @param labelText The text for the label.
+     * @param value     The read-only value to display.
+     * @param gridy     The grid y-coordinate for the field.
+     * @param gridx     The grid x-coordinate for the field.
+     */
     private void addReadOnlyField(JPanel panel, GridBagConstraints gbc, String labelText, String value, int gridy,
-                                  int gridx) {
+            int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 
@@ -124,11 +153,20 @@ public class CustomerDetailView extends SuperView {
         fieldPanel.add(label, BorderLayout.NORTH);
 
         JTextField field = new StyledInputs.StyledTextField(true, value);
+        field.setEditable(false); // Ensure it's read-only
         fieldPanel.add(field, BorderLayout.CENTER);
 
         panel.add(fieldPanel, gbc);
     }
 
+    /**
+     * Helper method to add a read-only labeled field to a sub-panel (for layout
+     * within a single grid cell).
+     *
+     * @param panel     The sub-panel to add the field to.
+     * @param labelText The text for the label.
+     * @param value     The read-only value to display.
+     */
     private void addReadOnlyFieldToPanel(JPanel panel, String labelText, String value) {
         JPanel fieldPanel = new JPanel(new GridLayout(2, 1, 0, 4));
         fieldPanel.setBackground(Color.WHITE);
@@ -138,9 +176,9 @@ public class CustomerDetailView extends SuperView {
         fieldPanel.add(label);
 
         JTextField field = new StyledInputs.StyledTextField(true, value);
+        field.setEditable(false); // Ensure it's read-only
         fieldPanel.add(field);
 
         panel.add(fieldPanel);
     }
-
 }

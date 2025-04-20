@@ -12,10 +12,30 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * The view displaying the order history for the currently logged-in customer.
+ * It retrieves the customer's information from the {@link AuthStore} and their
+ * order history from the controller. The view presents the customer's name and
+ * the total number of orders, followed by a list of individual orders, each
+ * showing the coffee name, quantity, and total price. If no orders are found,
+ * a message indicating this is displayed. A "Back to Menu" button allows
+ * navigation back to the main coffee menu. This view uses {@link GridBagLayout}
+ * for flexible layout management within the main panel and individual order
+ * cards.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class CustomerOrderHistoryView extends SuperView {
     private final Customer currentCustomer;
     private final List<Order> customerOrders;
 
+    /**
+     * Constructs the {@code CustomerOrderHistoryView}, retrieving the logged-in
+     * customer and their order history, and initializing the UI components to
+     * display this information.
+     */
     public CustomerOrderHistoryView() {
         super("Order History");
         currentCustomer = AuthStore.getInstance().get();
@@ -78,9 +98,14 @@ public class CustomerOrderHistoryView extends SuperView {
         mainPanel.add(buttonPanel, gbc);
 
         add(mainPanel, BorderLayout.CENTER);
-
     }
 
+    /**
+     * Creates and returns a panel displaying the current customer's basic
+     * information, such as their full name and the total number of orders.
+     *
+     * @return A {@code JPanel} containing customer information.
+     */
     private JPanel createCustomerInfoPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
@@ -110,6 +135,12 @@ public class CustomerOrderHistoryView extends SuperView {
         return panel;
     }
 
+    /**
+     * Creates and returns a panel containing individual order cards for each
+     * order in the customer's history.
+     *
+     * @return A {@code JPanel} containing the list of order cards.
+     */
     private JPanel createOrdersPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
@@ -129,6 +160,13 @@ public class CustomerOrderHistoryView extends SuperView {
         return panel;
     }
 
+    /**
+     * Creates and returns a panel representing a single order, displaying the
+     * coffee name, quantity ordered, and the total price of the order.
+     *
+     * @param order The {@link Order} object to create the card for.
+     * @return A {@code JPanel} representing an order card.
+     */
     private JPanel createOrderCard(Order order) {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(Color.WHITE);
@@ -163,5 +201,4 @@ public class CustomerOrderHistoryView extends SuperView {
 
         return card;
     }
-
 }

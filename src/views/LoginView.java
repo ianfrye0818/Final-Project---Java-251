@@ -8,7 +8,23 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The initial view presented to the user, providing fields for email and
+ * password to log into the application. It also includes a button to navigate
+ * to the account creation view. This view utilizes a {@link GridBagLayout} for
+ * organizing its components in a responsive manner.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class LoginView extends SuperView {
+
+    /**
+     * Constructs the {@code LoginView}, initializing its UI components, layout,
+     * and attaching the necessary action listeners for user interaction with
+     * the login and create account functionalities.
+     */
     public LoginView() {
         super("Login");
 
@@ -72,9 +88,21 @@ public class LoginView extends SuperView {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Helper method to add a labeled form field (e.g., JTextField, JPasswordField)
+     * to the panel using the provided GridBagConstraints.
+     *
+     * @param panel     The JPanel to which the form field is added.
+     * @param gbc       The GridBagConstraints to control the layout of the field.
+     * @param labelText The text for the label of the form field.
+     * @param field     The JComponent (e.g., JTextField, JPasswordField) to be
+     *                  added.
+     * @param gridY     The grid y-coordinate where the label and field will be
+     *                  placed.
+     */
     private void addFormField(JPanel panel, GridBagConstraints gbc,
-                              String labelText, JComponent field,
-                              int gridY) {
+            String labelText, JComponent field,
+            int gridY) {
 
         JLabel label = new Typography.StyledLabel(labelText);
         gbc.gridy = gridY;
@@ -87,5 +115,4 @@ public class LoginView extends SuperView {
         gbc.gridy = gridY + 1;
         panel.add(field, gbc);
     }
-
 }

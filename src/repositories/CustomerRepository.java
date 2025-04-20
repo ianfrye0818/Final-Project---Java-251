@@ -9,20 +9,53 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implements the {@link ICustomerRepository} interface to provide data access
+ * operations for {@link Customer} entities. This repository interacts with the
+ * 'CUSTOMER' table in the database to perform CRUD operations and table
+ * initialization.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class CustomerRepository implements ICustomerRepository {
 
     private final Connection connection;
 
+    /**
+     * Constructs a new {@code CustomerRepository} with the specified database
+     * connection.
+     *
+     * @param conn The {@link Connection} to the database.
+     */
     public CustomerRepository(Connection conn) {
         this.connection = conn;
     }
 
+    /**
+     * Initializes the 'CUSTOMER' table in the database by first dropping it if it
+     * exists
+     * and then recreating it. After creation, it populates the table with initial
+     * customer data.
+     *
+     * @throws SQLException If a database error occurs during table manipulation or
+     *                      population.
+     */
     @Override
     public void initTable() throws SQLException {
         resetDatabase();
         populateDatabase();
     }
 
+    /**
+     * Retrieves all {@link Customer} entities from the 'CUSTOMER' table, ordered by
+     * their ID.
+     *
+     * @return A {@code List} of all {@link Customer} entities in the table, or an
+     *         empty list
+     *         if no customers exist or if a database error occurs.
+     */
     @Override
     public List<Customer> findAll() {
         String sql = """
@@ -39,11 +72,21 @@ public class CustomerRepository implements ICustomerRepository {
             }
 
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             // Do nothing here we will just return an empty list.
         }
         return customers;
     }
 
+    /**
+     * Retrieves a {@link Customer} entity from the 'CUSTOMER' table based on its
+     * ID.
+     *
+     * @param id The ID of the customer to retrieve.
+     * @return The {@link Customer} entity with the specified ID, or {@code null} if
+     *         no
+     *         such customer exists or if a database error occurs.
+     */
     @Override
     public Customer findById(int id) {
         String sql = """
@@ -65,6 +108,16 @@ public class CustomerRepository implements ICustomerRepository {
         return customer;
     }
 
+    /**
+     * Retrieves a {@link Customer} entity from the 'CUSTOMER' table based on their
+     * email address.
+     * The comparison is case-insensitive.
+     *
+     * @param email The email address of the customer to retrieve.
+     * @return The {@link Customer} entity with the specified email address, or
+     *         {@code null} if no
+     *         such customer exists or if a database error occurs.
+     */
     @Override
     public Customer findByEmail(String email) {
         String sql = """
@@ -86,6 +139,18 @@ public class CustomerRepository implements ICustomerRepository {
         return customer;
     }
 
+    /**
+     * Saves a new customer to the 'CUSTOMER' table using the provided
+     * {@link CreateCustomerDto}.
+     * Upon successful insertion, it retrieves and returns the newly created
+     * {@link Customer}
+     * entity, including its generated ID.
+     *
+     * @param customer The {@link CreateCustomerDto} containing the details of the
+     *                 customer to save.
+     * @return The saved {@link Customer} entity, or {@code null} if the save
+     *         operation fails.
+     */
     @Override
     public Customer save(CreateCustomerDto customer) {
         String sql = """
@@ -111,6 +176,23 @@ public class CustomerRepository implements ICustomerRepository {
 
     }
 
+    /**
+     * Updates an existing customer in the 'CUSTOMER' table using the provided
+     * {@link CreateCustomerDto}. The {@code customer} object must be an instance of
+     * {@link UpdateCustomerDto} to include the customer's ID for the WHERE clause.
+     * Upon successful update, it retrieves and returns the updated {@link Customer}
+     * entity.
+     *
+     * @param customer The {@link CreateCustomerDto} (must be
+     *                 {@link UpdateCustomerDto})
+     *                 containing the updated details of the customer.
+     * @return The updated {@link Customer} entity, or {@code null} if the update
+     *         operation fails
+     *         or if the provided DTO is not an instance of
+     *         {@link UpdateCustomerDto}.
+     * @throws IllegalArgumentException If the provided {@code customer} is not an
+     *                                  instance of {@link UpdateCustomerDto}.
+     */
     @Override
     public Customer update(CreateCustomerDto customer) {
         if (!(customer instanceof UpdateCustomerDto)) {
@@ -139,14 +221,6 @@ public class CustomerRepository implements ICustomerRepository {
                 throw new RuntimeException("Failed to update customer");
 
             return findById(updateCustomer.getCustomerId());
-            // try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-            // if (generatedKeys.next()) {
-            // int customerId = generatedKeys.getInt(1);
-            // Customer cust = findById(customerId);
-            // System.out.println("Customer in reposiotry: " + cust)
-            // return cust;
-            // }
-            // }
         } catch (SQLException e) {
             System.out.println("Save Customer Failed: " + e.getMessage());
             return null;
@@ -154,6 +228,13 @@ public class CustomerRepository implements ICustomerRepository {
 
     }
 
+    /**
+     * Deletes a customer from the 'CUSTOMER' table based on their ID.
+     *
+     * @param id The ID of the customer to delete.
+     * @return {@code true} if the deletion was successful; {@code false} otherwise
+     *         or if a database error occurs.
+     */
     @Override
     public boolean deleteById(int id) {
         String sql = "DELETE FROM CUSTOMER WHERE CUSTOMER_ID = ?";
@@ -169,6 +250,14 @@ public class CustomerRepository implements ICustomerRepository {
         return true;
     }
 
+    /**
+     * Maps a row from the {@link ResultSet} to a {@link Customer} entity.
+     *
+     * @param rs The {@link ResultSet} containing the data for a customer.
+     * @return A new {@link Customer} entity populated with data from the result
+     *         set.
+     * @throws SQLException If an error occurs while accessing the result set.
+     */
     private Customer mapToCustomer(ResultSet rs) throws SQLException {
         return new Customer.Builder()
                 .setCustomerId(rs.getInt("CUSTOMER_ID"))
@@ -184,6 +273,16 @@ public class CustomerRepository implements ICustomerRepository {
                 .build();
     }
 
+    /**
+     * Sets the properties of a customer in a {@link PreparedStatement} based on the
+     * data from a {@link CreateCustomerDto}.
+     *
+     * @param customer The {@link CreateCustomerDto} containing the customer's
+     *                 properties.
+     * @param stmt     The {@link PreparedStatement} to set the properties on.
+     * @throws SQLException If an error occurs while setting the statement
+     *                      parameters.
+     */
     private void setCustomerProps(CreateCustomerDto customer, PreparedStatement stmt) throws SQLException {
         stmt.setString(1, customer.getFirstName());
         stmt.setString(2, customer.getLastName());
@@ -196,6 +295,13 @@ public class CustomerRepository implements ICustomerRepository {
         stmt.setDouble(9, customer.getCreditLimit());
     }
 
+    /**
+     * Generates a list of initial {@link CreateCustomerDto} objects representing
+     * some default customers for populating the database.
+     *
+     * @return A {@code List} of {@link CreateCustomerDto} objects for initial
+     *         customers.
+     */
     private List<CreateCustomerDto> generateInitialCustomers() {
         List<CreateCustomerDto> customers = new ArrayList<>();
         customers.add(new CreateCustomerDto.Builder()
@@ -237,9 +343,34 @@ public class CustomerRepository implements ICustomerRepository {
         return customers;
     }
 
+    /**
+     * Drops the 'CUSTOMER' table from the database if it exists. Any errors during
+     * the drop operation are logged but do not halt the execution. After dropping,
+     * it calls {@link #createTable()} to recreate the table.
+     *
+     * @throws SQLException If a database error occurs during the drop or create
+     *                      operation.
+     */
     @Override
     public void resetDatabase() throws SQLException {
         String dropSQL = "DROP TABLE CUSTOMER";
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(dropSQL);
+        } catch (SQLException ex) {
+            System.out.println("Failed to drop table CUSTOMER: " + ex.getMessage());
+        }
+        createTable();
+    }
+
+    /**
+     * Creates the 'CUSTOMER' table in the database with the necessary columns and
+     * constraints.
+     * Any errors during the create operation are logged and rethrown as an
+     * SQLException.
+     *
+     * @throws SQLException If a database error occurs during the table creation.
+     */
+    private void createTable() throws SQLException {
         String createSQL = """
                 CREATE TABLE CUSTOMER (
                   CUSTOMER_ID         INTEGER         GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_CUSTOMER_ID PRIMARY KEY,
@@ -255,18 +386,20 @@ public class CustomerRepository implements ICustomerRepository {
                 )
                 """;
         try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(dropSQL);
-        } catch (SQLException ex) {
-            System.out.println("Failed to drop table CUSTOMER: " + ex.getMessage());
-        }
-
-        try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createSQL);
         } catch (SQLException ex) {
             System.out.println("Failed to create table CUSTOMER: " + ex.getMessage());
+            throw ex; // Re-throw the exception to be handled by the caller
         }
     }
 
+    /**
+     * Populates the 'CUSTOMER' table with the initial customer data defined in
+     * {@link #generateInitialCustomers()}.
+     *
+     * @throws SQLException If a database error occurs during the save operation for
+     *                      any customer.
+     */
     @Override
     public void populateDatabase() throws SQLException {
         List<CreateCustomerDto> customers = generateInitialCustomers();

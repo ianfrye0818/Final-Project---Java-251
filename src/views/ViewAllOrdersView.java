@@ -11,7 +11,28 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The view displaying a table of all orders in the system. It uses an
+ * {@link OrderTable} component to present the order data, which is loaded
+ * from the controller's order service. Administrators can select an order
+ * from the table and click a "View Details" button (currently non-functional
+ * in this view) for more information. The view also displays the total number
+ * of orders and the total revenue generated from all orders. It utilizes a
+ * {@link BorderLayout} for overall layout and custom table and title
+ * components.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class ViewAllOrdersView extends SuperView {
+
+    /**
+     * Constructs the {@code ViewAllOrdersView}, initializing its UI components,
+     * layout, and loading the order data into the table. It also sets up the
+     * (currently non-functional) "View Details" button and displays summary
+     * information about the orders.
+     */
     public ViewAllOrdersView() {
         super("All Orders");
 
@@ -73,11 +94,22 @@ public class ViewAllOrdersView extends SuperView {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Creates and returns the "View Details" button, attaching an action listener
+     * that (currently) displays an error message prompting the user to select
+     * an order. In a fully implemented version, this button would likely navigate
+     * to an order detail view.
+     *
+     * @param orderTable The {@code OrderTable} from which the selected order
+     *                   is (intended to be) retrieved.
+     * @return The created "View Details" {@code JButton}.
+     */
     private JButton getJButton(OrderTable orderTable) {
         JButton viewDetailsButton = new StyledInputs.PrimaryButton("View Details");
         viewDetailsButton.addActionListener(e -> {
             Order selectedOrder = orderTable.getSelectedItem();
             if (selectedOrder != null) {
+                // In a real implementation, navigate to order details view here
                 orderTable.handleViewDetails();
             } else {
                 DialogUtils.showError(this, "Please select an order to view details");
@@ -85,5 +117,4 @@ public class ViewAllOrdersView extends SuperView {
         });
         return viewDetailsButton;
     }
-
 }

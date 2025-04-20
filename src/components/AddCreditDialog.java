@@ -11,11 +11,33 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * A custom dialog for adding credit to a selected customer's account.
+ * This dialog allows users to input an amount to increase the credit limit
+ * of the currently selected customer, with validation to ensure the input
+ * is a positive whole number and the new credit limit does not exceed $100.00.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class AddCreditDialog extends JDialog {
     private final Customer currentCustomer;
     private final JTextField addCreditTextField;
     private final JLabel errorLabel;
 
+    /**
+     * Constructs an {@code AddCreditDialog} for the given parent frame and
+     * application controller.
+     * It retrieves the currently selected customer from the
+     * {@link SelectedCustomerStore}
+     * and sets up the UI components for displaying customer information and adding
+     * credit.
+     *
+     * @param parentView The parent {@code JFrame} for this dialog.
+     * @param controller The {@link AppController} providing access to customer
+     *                   service and view management.
+     */
     public AddCreditDialog(JFrame parentView, AppController controller) {
         super(parentView, "Add Credit", true);
         this.currentCustomer = SelectedCustomerStore.getInstance().get();

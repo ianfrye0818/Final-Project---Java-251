@@ -12,11 +12,30 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The view for creating a new coffee order. It presents the logged-in
+ * customer's
+ * information, a dropdown to select a coffee, a spinner to specify the
+ * quantity,
+ * and a dynamic price summary including subtotal, tax, and total. It includes
+ * buttons to navigate back to the main menu and to place the order. This view
+ * retrieves the current user's information from the {@link AuthStore} and
+ * dynamically updates the price based on the selected coffee and quantity.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class CreateOrderView extends SuperView {
     private JLabel subtotalLabel;
     private JLabel taxLabel;
     private JLabel totalLabel;
 
+    /**
+     * Constructs the {@code CreateOrderView}, initializing its UI components,
+     * layout, and attaching the necessary action listeners for user interaction,
+     * including updating the price based on coffee selection and quantity.
+     */
     public CreateOrderView() {
         super("Create Order");
         AuthStore authStore = AuthStore.getInstance();
@@ -51,10 +70,12 @@ public class CreateOrderView extends SuperView {
 
         addSectionHeader(mainPanel, gbc, "Customer Information", 2, 0);
 
-        JTextField firstNameField = new StyledInputs.StyledTextField(true, authStore.get().getFirstName());
+        JTextField firstNameField = new StyledInputs.StyledTextField(true,
+                authStore.get() != null ? authStore.get().getFirstName() : "");
         addFormField(mainPanel, gbc, "First Name:", firstNameField, 3, 0);
 
-        JTextField lastNameField = new StyledInputs.StyledTextField(true, authStore.get().getLastName());
+        JTextField lastNameField = new StyledInputs.StyledTextField(true,
+                authStore.get() != null ? authStore.get().getLastName() : "");
         addFormField(mainPanel, gbc, "Last Name:", lastNameField, 4, 0);
 
         // Right Column - Order Details
@@ -119,14 +140,31 @@ public class CreateOrderView extends SuperView {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Helper method to add a labeled form field to the panel.
+     *
+     * @param panel     The panel to add the field to.
+     * @param gbc       The {@code GridBagConstraints} to use for layout.
+     * @param labelText The text for the label.
+     * @param field     The {@code JComponent} to add (e.g., JTextField, JComboBox,
+     *                  JSpinner).
+     * @param gridy     The grid y-coordinate for the field.
+     * @param gridx     The grid x-coordinate for the field.
+     */
     private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field, int gridy,
-                              int gridx) {
+            int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 
         CreateCoffeeView.setFormFieldProps(panel, gbc, labelText, field);
     }
 
+    /**
+     * Helper method to create the panel displaying the price summary.
+     *
+     * @return A {@code JPanel} containing labels for subtotal, tax, and total
+     *         amounts.
+     */
     private JPanel createPricePanel() {
         JPanel pricePanel = new JPanel(new GridLayout(3, 2, 5, 5));
         pricePanel.setBackground(Color.WHITE);
@@ -143,10 +181,27 @@ public class CreateOrderView extends SuperView {
         return pricePanel;
     }
 
+    /**
+     * Helper method to add a row to the price panel.
+     *
+     * @param panel      The panel to add the row to.
+     * @param labelText  The text for the label (e.g., "Subtotal:").
+     * @param valueLabel The {@code JLabel} to display the price value.
+     */
     private void addPriceRow(JPanel panel, String labelText, JLabel valueLabel) {
         addPriceRow(panel, labelText, valueLabel, false);
     }
 
+    /**
+     * Helper method to add a row to the price panel with an option to make the
+     * label and value bold.
+     *
+     * @param panel      The panel to add the row to.
+     * @param labelText  The text for the label.
+     * @param valueLabel The {@code JLabel} to display the price value.
+     * @param isBold     A boolean indicating whether the label and value should be
+     *                   bold.
+     */
     protected void addPriceRow(JPanel panel, String labelText, JLabel valueLabel, boolean isBold) {
         JLabel label = new JLabel(labelText);
         label.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -160,5 +215,4 @@ public class CreateOrderView extends SuperView {
         panel.add(label);
         panel.add(valueLabel);
     }
-
 }

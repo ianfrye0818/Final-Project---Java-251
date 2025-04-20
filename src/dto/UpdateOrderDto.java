@@ -1,5 +1,15 @@
 package dto;
 
+/**
+ * A data transfer object (DTO) class for updating an order.
+ * It contains the order ID, customer ID, coffee ID, quantity ordered, and total
+ * price.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class UpdateOrderDto extends CreateOrderDto {
   private final int orderId;
 

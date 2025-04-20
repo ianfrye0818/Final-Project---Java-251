@@ -2,6 +2,15 @@ package entites;
 
 import dto.OrderCoffeeDto;
 
+/**
+ * A class representing a coffee entity.
+ * It contains the coffee ID, name, description, price, and in-stock status.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class Coffee {
 
     private Integer coffeeId;

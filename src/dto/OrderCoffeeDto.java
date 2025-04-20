@@ -1,5 +1,14 @@
 package dto;
 
+/**
+ * A data transfer object (DTO) class for representing an order coffee.
+ * It contains the order ID, coffee ID, coffee name, and price.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class OrderCoffeeDto {
   private int orderId;
   private int coffeeId;

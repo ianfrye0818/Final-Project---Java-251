@@ -2,6 +2,14 @@ package dto;
 
 import entites.Coffee;
 
+/**
+ * A data transfer object (DTO) class for creating a new coffee.
+ * It contains the name, description, price, and in-stock status of a coffee.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class CreateCoffeeDto {
   private String name;
   private String description;

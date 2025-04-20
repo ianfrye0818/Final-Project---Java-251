@@ -1,5 +1,14 @@
 package dto;
 
+/**
+ * A data transfer object (DTO) class for representing an order customer.
+ * It contains the order ID, customer ID, customer name, email, and phone.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class OrderCustomerDto {
   private int orderId;
   private int customerId;

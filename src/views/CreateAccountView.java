@@ -11,6 +11,20 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The view for creating a new user account. It provides a form with fields for
+ * personal information (first name, last name, email, phone), address
+ * information
+ * (street, city, state, zip), and account security (password). It includes
+ * buttons to navigate back to the login view and to submit the account creation
+ * request. This view utilizes a {@link GridBagLayout} for flexible layout
+ * management
+ * and custom styled input components.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class CreateAccountView extends SuperView {
     private List<Component> tabOrder = new ArrayList<>();
     private JTextField firstNameField;
@@ -25,6 +39,10 @@ public class CreateAccountView extends SuperView {
     private JButton backButton;
     private JButton createButton;
 
+    /**
+     * Constructs the {@code CreateAccountView}, initializing its UI components,
+     * layout, and attaching the necessary action listeners for user interaction.
+     */
     public CreateAccountView() {
         super("Create Account");
         setMinimumSize(new Dimension(800, 600));

@@ -2,6 +2,16 @@ package dto;
 
 import entites.Customer;
 
+/**
+ * A data transfer object (DTO) class for updating a customer.
+ * It contains the customer ID, first name, last name, email, phone, street,
+ * city, state, zip, and credit limit of a customer.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
+
 public class UpdateCustomerDto extends CreateCustomerDto {
   private final int customerId;
 

@@ -11,9 +11,27 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * The view displaying a table of all customers in the system. It uses a
+ * {@link CustomerTable} component to present the customer data, which is loaded
+ * from the controller's customer service. Users can select a customer from the
+ * table and click a "View Details" button to navigate to the
+ * {@link CustomerDetailView} for more information. The view also displays the
+ * total number of customers. It utilizes a {@link BorderLayout} for overall
+ * layout and custom table and title components.
+ * 
+ * @author Ian Frye
+ * @version 1.0
+ * @since 2025-04-20
+ */
 public class ViewAllCustomersView extends SuperView {
     private final CustomerTable customerTable;
 
+    /**
+     * Constructs the {@code ViewAllCustomersView}, initializing its UI components,
+     * layout, and loading the customer data into the table. It also sets up the
+     * "View Details" button to handle navigation to the customer details view.
+     */
     public ViewAllCustomersView() {
         super("All Customers");
 
@@ -60,15 +78,28 @@ public class ViewAllCustomersView extends SuperView {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Creates and returns the "View Details" button, attaching an action listener
+     * that handles the navigation to the {@link CustomerDetailView} for the
+     * selected customer.
+     *
+     * @param customerTable The {@code CustomerTable} from which the selected
+     *                      customer is retrieved.
+     * @return The created "View Details" {@code JButton}.
+     */
     private JButton getJButton(CustomerTable customerTable) {
         JButton viewDetailsButton = new StyledInputs.PrimaryButton("View Details");
         viewDetailsButton.addActionListener(e -> handleViewDetails());
         return viewDetailsButton;
     }
 
+    /**
+     * Handles the action of the "View Details" button. It retrieves the selected
+     * customer from the table, stores it in the {@link SelectedCustomerStore},
+     * and navigates the application to the {@link CustomerDetailView}.
+     */
     public void handleViewDetails() {
         SelectedCustomerStore.getInstance().set(customerTable.getSelectedItem());
         controller.setDisplay(ViewType.CUSTOMER_DETAIL_VIEW);
     }
-
 }
