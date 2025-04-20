@@ -1,10 +1,6 @@
 package controllers;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import Interfaces.ICoffeeRepository;
-import Interfaces.ICustomerRepository;
-import Interfaces.IOrderRepository;
+import Interfaces.*;
 import enums.ViewType;
 import repositories.CoffeeRepository;
 import repositories.CustomerRepository;
@@ -14,22 +10,30 @@ import services.CustomerService;
 import services.OrderService;
 import utils.ConnectionFactory;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class AppController {
     private ICustomerRepository customerRepository;
     private ICoffeeRepository coffeeRepository;
     private IOrderRepository orderRepository;
     private final ViewManager viewManager;
-    private final CustomerService customerService;
-    private final CoffeeService coffeeService;
-    private final OrderService orderService;
+    private final ICustomerService customerService;
+    private final ICoffeeService coffeeService;
+    private final IOrderService orderService;
 
     public static final double TAX_RATE = 0.08;
 
     private static AppController instance;
+    // private static boolean initialized = false;
 
     public static AppController getInstance() {
         if (instance == null) {
-            instance = new AppController();
+            synchronized (AppController.class) {
+                if (instance == null) {
+                    instance = new AppController();
+                }
+            }
         }
         return instance;
     }
@@ -38,6 +42,7 @@ public class AppController {
         try {
             Connection conn = ConnectionFactory.getConnection();
             initializeRepositories(conn);
+            // initialized = true;
         } catch (SQLException e) {
             System.out.println("Failed to initialize repositories: " + e.getMessage());
             System.out.println("Exiting....");
@@ -46,8 +51,8 @@ public class AppController {
 
         // Initialize services
         this.customerService = new CustomerService(this.customerRepository);
-        this.coffeeService = new CoffeeService((ICoffeeRepository) this.coffeeRepository);
-        this.orderService = new OrderService(this.orderRepository, (CustomerRepository) this.customerRepository);
+        this.coffeeService = new CoffeeService(this.coffeeRepository);
+        this.orderService = new OrderService(this.orderRepository, this.customerRepository);
 
         // Initialize view manager
         this.viewManager = new ViewManager(this);
@@ -62,15 +67,15 @@ public class AppController {
     }
 
     // Getters for services
-    public CoffeeService getCoffeeService() {
+    public ICoffeeService getCoffeeService() {
         return this.coffeeService;
     }
 
-    public CustomerService getCustomerService() {
+    public ICustomerService getCustomerService() {
         return this.customerService;
     }
 
-    public OrderService getOrderService() {
+    public IOrderService getOrderService() {
         return this.orderService;
     }
 

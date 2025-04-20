@@ -6,9 +6,9 @@ import views.*;
 import java.awt.*;
 
 public class ViewManager {
-    private final AppController controller;
     private ViewType currentView;
     private ViewType previousView;
+    AppController controller;
 
     public ViewManager(AppController controller) {
         this.controller = controller;
@@ -25,7 +25,7 @@ public class ViewManager {
         this.currentView = view;
 
         disposeWindows();
-        displayNewView(view);
+        displayNewView();
     }
 
     public ViewType getPreviousView() {
@@ -38,17 +38,21 @@ public class ViewManager {
 
     public void refreshCurrentView() {
         disposeWindows();
-        displayNewView(this.currentView);
+        displayNewView();
     }
 
     private void disposeWindows() {
-        Window[] windows = Window.getWindows();
-        for (Window window : windows) {
-            window.dispose();
+        if (currentView != null) {
+            Window[] windows = Window.getWindows();
+            for (Window window : windows) {
+                if (window instanceof SuperView) {
+                    window.dispose();
+                }
+            }
         }
     }
 
-    private void displayNewView(ViewType view) {
+    private void displayNewView() {
         SuperView viewToDisplay = createView(this.currentView);
         viewToDisplay.pack();
         viewToDisplay.setLocationRelativeTo(null);
@@ -58,18 +62,18 @@ public class ViewManager {
 
     private SuperView createView(ViewType viewType) {
         return switch (viewType) {
-            case COFFEE_MENU_VIEW -> new CoffeeMenuView(controller);
-            case CREATE_ACCOUNT_VIEW -> new CreateAccountView(controller);
-            case CREATE_COFFEE_VIEW -> new CreateCoffeeView(controller);
-            case CREATE_ORDER_VIEW -> new CreateOrderView(controller);
-            case ORDER_HISTORY_VIEW -> new CustomerOrderHistoryView(controller);
-            case LOGIN_VIEW -> new LoginView(controller);
-            case ORDER_DETAIL_VIEW -> new OrderDetailView(controller);
-            case UPDATE_ACCOUNT_VIEW -> new UpdateAccountView(controller);
-            case UPDATE_COFFEE_VIEW -> new UpdateCoffeeView(controller);
-            case CUSTOMER_DETAIL_VIEW -> new CustomerDetailView(controller);
-            case VIEW_ALL_CUSTOMERS_VIEW -> new ViewAllCustomersView(controller);
-            case VIEW_ALL_ORDERS_VIEW -> new ViewAllOrdersView(controller);
+            case COFFEE_MENU_VIEW -> new CoffeeMenuView();
+            case CREATE_ACCOUNT_VIEW -> new CreateAccountView();
+            case CREATE_COFFEE_VIEW -> new CreateCoffeeView();
+            case CREATE_ORDER_VIEW -> new CreateOrderView();
+            case ORDER_HISTORY_VIEW -> new CustomerOrderHistoryView();
+            case LOGIN_VIEW -> new LoginView();
+            case ORDER_DETAIL_VIEW -> new OrderDetailView();
+            case UPDATE_ACCOUNT_VIEW -> new UpdateAccountView();
+            case UPDATE_COFFEE_VIEW -> new UpdateCoffeeView();
+            case CUSTOMER_DETAIL_VIEW -> new CustomerDetailView();
+            case VIEW_ALL_CUSTOMERS_VIEW -> new ViewAllCustomersView();
+            case VIEW_ALL_ORDERS_VIEW -> new ViewAllOrdersView();
         };
     }
 }

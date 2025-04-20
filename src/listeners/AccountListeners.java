@@ -3,13 +3,16 @@ package listeners;
 import controllers.AppController;
 import dto.CreateCustomerDto;
 import dto.UpdateCustomerDto;
+import entites.Customer;
 import enums.ViewType;
 import services.ValidatorService;
+import stores.AuthStore;
 import utils.DialogUtils;
 import views.SuperView;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class AccountListeners {
     private final AppController appController;
@@ -74,16 +77,19 @@ public class AccountListeners {
         };
     }
 
-    public ActionListener getUpdateAccountButtonListener(int customerId) {
+    public ActionListener getUpdateAccountButtonListener(int customerId, double creditLimit) {
         return e -> {
-            UpdateCustomerDto dto = buildUpdateDto(customerId);
+            UpdateCustomerDto dto = buildUpdateDto(customerId, creditLimit);
 
             if (!isValidDto(dto)) {
                 return;
             }
 
             try {
-                appController.getCustomerService().updateCustomer(dto);
+                Customer updatedCustomer = appController.getCustomerService().updateCustomer(dto);
+                if (Objects.equals(updatedCustomer.getCustomerId(), AuthStore.getInstance().get().getCustomerId())) {
+                    AuthStore.getInstance().set(updatedCustomer);
+                }
                 DialogUtils.showSuccess(view, "Account updated successfully");
                 appController.setDisplay(ViewType.COFFEE_MENU_VIEW);
             } catch (Exception e1) {
@@ -106,7 +112,7 @@ public class AccountListeners {
                 .build();
     }
 
-    private UpdateCustomerDto buildUpdateDto(int customerId) {
+    private UpdateCustomerDto buildUpdateDto(int customerId, double creditLimit) {
         return new UpdateCustomerDto.Builder()
                 .setCustomerId(customerId)
                 .setFirstName(firstNameField.getText().trim())
@@ -116,6 +122,7 @@ public class AccountListeners {
                 .setState(stateField.getText().trim())
                 .setZip(zipField.getText().trim())
                 .setPhone(phoneField.getText().trim())
+                .setCreditLimit(creditLimit)
                 .setEmail(emailField.getText().trim())
                 .build();
     }

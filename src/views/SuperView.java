@@ -1,15 +1,16 @@
 package views;
 
 import controllers.AppController;
-import java.util.List;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class SuperView extends JFrame {
     protected AppController controller;
 
-    public SuperView(AppController controller, String title) {
-        this.controller = controller;
+    public SuperView(String title) {
+        this.controller = AppController.getInstance();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setTitle("Java Cafe - " + title);
@@ -36,7 +37,7 @@ public class SuperView extends JFrame {
     }
 
     protected void addFormField(JPanel panel, GridBagConstraints gbc, String text, JTextField field, int gridy,
-            int gridx) {
+                                int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 
@@ -54,7 +55,7 @@ public class SuperView extends JFrame {
 
     protected FocusTraversalPolicy getFocusTraversalPolicy(List<Component> tabOrder) {
 
-        FocusTraversalPolicy policy = new FocusTraversalPolicy() {
+        return new FocusTraversalPolicy() {
 
             @Override
             public Component getComponentAfter(Container container, Component component) {
@@ -70,20 +71,19 @@ public class SuperView extends JFrame {
 
             @Override
             public Component getFirstComponent(Container container) {
-                return tabOrder.get(0);
+                return tabOrder.getFirst();
             }
 
             @Override
             public Component getLastComponent(Container container) {
-                return tabOrder.get(tabOrder.size() - 1);
+                return tabOrder.getLast();
             }
 
             @Override
             public Component getDefaultComponent(Container container) {
-                return tabOrder.get(0);
+                return tabOrder.getFirst();
             }
         };
-        return policy;
     }
 
 }

@@ -2,7 +2,6 @@ package views;
 
 import components.StyledInputs;
 import components.Typography;
-import controllers.AppController;
 import listeners.CoffeeListeners;
 import stores.CoffeeStore;
 
@@ -11,8 +10,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class UpdateCoffeeView extends SuperView {
-    public UpdateCoffeeView(AppController controller) {
-        super(controller, "Update Coffee");
+    public UpdateCoffeeView() {
+        super("Update Coffee");
         CoffeeStore coffeeStore = CoffeeStore.getInstance();
         setMinimumSize(new Dimension(800, 600));
         getContentPane().setBackground(new Color(245, 245, 245));

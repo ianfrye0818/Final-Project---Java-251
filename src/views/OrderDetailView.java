@@ -13,10 +13,10 @@ import java.awt.*;
 
 public class OrderDetailView extends SuperView {
 
-    private Order selectedOrder;
+    private final Order selectedOrder;
 
-    public OrderDetailView(AppController controller) {
-        super(controller, "Order Summary");
+    public OrderDetailView() {
+        super("Order Summary");
         ViewType previousView = controller.getViewManager().getPreviousView();
         selectedOrder = OrderStore.getInstance().get();
 
@@ -92,7 +92,7 @@ public class OrderDetailView extends SuperView {
     }
 
     private void addDetailField(JPanel panel, GridBagConstraints gbc, String labelText, String value, int gridy,
-            int gridx) {
+                                int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 

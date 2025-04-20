@@ -4,7 +4,6 @@ import components.StyledInputs;
 import components.TableJPanel;
 import components.TitlePanel;
 import components.tables.CustomerTable;
-import controllers.AppController;
 import enums.ViewType;
 import stores.SelectedCustomerStore;
 
@@ -13,10 +12,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class ViewAllCustomersView extends SuperView {
-    private CustomerTable customerTable;
+    private final CustomerTable customerTable;
 
-    public ViewAllCustomersView(AppController controller) {
-        super(controller, "All Customers");
+    public ViewAllCustomersView() {
+        super("All Customers");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1000, 650)); // Slightly wider for all columns

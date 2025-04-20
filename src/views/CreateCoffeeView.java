@@ -2,7 +2,6 @@ package views;
 
 import components.StyledInputs;
 import components.Typography;
-import controllers.AppController;
 import listeners.CoffeeListeners;
 
 import javax.swing.*;
@@ -11,8 +10,8 @@ import java.awt.*;
 
 public class CreateCoffeeView extends SuperView {
 
-    public CreateCoffeeView(AppController controller) {
-        super(controller, "Create Coffee");
+    public CreateCoffeeView() {
+        super("Create Coffee");
 
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(800, 600));

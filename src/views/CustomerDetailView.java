@@ -2,7 +2,6 @@ package views;
 
 import components.StyledInputs;
 import components.Typography;
-import controllers.AppController;
 import entites.Customer;
 import listeners.CustomerDetailsListeners;
 import stores.SelectedCustomerStore;
@@ -13,8 +12,8 @@ import java.awt.*;
 
 public class CustomerDetailView extends SuperView {
 
-    public CustomerDetailView(AppController controller) {
-        super(controller, "Customer Details");
+    public CustomerDetailView() {
+        super("Customer Details");
         Customer selectedCustomer = SelectedCustomerStore.getInstance().get();
 
         CustomerDetailsListeners listeners = new CustomerDetailsListeners(controller, this);
@@ -113,7 +112,7 @@ public class CustomerDetailView extends SuperView {
     }
 
     private void addReadOnlyField(JPanel panel, GridBagConstraints gbc, String labelText, String value, int gridy,
-            int gridx) {
+                                  int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 

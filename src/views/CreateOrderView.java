@@ -4,7 +4,6 @@ import components.CoffeeSelectComboBox;
 import components.QuantitySpinner;
 import components.StyledInputs;
 import components.Typography;
-import controllers.AppController;
 import entites.Coffee;
 import listeners.CreateOrderViewListeners;
 import stores.AuthStore;
@@ -18,8 +17,8 @@ public class CreateOrderView extends SuperView {
     private JLabel taxLabel;
     private JLabel totalLabel;
 
-    public CreateOrderView(AppController controller) {
-        super(controller, "Create Order");
+    public CreateOrderView() {
+        super("Create Order");
         AuthStore authStore = AuthStore.getInstance();
 
         setLayout(new BorderLayout());
@@ -121,7 +120,7 @@ public class CreateOrderView extends SuperView {
     }
 
     private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field, int gridy,
-            int gridx) {
+                              int gridx) {
         gbc.gridy = gridy;
         gbc.gridx = gridx;
 

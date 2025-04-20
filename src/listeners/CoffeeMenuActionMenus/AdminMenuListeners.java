@@ -1,21 +1,22 @@
 package listeners.CoffeeMenuActionMenus;
 
+import Interfaces.ICoffeeService;
+import Interfaces.ICustomerService;
+import Interfaces.IOrderService;
 import controllers.AppController;
 import enums.ViewType;
-import services.CoffeeService;
-import services.CustomerService;
-import services.OrderService;
 import utils.DialogUtils;
 import views.SuperView;
+
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 public class AdminMenuListeners {
     private final AppController controller;
 
-    private final CustomerService customerService;
-    private final CoffeeService coffeeService;
-    private final OrderService orderService;
+    private final ICustomerService customerService;
+    private final ICoffeeService coffeeService;
+    private final IOrderService orderService;
 
     public AdminMenuListeners(AppController controller) {
         this.controller = controller;
@@ -52,7 +53,7 @@ public class AdminMenuListeners {
     private void clearDatabase(SuperView parent) {
         try {
             var confirm = DialogUtils.showConfirmation(parent,
-                    "Are you sure you want to clear the databases?\nThis will delete all data from the tables. If you are currenly logged in, your session will only be persisted until you logout.\nYou will need to recreate an account to continue using the application.");
+                    "Are you sure you want to clear the databases?\nThis will delete all data from the tables. If you are currently logged in, your session will only be persisted until you logout.\nYou will need to recreate an account to continue using the application.");
 
             if (!confirm) {
                 return;

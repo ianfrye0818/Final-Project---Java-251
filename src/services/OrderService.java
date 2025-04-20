@@ -1,38 +1,43 @@
 package services;
 
-import entites.Customer;
-import entites.Order;
-import repositories.CustomerRepository;
-
-import java.sql.SQLException;
-import java.util.List;
+import Interfaces.ICustomerRepository;
 import Interfaces.IOrderRepository;
+import Interfaces.IOrderService;
 import dto.CreateOrderDto;
 import dto.UpdateCustomerDto;
 import dto.UpdateOrderDto;
+import entites.Customer;
+import entites.Order;
 
-public class OrderService {
+import java.sql.SQLException;
+import java.util.List;
+
+public class OrderService implements IOrderService {
 
     private final IOrderRepository orderRepository;
-    private final CustomerRepository customerRepository;
+    private final ICustomerRepository customerRepository;
 
-    public OrderService(IOrderRepository orderRepository, CustomerRepository customerRepository) {
+    public OrderService(IOrderRepository orderRepository, ICustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
     }
 
+    @Override
     public List<Order> getAllOrders() {
         return this.orderRepository.findAll();
     }
 
+    @Override
     public Order getOrderById(int id) {
         return this.orderRepository.findById(id);
     }
 
+    @Override
     public List<Order> getOrdersByCustomerId(int customerId) {
         return this.orderRepository.findByCustomerId(customerId);
     }
 
+    @Override
     public Order createOrder(CreateOrderDto order) {
         // save the order
         Order newOrder = this.orderRepository.save(order);
@@ -45,19 +50,23 @@ public class OrderService {
         return newOrder;
     }
 
+    @Override
     public Order updateOrder(UpdateOrderDto order) {
         return this.orderRepository.update(order);
 
     }
 
+    @Override
     public boolean deleteOrder(int id) {
         return this.orderRepository.deleteById(id);
     }
 
+    @Override
     public void resetDatabase() throws SQLException {
         this.orderRepository.resetDatabase();
     }
 
+    @Override
     public void populateDatabase() throws SQLException {
         this.orderRepository.populateDatabase();
     }

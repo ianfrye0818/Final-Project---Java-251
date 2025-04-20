@@ -2,7 +2,6 @@ package views;
 
 import components.StyledInputs;
 import components.Typography;
-import controllers.AppController;
 import enums.ViewType;
 import listeners.AccountListeners;
 import stores.AuthStore;
@@ -27,10 +26,8 @@ public class UpdateAccountView extends SuperView {
     private JButton backButton;
     private AuthStore authStore;
 
-    private final List<Component> tabOrder = new ArrayList<>();
-
-    public UpdateAccountView(AppController controller) {
-        super(controller, "Update Account");
+    public UpdateAccountView() {
+        super("Update Account");
         authStore = AuthStore.getInstance();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -173,8 +170,17 @@ public class UpdateAccountView extends SuperView {
 
         backButton.addActionListener(listeners.getBackButtonListener(ViewType.COFFEE_MENU_VIEW));
         updateButton.addActionListener(
-                listeners.getUpdateAccountButtonListener(AuthStore.getInstance().get().getCustomerId()));
+                listeners.getUpdateAccountButtonListener(
+                        AuthStore
+                                .getInstance()
+                                .get()
+                                .getCustomerId(),
+                        AuthStore
+                                .getInstance()
+                                .get().
+                                getCreditLimit()));
 
+        List<Component> tabOrder = new ArrayList<>();
         tabOrder.add(firstNameField);
         tabOrder.add(lastNameField);
         tabOrder.add(emailField);

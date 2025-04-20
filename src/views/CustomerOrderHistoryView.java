@@ -2,7 +2,6 @@ package views;
 
 import components.StyledInputs;
 import components.Typography;
-import controllers.AppController;
 import entites.Customer;
 import entites.Order;
 import enums.ViewType;
@@ -14,13 +13,13 @@ import java.awt.*;
 import java.util.List;
 
 public class CustomerOrderHistoryView extends SuperView {
-    private Customer currentCustomer;
-    private List<Order> customerOrders;
+    private final Customer currentCustomer;
+    private final List<Order> customerOrders;
 
-    public CustomerOrderHistoryView(AppController controller) {
-        super(controller, "Order History");
+    public CustomerOrderHistoryView() {
+        super("Order History");
+        currentCustomer = AuthStore.getInstance().get();
         AuthStore authStore = AuthStore.getInstance();
-
         this.customerOrders = controller.getOrderService().getOrdersByCustomerId(authStore.get().getCustomerId());
 
         setMinimumSize(new Dimension(800, 600));

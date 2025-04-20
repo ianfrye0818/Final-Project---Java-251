@@ -2,7 +2,6 @@ package views;
 
 import components.StyledInputs;
 import components.Typography;
-import controllers.AppController;
 import listeners.LoginViewListeners;
 
 import javax.swing.*;
@@ -10,8 +9,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class LoginView extends SuperView {
-    public LoginView(AppController controller) {
-        super(controller, "Login");
+    public LoginView() {
+        super("Login");
 
         setMinimumSize(new Dimension(400, 220));
         setLayout(new BorderLayout());
@@ -74,8 +73,8 @@ public class LoginView extends SuperView {
     }
 
     private void addFormField(JPanel panel, GridBagConstraints gbc,
-            String labelText, JComponent field,
-            int gridY) {
+                              String labelText, JComponent field,
+                              int gridY) {
 
         JLabel label = new Typography.StyledLabel(labelText);
         gbc.gridy = gridY;

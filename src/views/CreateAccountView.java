@@ -2,14 +2,14 @@ package views;
 
 import components.StyledInputs;
 import components.Typography;
-import controllers.AppController;
 import enums.ViewType;
 import listeners.AccountListeners;
-import java.util.List;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CreateAccountView extends SuperView {
     private List<Component> tabOrder = new ArrayList<>();
@@ -25,8 +25,8 @@ public class CreateAccountView extends SuperView {
     private JButton backButton;
     private JButton createButton;
 
-    public CreateAccountView(AppController controller) {
-        super(controller, "Create Account");
+    public CreateAccountView() {
+        super("Create Account");
         setMinimumSize(new Dimension(800, 600));
         getContentPane().setBackground(new Color(245, 245, 245));
 

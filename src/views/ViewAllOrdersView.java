@@ -4,16 +4,16 @@ import components.StyledInputs;
 import components.TableJPanel;
 import components.TitlePanel;
 import components.tables.OrderTable;
-import controllers.AppController;
 import entites.Order;
 import utils.DialogUtils;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class ViewAllOrdersView extends SuperView {
-    public ViewAllOrdersView(AppController controller) {
-        super(controller, "All Orders");
+    public ViewAllOrdersView() {
+        super("All Orders");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1000, 650));
