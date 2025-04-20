@@ -1,26 +1,14 @@
 package stores;
 
-import Interfaces.IStore;
 import entites.Customer;
 
-public class AuthStore implements IStore<Customer> {
+public class AuthStore extends BaseStore<Customer> {
+    private static final AuthStore instance = new AuthStore();
 
-    private Customer currentCustomer;
-
-    @Override
-    public void set(Customer customer) {
-        this.currentCustomer = customer;
-
+    private AuthStore() {
     }
 
-    @Override
-    public void clear() {
-        this.currentCustomer = null;
+    public static AuthStore getInstance() {
+        return instance;
     }
-
-    @Override
-    public Customer get() {
-        return this.currentCustomer;
-    }
-
 }

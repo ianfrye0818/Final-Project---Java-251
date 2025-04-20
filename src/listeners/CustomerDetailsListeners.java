@@ -6,6 +6,7 @@ import java.util.Objects;
 import controllers.AppController;
 import entites.Customer;
 import enums.ViewType;
+import stores.AuthStore;
 import utils.DialogUtils;
 import views.SuperView;
 
@@ -25,7 +26,7 @@ public class CustomerDetailsListeners {
       try {
         String message = "";
         // check if account being deleted is current account
-        Customer currentCustomer = controller.getLoggedinCustomerStore().get();
+        Customer currentCustomer = AuthStore.getInstance().get();
         System.out.println("currentCustomer: " + currentCustomer.getCustomerId());
         System.out.println("customerId: " + customerId);
         if (Objects.equals(customerId, currentCustomer.getCustomerId())) {

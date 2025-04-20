@@ -5,6 +5,7 @@ import components.Typography;
 import controllers.AppController;
 import entites.Customer;
 import listeners.CustomerDetailsListeners;
+import stores.SelectedCustomerStore;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,7 +15,7 @@ public class CustomerDetailView extends SuperView {
 
     public CustomerDetailView(AppController controller) {
         super(controller, "Customer Details");
-        Customer selectedCustomer = controller.getSelectedCustomerStore().get();
+        Customer selectedCustomer = SelectedCustomerStore.getInstance().get();
 
         CustomerDetailsListeners listeners = new CustomerDetailsListeners(controller, this);
         setLayout(new BorderLayout());

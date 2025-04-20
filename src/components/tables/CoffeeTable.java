@@ -4,6 +4,7 @@ import components.StyledTable;
 import controllers.AppController;
 import entites.Coffee;
 import enums.ViewType;
+import stores.CoffeeStore;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -51,7 +52,7 @@ public class CoffeeTable extends StyledTable<Coffee> {
 
     public void handleViewDetails() {
         Coffee selectedCoffee = getSelectedItem();
-        controller.getCoffeeStore().set(selectedCoffee);
+        CoffeeStore.getInstance().set(selectedCoffee);
         controller.setDisplay(ViewType.UPDATE_COFFEE_VIEW);
     }
 }

@@ -6,6 +6,7 @@ import controllers.AppController;
 import entites.Customer;
 import entites.Order;
 import enums.ViewType;
+import stores.AuthStore;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,8 +19,9 @@ public class CustomerOrderHistoryView extends SuperView {
 
     public CustomerOrderHistoryView(AppController controller) {
         super(controller, "Order History");
+        AuthStore authStore = AuthStore.getInstance();
 
-        this.customerOrders = controller.getOrderService().getOrdersByCustomerId(getLoggedInUser().getCustomerId());
+        this.customerOrders = controller.getOrderService().getOrdersByCustomerId(authStore.get().getCustomerId());
 
         setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());

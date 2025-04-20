@@ -3,9 +3,10 @@ package views;
 import components.StyledInputs;
 import components.Typography;
 import controllers.AppController;
-import entites.Customer;
 import enums.ViewType;
 import listeners.AccountListeners;
+import stores.AuthStore;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -24,12 +25,13 @@ public class UpdateAccountView extends SuperView {
     private JPasswordField passwordField;
     private JButton updateButton;
     private JButton backButton;
+    private AuthStore authStore;
 
     private final List<Component> tabOrder = new ArrayList<>();
 
     public UpdateAccountView(AppController controller) {
         super(controller, "Update Account");
-
+        authStore = AuthStore.getInstance();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(800, 600));
@@ -64,22 +66,22 @@ public class UpdateAccountView extends SuperView {
 
         // First Name
         this.firstNameField = new StyledInputs.StyledTextField();
-        firstNameField.setText(getLoggedInUser().getFirstName());
+        firstNameField.setText(authStore.get().getFirstName());
         addFormField(mainPanel, gbc, "First Name:", firstNameField, 3, 0);
 
         // Last Name
         this.lastNameField = new StyledInputs.StyledTextField();
-        lastNameField.setText(getLoggedInUser().getLastName());
+        lastNameField.setText(authStore.get().getLastName());
         addFormField(mainPanel, gbc, "Last Name:", lastNameField, 4, 0);
 
         // Email
         this.emailField = new StyledInputs.StyledTextField();
-        emailField.setText(getLoggedInUser().getEmail());
+        emailField.setText(authStore.get().getEmail());
         addFormField(mainPanel, gbc, "Email:", emailField, 5, 0);
 
         // Phone
         this.phoneField = new StyledInputs.StyledTextField();
-        phoneField.setText(getLoggedInUser().getPhone());
+        phoneField.setText(authStore.get().getPhone());
         addFormField(mainPanel, gbc, "Phone:", phoneField, 6, 0);
 
         // Right Column - Address Information
@@ -90,12 +92,12 @@ public class UpdateAccountView extends SuperView {
 
         // Street
         this.streetField = new StyledInputs.StyledTextField();
-        streetField.setText(getLoggedInUser().getStreet());
+        streetField.setText(authStore.get().getStreet());
         addFormField(mainPanel, gbc, "Street:", streetField, 3, 1);
 
         // City
         this.cityField = new StyledInputs.StyledTextField();
-        cityField.setText(getLoggedInUser().getCity());
+        cityField.setText(authStore.get().getCity());
         addFormField(mainPanel, gbc, "City:", cityField, 4, 1);
 
         // State and Zip (in one panel)
@@ -109,7 +111,7 @@ public class UpdateAccountView extends SuperView {
         stateLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         statePanel.add(stateLabel, BorderLayout.NORTH);
         this.stateField = new StyledInputs.StyledTextField();
-        stateField.setText(getLoggedInUser().getState());
+        stateField.setText(authStore.get().getState());
         statePanel.add(stateField, BorderLayout.CENTER);
         stateZipPanel.add(statePanel);
 
@@ -120,7 +122,7 @@ public class UpdateAccountView extends SuperView {
         zipLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         zipPanel.add(zipLabel, BorderLayout.NORTH);
         this.zipField = new StyledInputs.StyledTextField();
-        zipField.setText(getLoggedInUser().getZip());
+        zipField.setText(authStore.get().getZip());
         zipPanel.add(zipField, BorderLayout.CENTER);
         stateZipPanel.add(zipPanel);
 
@@ -170,7 +172,8 @@ public class UpdateAccountView extends SuperView {
                 passwordField);
 
         backButton.addActionListener(listeners.getBackButtonListener(ViewType.COFFEE_MENU_VIEW));
-        updateButton.addActionListener(listeners.getUpdateAccountButtonListener(getLoggedInUser().getCustomerId()));
+        updateButton.addActionListener(
+                listeners.getUpdateAccountButtonListener(AuthStore.getInstance().get().getCustomerId()));
 
         tabOrder.add(firstNameField);
         tabOrder.add(lastNameField);

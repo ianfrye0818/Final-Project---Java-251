@@ -1,24 +1,14 @@
 package stores;
 
-import Interfaces.IStore;
 import entites.Order;
 
-public class OrderStore implements IStore<Order> {
-    private Order currentOrder;
+public class OrderStore extends BaseStore<Order> {
+    private static final OrderStore instance = new OrderStore();
 
-    @Override
-    public void set(Order order) {
-        this.currentOrder = order;
+    private OrderStore() {
     }
 
-    @Override
-    public void clear() {
-        this.currentOrder = null;
+    public static OrderStore getInstance() {
+        return instance;
     }
-
-    @Override
-    public Order get() {
-        return this.currentOrder;
-    }
-
 }

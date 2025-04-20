@@ -4,6 +4,7 @@ import components.StyledTable;
 import controllers.AppController;
 import entites.Order;
 import enums.ViewType;
+import stores.OrderStore;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -50,7 +51,7 @@ public class OrderTable extends StyledTable<Order> {
 
         if (selectedOrder != null) {
             Order order = controller.getOrderService().getOrderById(selectedOrder.getOrderId());
-            controller.getOrderStore().set(order);
+            OrderStore.getInstance().set(order);
             controller.setDisplay(ViewType.ORDER_DETAIL_VIEW);
         }
     }

@@ -6,6 +6,8 @@ import components.TitlePanel;
 import components.tables.CustomerTable;
 import controllers.AppController;
 import enums.ViewType;
+import stores.SelectedCustomerStore;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -66,7 +68,7 @@ public class ViewAllCustomersView extends SuperView {
     }
 
     public void handleViewDetails() {
-        setSelectedCustomer(customerTable.getSelectedItem());
+        SelectedCustomerStore.getInstance().set(customerTable.getSelectedItem());
         controller.setDisplay(ViewType.CUSTOMER_DETAIL_VIEW);
     }
 

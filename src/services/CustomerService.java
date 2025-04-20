@@ -1,22 +1,21 @@
 package services;
 
 import entites.Customer;
+import stores.AuthStore;
+
 import java.sql.SQLException;
 import java.util.List;
 
 import Interfaces.ICustomerRepository;
-import controllers.AppController;
 import dto.CreateCustomerDto;
 import dto.UpdateCustomerDto;
 
 public class CustomerService {
 
     private final ICustomerRepository customerRepository;
-    private final AppController controller;
 
-    public CustomerService(ICustomerRepository customerRepository, AppController controller) {
+    public CustomerService(ICustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
-        this.controller = controller;
     }
 
     public List<Customer> getAllCustomers() {
@@ -60,11 +59,11 @@ public class CustomerService {
         if (customer == null) {
             throw new RuntimeException("Invalid email or password");
         }
-        this.controller.getLoggedinCustomerStore().set(customer);
+        AuthStore.getInstance().set(customer);
     }
 
     public void logout() {
-        this.controller.getLoggedinCustomerStore().clear();
+        AuthStore.getInstance().clear();
     }
 
     public void register(CreateCustomerDto customer) {

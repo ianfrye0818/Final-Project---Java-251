@@ -1,11 +1,6 @@
 package views;
 
 import controllers.AppController;
-import entites.Coffee;
-import entites.Customer;
-import entites.Order;
-import enums.ViewType;
-import utils.DialogUtils;
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
@@ -55,94 +50,6 @@ public class SuperView extends JFrame {
         fieldPanel.add(field, BorderLayout.CENTER);
 
         panel.add(fieldPanel, gbc);
-    }
-
-    public boolean isCustomerPresent() {
-        ViewType previousView = controller.getViewManager().getPreviousView();
-        Customer selectedCustomer = controller.getSelectedCustomerStore().get();
-        if (selectedCustomer == null) {
-            DialogUtils.showError(this, "No customer found");
-            controller.setDisplay(previousView);
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isOrderPresent() {
-        ViewType previousView = controller.getViewManager().getPreviousView();
-        Order order = controller.getOrderStore().get();
-        if (order == null) {
-            DialogUtils.showError(this, "No order found");
-            controller.setDisplay(previousView);
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isCoffeePresent() {
-        ViewType previousView = controller.getViewManager().getPreviousView();
-        Coffee coffee = controller.getCoffeeStore().get();
-        if (coffee == null) {
-            DialogUtils.showError(this, "No coffee found");
-            controller.setDisplay(previousView);
-            return false;
-        }
-        return true;
-    }
-
-    public void setSelectedCustomer(Customer customer) {
-        System.out.println("Setting selected customer: " + customer);
-        controller.getSelectedCustomerStore().set(customer);
-    }
-
-    public Customer getSelectedCustomer() {
-        Customer customer = controller.getSelectedCustomerStore().get();
-        System.out.println("Selected customer: " + customer);
-        if (customer == null) {
-            throw new RuntimeException("No customer found");
-        }
-        return customer;
-    }
-
-    public Customer getLoggedInUser() {
-        int currentCustomerId = controller.getLoggedinCustomerStore().get().getCustomerId();
-        if (currentCustomerId == 0) {
-            throw new RuntimeException("No user found");
-        }
-        Customer customer = controller.getCustomerService().getCustomerById(currentCustomerId);
-        System.out.println("Logged in user: " + customer);
-        if (customer == null) {
-            throw new RuntimeException("No user found");
-        }
-        return customer;
-    }
-
-    public Order getSelectedOrder() {
-        Order order = controller.getOrderStore().get();
-        System.out.println("Selected order: " + order);
-        if (order == null) {
-            throw new RuntimeException("No order found");
-        }
-        return order;
-    }
-
-    public Coffee getSelectedCoffee() {
-        Coffee coffee = controller.getCoffeeStore().get();
-        System.out.println("Selected coffee: " + coffee);
-        if (coffee == null) {
-            throw new RuntimeException("No coffee found");
-        }
-        return coffee;
-    }
-
-    public void setSelectedCoffee(Coffee coffee) {
-        System.out.println("Setting selected coffee: " + coffee);
-        controller.getCoffeeStore().set(coffee);
-    }
-
-    public void setSelectedOrder(Order order) {
-        System.out.println("Setting selected order: " + order);
-        controller.getOrderStore().set(order);
     }
 
     protected FocusTraversalPolicy getFocusTraversalPolicy(List<Component> tabOrder) {

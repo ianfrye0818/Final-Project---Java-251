@@ -6,6 +6,9 @@ import entites.Coffee;
 import entites.Customer;
 import entites.Order;
 import enums.ViewType;
+import stores.AuthStore;
+import stores.OrderStore;
+import stores.SelectedCustomerStore;
 import utils.DialogUtils;
 import views.CreateOrderView;
 
@@ -58,12 +61,12 @@ public class CreateOrderViewListeners {
 
             CreateOrderDto order = new CreateOrderDto.Builder()
                     .setCoffeeId(selectedCoffee.getCoffeeId())
-                    .setCustomerId(view.getLoggedInUser().getCustomerId())
+                    .setCustomerId(AuthStore.getInstance().get().getCustomerId())
                     .setQtyOrdered(quantity)
                     .setTotal(total)
                     .build();
 
-            Customer loggedInCustomer = view.getLoggedInUser();
+            Customer loggedInCustomer = AuthStore.getInstance().get();
             if (total > loggedInCustomer.getCreditLimit()) {
                 handleInsufficientCredit(loggedInCustomer.getCreditLimit());
                 return;
@@ -73,7 +76,7 @@ public class CreateOrderViewListeners {
 
                 Order createdOrder = appController.getOrderService().createOrder(order);
                 System.out.println("Created order: " + createdOrder);
-                view.setSelectedOrder(createdOrder);
+                OrderStore.getInstance().set(createdOrder);
                 appController.setDisplay(ViewType.ORDER_DETAIL_VIEW);
             } catch (Exception ex) {
                 DialogUtils.showError(view, "Error placing order: " + ex.getMessage());
@@ -106,28 +109,10 @@ public class CreateOrderViewListeners {
                 message + "\nWould you like to update your account to add more credit?");
 
         if (confirmation) {
-            appController.getSelectedCustomerStore().set(appController.getLoggedinCustomerStore().get());
+            // appController.getSelectedCustomerStore().set(appController.getLoggedinCustomerStore().get());
+            SelectedCustomerStore.getInstance().set(AuthStore.getInstance().get());
             DialogUtils.showAddCreditDialog(view, appController);
         }
     }
-
-    // private void setOrder(CreateOrderDto dto) {
-    // Customer currentCustomer = appController.getLoggedinCustomerStore().get();
-    // appController.getOrderStore().set(
-    // new Order.Builder()
-    // .setQtyOrdered(dto.getQtyOrdered())
-    // .setTotal(dto.getTotal())
-    // .setCustomer(new OrderCustomerDto.Builder()
-    // .setCustomerId(currentCustomer.getCustomerId())
-    // .setCustomerEmail(currentCustomer.getEmail())
-    // .setCustomerName(currentCustomer.getFirstName() + " " +
-    // currentCustomer.getLastName())
-    // .setCustomerPhone(currentCustomer.getPhone())
-    // .build())
-    // .setCoffee(new OrderCoffeeDto.Builder()
-    // .setCoffeeId(dto.getCoffeeId())
-    // .build())
-    // .build());
-    // }
 
 }

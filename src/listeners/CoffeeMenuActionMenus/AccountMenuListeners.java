@@ -2,6 +2,8 @@ package listeners.CoffeeMenuActionMenus;
 
 import controllers.AppController;
 import enums.ViewType;
+import stores.AuthStore;
+import stores.SelectedCustomerStore;
 import utils.DialogUtils;
 import views.SuperView;
 
@@ -10,15 +12,20 @@ import java.awt.event.ActionListener;
 public class AccountMenuListeners {
     private final AppController controller;
     private final SuperView view;
+    AuthStore authStore;
+    SelectedCustomerStore selectedCustomerStore;
 
     public AccountMenuListeners(AppController controller, SuperView view) {
         this.controller = controller;
         this.view = view;
+        authStore = AuthStore.getInstance();
+        selectedCustomerStore = SelectedCustomerStore.getInstance();
     }
 
     public ActionListener getUpdateAccountActionListener() {
         return e -> {
-            view.setSelectedCustomer(view.getLoggedInUser());
+            // view.setSelectedCustomer(view.getLoggedInUser());
+            selectedCustomerStore.set(authStore.get());
             controller.setDisplay(ViewType.UPDATE_ACCOUNT_VIEW);
         };
     }
@@ -26,14 +33,16 @@ public class AccountMenuListeners {
     public ActionListener getViewAccountActionListener() {
 
         return e -> {
-            view.setSelectedCustomer(view.getLoggedInUser());
+            // view.setSelectedCustomer(view.getLoggedInUser());
+            selectedCustomerStore.set(authStore.get());
             controller.setDisplay(ViewType.CUSTOMER_DETAIL_VIEW);
         };
     }
 
     public ActionListener getDeleteAccountActionListener(int customerId) {
         return e -> {
-            view.setSelectedCustomer(view.getLoggedInUser());
+            // view.setSelectedCustomer(view.getLoggedInUser());
+            selectedCustomerStore.set(authStore.get());
             boolean confirmation = DialogUtils.showConfirmation(
                     view,
                     "You are trying to delete your own account.\nPlease note that this action is irreversible.\nAfter deletion, you current session will persist, but you will not be able to login again.");
@@ -41,7 +50,7 @@ public class AccountMenuListeners {
             // Delete Account
             if (confirmation) {
                 controller.getCustomerService().deleteCustomer(customerId);
-                controller.getLoggedinCustomerStore().clear();
+
                 controller.setDisplay(ViewType.LOGIN_VIEW);
             }
         };
@@ -49,7 +58,7 @@ public class AccountMenuListeners {
 
     public ActionListener getLogoutActionListener() {
         return e -> {
-            controller.getSelectedCustomerStore().clear();
+            authStore.clear();
             controller.getCustomerService().logout();
             controller.setDisplay(ViewType.LOGIN_VIEW);
         };
@@ -57,20 +66,10 @@ public class AccountMenuListeners {
 
     public ActionListener getAddCreditsActionListener() {
         return e -> {
-            view.setSelectedCustomer(view.getLoggedInUser());
+            // view.setSelectedCustomer(view.getLoggedInUser());
+            selectedCustomerStore.set(authStore.get());
             DialogUtils.showAddCreditDialog(view, controller);
         };
     }
 
-    // private void setSelectedCustomer() {
-    // Customer loggedInCustomer = controller.getLoggedinCustomerStore().get();
-    // if (loggedInCustomer == null) {
-    // DialogUtils.showError(view, "No customer logged in");
-    // return;
-    // }
-    // System.out.println("Setting selected customer: " + loggedInCustomer);
-    // controller.getSelectedCustomerStore().set(loggedInCustomer);
-    // System.out.println("Selected customer: " +
-    // controller.getSelectedCustomerStore().get());
-    // }
 }

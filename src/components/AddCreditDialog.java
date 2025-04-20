@@ -3,6 +3,8 @@ package components;
 import controllers.AppController;
 import dto.UpdateCustomerDto;
 import entites.Customer;
+import stores.SelectedCustomerStore;
+import stores.AuthStore;
 import utils.DialogUtils;
 
 import javax.swing.*;
@@ -16,7 +18,7 @@ public class AddCreditDialog extends JDialog {
 
     public AddCreditDialog(JFrame parentView, AppController controller) {
         super(parentView, "Add Credit", true);
-        this.currentCustomer = controller.getSelectedCustomerStore().get();
+        this.currentCustomer = SelectedCustomerStore.getInstance().get();
 
         // Set dialog styling
         setBackground(new Color(245, 245, 245));
@@ -148,6 +150,11 @@ public class AddCreditDialog extends JDialog {
                 Customer updatedCustomer = controller.getCustomerService()
                         .updateCustomer(UpdateCustomerDto.fromCustomer(currentCustomer));
                 if (updatedCustomer != null) {
+                    // If the updated customer is the currently logged-in user, update the AuthStore
+                    Customer loggedInUser = AuthStore.getInstance().get();
+                    if (loggedInUser != null && loggedInUser.getCustomerId() == updatedCustomer.getCustomerId()) {
+                        AuthStore.getInstance().set(updatedCustomer);
+                    }
                     dispose();
                     controller.getViewManager().refreshCurrentView();
                 } else {

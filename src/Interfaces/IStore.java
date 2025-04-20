@@ -7,4 +7,9 @@ public interface IStore<T> {
     public void clear();
 
     public T get();
+
+    public void subscribe(Runnable listener);
+
+    public void unsubscribe(Runnable listener);
+
 }

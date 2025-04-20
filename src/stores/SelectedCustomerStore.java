@@ -1,25 +1,16 @@
 package stores;
 
-import Interfaces.IStore;
 import entites.Customer;
 
-public class SelectedCustomerStore implements IStore<Customer> {
+public class SelectedCustomerStore extends BaseStore<Customer> {
 
-  private Customer selectedCustomer;
+  private static final SelectedCustomerStore instance = new SelectedCustomerStore();
 
-  @Override
-  public void set(Customer t) {
-    this.selectedCustomer = t;
+  private SelectedCustomerStore() {
   }
 
-  @Override
-  public void clear() {
-    this.selectedCustomer = null;
-  }
-
-  @Override
-  public Customer get() {
-    return this.selectedCustomer;
+  public static SelectedCustomerStore getInstance() {
+    return instance;
   }
 
 }

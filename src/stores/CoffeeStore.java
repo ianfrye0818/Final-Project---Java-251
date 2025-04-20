@@ -1,22 +1,14 @@
 package stores;
 
-import Interfaces.IStore;
 import entites.Coffee;
 
-public class CoffeeStore implements IStore<Coffee> {
-    private Coffee currentCoffee;
+public class CoffeeStore extends BaseStore<Coffee> {
+    private static final CoffeeStore instance = new CoffeeStore();
 
-    public void set(Coffee coffee) {
-        this.currentCoffee = coffee;
+    private CoffeeStore() {
     }
 
-    @Override
-    public void clear() {
-        this.currentCoffee = null;
-    }
-
-    @Override
-    public Coffee get() {
-        return this.currentCoffee;
+    public static CoffeeStore getInstance() {
+        return instance;
     }
 }
