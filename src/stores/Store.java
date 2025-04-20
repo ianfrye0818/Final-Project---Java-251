@@ -5,7 +5,7 @@ import java.util.List;
 
 import Interfaces.IStore;
 
-public class BaseStore<T> implements IStore<T> {
+public class Store<T> implements IStore<T> {
   private T state;
   private final List<Runnable> listeners = new ArrayList<>();
 

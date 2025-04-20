@@ -2,7 +2,7 @@ package stores;
 
 import entites.Customer;
 
-public class SelectedCustomerStore extends BaseStore<Customer> {
+public class SelectedCustomerStore extends Store<Customer> {
 
   private static final SelectedCustomerStore instance = new SelectedCustomerStore();
 
