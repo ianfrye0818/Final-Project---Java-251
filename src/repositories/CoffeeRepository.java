@@ -299,46 +299,15 @@ public class CoffeeRepository implements ICoffeeRepository {
     }
 
     /**
-     * Drops the 'COFFEE' table from the database if it exists. Any errors during
-     * the drop operation are logged but do not halt the execution.
+     * Drops the 'COFFEE' table from the database if it exists.
+     * Creates the 'COFFEE' table in the database with the necessary columns and
+     * constraints.
      *
      * @throws SQLException If a database error occurs during the drop operation.
      */
     @Override
     public void resetDatabase() throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
-            // First disable foreign key constraints
-            stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
-
-            // Drop the table
-            stmt.executeUpdate("DROP TABLE COFFEE");
-
-            // Re-enable foreign key constraints
-            stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
-
-            // Create the table
-            createTable();
-        } catch (SQLException ex) {
-            System.out.println("Failed to reset COFFEE table: " + ex.getMessage());
-            try {
-                // Make sure to re-enable constraints even if there's an error
-                connection.createStatement().execute("SET REFERENTIAL_INTEGRITY TRUE");
-            } catch (SQLException e) {
-                System.out.println("Failed to re-enable referential integrity: " + e.getMessage());
-            }
-            throw ex;
-        }
-    }
-
-    /**
-     * Creates the 'COFFEE' table in the database with the necessary columns and
-     * constraints.
-     * Any errors during the create operation are logged and rethrown as an
-     * SQLException.
-     *
-     * @throws SQLException If a database error occurs during the table creation.
-     */
-    private void createTable() throws SQLException {
+        String dropSQL = "DROP TABLE COFFEE";
         String createSQL = """
                 CREATE TABLE COFFEE (
                   COFFEE_ID          INTEGER   GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_COFFEE_ID PRIMARY KEY,
@@ -349,10 +318,14 @@ public class CoffeeRepository implements ICoffeeRepository {
                 )
                 """;
         try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(dropSQL);
+        } catch (SQLException ex) {
+            System.out.println("Failed to drop table COFFEE: " + ex.getMessage());
+        }
+        try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createSQL);
         } catch (SQLException ex) {
             System.out.println("Failed to create table COFFEE: " + ex.getMessage());
-            throw ex; // Re-throw the exception to be handled by the caller
         }
     }
 

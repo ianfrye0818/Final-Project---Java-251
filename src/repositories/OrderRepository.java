@@ -361,61 +361,35 @@ public class OrderRepository implements IOrderRepository {
     }
 
     /**
-     * Drops the 'COFFEE_ORDER' table from the database if it exists. Any errors
-     * during the drop operation are logged but do not halt the execution. After
-     * dropping, it calls {@link #createTable()} to recreate the table.
-     */
-    @Override
-    public void resetDatabase() {
-        try (Statement stmt = connection.createStatement()) {
-            // First disable foreign key constraints
-            stmt.execute("SET REFERENTIAL_INTEGRITY FALSE");
-
-            // Drop the table
-            stmt.executeUpdate("DROP TABLE COFFEE_ORDER");
-
-            // Re-enable foreign key constraints
-            stmt.execute("SET REFERENTIAL_INTEGRITY TRUE");
-
-            // Create the table
-            createTable();
-        } catch (SQLException ex) {
-            System.out.println("Failed to reset COFFEE_ORDER table: " + ex.getMessage());
-            try {
-                // Make sure to re-enable constraints even if there's an error
-                connection.createStatement().execute("SET REFERENTIAL_INTEGRITY TRUE");
-            } catch (SQLException e) {
-                System.out.println("Failed to re-enable referential integrity: " + e.getMessage());
-            }
-        }
-    }
-
-    /**
+     * Drops the 'COFFEE_ORDER' table from the database if it exists.
      * Creates the 'COFFEE_ORDER' table in the database with the necessary columns
-     * and foreign key constraints referencing 'CUSTOMER' and 'COFFEE' tables.
-     * Any errors during the create operation are logged and rethrown as an
-     * SQLException.
+     * and constraints.
      *
      * @throws SQLException If a database error occurs during the table creation.
      */
-    private void createTable() throws SQLException {
+    @Override
+    public void resetDatabase() {
+        String dropSQL = "DROP TABLE COFFEE_ORDER";
         String createSQL = """
                 CREATE TABLE COFFEE_ORDER (
                   ORDER_ID          INTEGER   GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_ORDER_ID PRIMARY KEY,
                   CUSTOMER_ID       INTEGER   NOT NULL,
                   COFFEE_ID         INTEGER   NOT NULL,
                   QUANTITY_ORDERED  DOUBLE    NOT NULL,
-                  TOTAL_PRICE       DOUBLE    NOT NULL,
-                  FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMER(CUSTOMER_ID),
-                  FOREIGN KEY (COFFEE_ID) REFERENCES COFFEE(COFFEE_ID) ON DELETE CASCADE
+                  TOTAL_PRICE       DOUBLE    NOT NULL
                 )
                 """;
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(dropSQL);
+        } catch (SQLException ex) {
+            System.out.println("Failed to drop table COFFEE_ORDER: " + ex.getMessage());
+        }
 
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createSQL);
         } catch (SQLException ex) {
             System.out.println("Failed to create table COFFEE_ORDER: " + ex.getMessage());
-            throw ex; // Re-throw the exception to be handled by the caller
         }
     }
 

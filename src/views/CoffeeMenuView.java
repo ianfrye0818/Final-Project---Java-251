@@ -32,6 +32,7 @@ public class CoffeeMenuView extends SuperView {
     private final JMenuItem currentUserItem;
     private final JMenuItem creditsItem;
     private final AuthStore authStore;
+    private CoffeeTable coffeeTable;
 
     /**
      * Constructs the {@code CoffeeMenuView}, initializing its UI components,
@@ -45,7 +46,7 @@ public class CoffeeMenuView extends SuperView {
         CoffeeMenuActionListeners coffeeMenuActionListeners = new CoffeeMenuActionListeners(controller);
         CoffeeMenuListeners coffeeMenuListeners = new CoffeeMenuListeners(controller);
         AccountMenuListeners accountMenuListeners = new AccountMenuListeners(controller, this);
-        AdminMenuListeners adminMenuListeners = new AdminMenuListeners(controller);
+        AdminMenuListeners adminMenuListeners = new AdminMenuListeners(controller, this);
 
         setMinimumSize(new Dimension(850, 650));
         getContentPane().setBackground(new Color(245, 245, 245));
@@ -53,7 +54,7 @@ public class CoffeeMenuView extends SuperView {
         JPanel titlePanel = new TitlePanel("Our Coffee Selection");
         add(titlePanel, BorderLayout.NORTH);
 
-        CoffeeTable coffeeTable = new CoffeeTable(controller);
+        coffeeTable = new CoffeeTable(controller);
 
         JScrollPane scrollPane = new JScrollPane(coffeeTable);
         scrollPane.setBorder(new EmptyBorder(0, 20, 0, 20));
@@ -147,7 +148,7 @@ public class CoffeeMenuView extends SuperView {
     }
 
     /**
-     * Updates the displayed customer information (email and credits) in the menu
+     * Updates the displayed customer infoprmation (email and credits) in the menu
      * bar. This method is called whenever the authenticated customer in the
      * {@link AuthStore} changes.
      */
@@ -160,5 +161,12 @@ public class CoffeeMenuView extends SuperView {
             currentUserItem.setText("Not logged in");
             creditsItem.setText("Credits: $0.00");
         }
+    }
+
+    public void refreshTable() {
+        System.out.println("Refreshing table");
+        coffeeTable.loadData(); // Explicitly load the data
+        this.revalidate(); // Ensure the UI updates
+        this.repaint(); // Repaint the component
     }
 }

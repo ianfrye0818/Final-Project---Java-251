@@ -6,6 +6,7 @@ import Interfaces.IOrderService;
 import controllers.AppController;
 import enums.ViewType;
 import utils.DialogUtils;
+import views.CoffeeMenuView;
 import views.SuperView;
 
 import java.awt.event.ActionListener;
@@ -29,6 +30,7 @@ public class AdminMenuListeners {
     private final ICustomerService customerService;
     private final ICoffeeService coffeeService;
     private final IOrderService orderService;
+    private final CoffeeMenuView coffeeMenuView;
 
     /**
      * Constructs a new {@code AdminMenuListeners} with the specified application
@@ -39,11 +41,12 @@ public class AdminMenuListeners {
      * @param controller The application controller providing access to services and
      *                   navigation.
      */
-    public AdminMenuListeners(AppController controller) {
+    public AdminMenuListeners(AppController controller, CoffeeMenuView coffeeMenuView) {
         this.controller = controller;
         this.customerService = controller.getCustomerService();
         this.coffeeService = controller.getCoffeeService();
         this.orderService = controller.getOrderService();
+        this.coffeeMenuView = coffeeMenuView;
     }
 
     /**
@@ -101,6 +104,7 @@ public class AdminMenuListeners {
             clearDatabase(parent);
             populateDatabase(parent);
             DialogUtils.showSuccess(parent, "Database populated successfully");
+            coffeeMenuView.refreshTable();
             controller.setDisplay(ViewType.COFFEE_MENU_VIEW);
         };
     }
@@ -126,7 +130,7 @@ public class AdminMenuListeners {
             orderService.resetDatabase();
             customerService.resetDatabase();
             coffeeService.resetDatabase();
-
+            coffeeMenuView.refreshTable();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             DialogUtils.showError(parent, "Error resetting database");

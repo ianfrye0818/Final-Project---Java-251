@@ -344,33 +344,15 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     /**
-     * Drops the 'CUSTOMER' table from the database if it exists. Any errors during
-     * the drop operation are logged but do not halt the execution. After dropping,
-     * it calls {@link #createTable()} to recreate the table.
+     * Drops the 'CUSTOMER' table from the database if it exists.
+     * Creates the 'CUSTOMER' table in the database with the necessary columns and
+     * constraints.
      *
      * @throws SQLException If a database error occurs during the drop or create
      *                      operation.
      */
-    @Override
     public void resetDatabase() throws SQLException {
         String dropSQL = "DROP TABLE CUSTOMER";
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate(dropSQL);
-        } catch (SQLException ex) {
-            System.out.println("Failed to drop table CUSTOMER: " + ex.getMessage());
-        }
-        createTable();
-    }
-
-    /**
-     * Creates the 'CUSTOMER' table in the database with the necessary columns and
-     * constraints.
-     * Any errors during the create operation are logged and rethrown as an
-     * SQLException.
-     *
-     * @throws SQLException If a database error occurs during the table creation.
-     */
-    private void createTable() throws SQLException {
         String createSQL = """
                 CREATE TABLE CUSTOMER (
                   CUSTOMER_ID         INTEGER         GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) CONSTRAINT PK_CUSTOMER_ID PRIMARY KEY,
@@ -386,10 +368,15 @@ public class CustomerRepository implements ICustomerRepository {
                 )
                 """;
         try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(dropSQL);
+        } catch (SQLException ex) {
+            System.out.println("Failed to drop table CUSTOMER: " + ex.getMessage());
+        }
+
+        try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate(createSQL);
         } catch (SQLException ex) {
             System.out.println("Failed to create table CUSTOMER: " + ex.getMessage());
-            throw ex; // Re-throw the exception to be handled by the caller
         }
     }
 

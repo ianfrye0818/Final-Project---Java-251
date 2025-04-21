@@ -74,7 +74,7 @@ public class CustomerDetailsListeners {
         System.out.println("currentCustomer: " + currentCustomer.getCustomerId());
         System.out.println("customerId: " + customerId);
         if (Objects.equals(customerId, currentCustomer.getCustomerId())) {
-          message = "You are trying to delete your own account.\nPlease note that this action is irreversible.\nAfter deletion, your current session will persist, but you will not be able to login again.";
+          message = "You are trying to delete your own account.\nPlease note that this action is irreversible.\nAfter deletion, your current session end and you will not be able to login with this account again";
         } else {
           message = "Are you sure you want to delete this account?";
         }
@@ -86,7 +86,12 @@ public class CustomerDetailsListeners {
 
         controller.getCustomerService().deleteCustomer(customerId);
         DialogUtils.showSuccess(view, "Account deleted successfully");
-        controller.setDisplay(returningView);
+        if (Objects.equals(customerId, currentCustomer.getCustomerId())) {
+          AuthStore.getInstance().clear();
+          controller.setDisplay(ViewType.LOGIN_VIEW);
+        } else {
+          controller.setDisplay(returningView);
+        }
       } catch (Exception ex) {
         DialogUtils.showError(view, "Failed to delete account.");
       }

@@ -60,10 +60,16 @@
 
 #### Tests 04/19/2025
 
-~~ - Create Coffee ~~ ~~ - View Coffees~~ ~~ - Delete Coffee~~ ~~ - Update Coffee~~
-
-- Create Account
-- Add Credits from account menu
-- Add credits from view account details menu
-- Update Account
--
+- Coffee
+  - Create
+  - Read
+  - Update
+  - Delete
+- User/Customer
+  - Create
+  - Read
+  - Update
+  - Delete
+- Order
+  - Create
+  - Read
