@@ -1,12 +1,13 @@
 package views;
 
 import components.StyledInputs;
-import components.TitlePanel;
+import components.Typography;
 import components.tables.CoffeeTable;
 import listeners.CoffeeMenuActionListeners;
 import listeners.CoffeeMenuActionMenus.AccountMenuListeners;
 import listeners.CoffeeMenuActionMenus.AdminMenuListeners;
 import listeners.CoffeeMenuActionMenus.CoffeeMenuListeners;
+import services.ImageIconService;
 import stores.AuthStore;
 
 import javax.swing.*;
@@ -51,11 +52,38 @@ public class CoffeeMenuView extends SuperView {
         setMinimumSize(new Dimension(850, 650));
         getContentPane().setBackground(new Color(245, 245, 245));
 
-        JPanel titlePanel = new TitlePanel("Our Coffee Selection");
-        add(titlePanel, BorderLayout.NORTH);
+        // JPanel titlePanel = new TitlePanel("Our Coffee Selection");
+        // add(titlePanel, BorderLayout.NORTH);
 
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setBackground(new Color(245, 245, 245));
+
+        // Get the logo image icon
+        ImageIcon logoIcon = ImageIconService.getImageIcon();
+        if (logoIcon != null) {
+            // Resize the logo image icon
+            ImageIcon resizedIcon = ImageIconService.resizeImageIcon(logoIcon, 50, 50);
+            JLabel logoLabel = new JLabel(resizedIcon);
+            logoLabel.setBorder(new EmptyBorder(10, 20, 10, 10));
+
+            // Get the title label
+            JLabel titleLabel = new Typography.StyledTitleField("Our Coffee Selection");
+            titleLabel.setForeground(new Color(79, 55, 48));
+            titleLabel.setHorizontalAlignment(JLabel.CENTER);
+
+            // Add the logo label and title label to the title panel
+            titlePanel.add(logoLabel, BorderLayout.WEST);
+            titlePanel.add(titleLabel, BorderLayout.CENTER);
+
+            // Add the title panel to the top of the frame
+            add(titlePanel, BorderLayout.NORTH);
+
+        }
+
+        // Create the coffee table
         coffeeTable = new CoffeeTable(controller);
 
+        // Create the scroll pane for the coffee table
         JScrollPane scrollPane = new JScrollPane(coffeeTable);
         scrollPane.setBorder(new EmptyBorder(0, 20, 0, 20));
         this.add(scrollPane, BorderLayout.CENTER);
@@ -84,6 +112,7 @@ public class CoffeeMenuView extends SuperView {
         JMenuItem addCreditsItem = new JMenuItem("Add Credits");
         JMenuItem logoutItem = new JMenuItem("Logout");
 
+        // Account Menu Items
         accountMenu.add(currentUserItem);
         accountMenu.add(creditsItem);
         accountMenu.addSeparator();
@@ -153,6 +182,7 @@ public class CoffeeMenuView extends SuperView {
      * {@link AuthStore} changes.
      */
     private void updateCustomerInfo() {
+        System.out.println("Updating customer info");
         if (authStore.get() != null) {
             currentUserItem.setText("Logged in as: " + authStore.get().getEmail());
             creditsItem.setText(
@@ -163,6 +193,10 @@ public class CoffeeMenuView extends SuperView {
         }
     }
 
+    /**
+     * Refreshes the {@link CoffeeTable} by reloading the data and repainting the
+     * component.
+     */
     public void refreshTable() {
         System.out.println("Refreshing table");
         coffeeTable.loadData(); // Explicitly load the data

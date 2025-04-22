@@ -68,8 +68,8 @@ public class OrderTable extends StyledTable<Order> {
                     order.getOrderId(),
                     order.getCustomer().getCustomerName(),
                     order.getCoffee().getCoffeeName(),
-                    order.getQtyOrdered(),
-                    order.getTotal()
+                    (int) order.getQtyOrdered(),
+                    String.format("$%.2f", order.getTotal())
             });
         }
 

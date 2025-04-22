@@ -176,9 +176,7 @@ public class OrderRepository implements IOrderRepository {
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int orderId = generatedKeys.getInt(1);
-                    System.out.println("Order ID: " + orderId);
                     Order foundOrder = findById(orderId);
-                    System.out.println("Found order: " + foundOrder);
                     return foundOrder;
                 }
             }

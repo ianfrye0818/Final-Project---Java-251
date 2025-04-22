@@ -8,6 +8,7 @@ import dto.UpdateCustomerDto;
 import dto.UpdateOrderDto;
 import entites.Customer;
 import entites.Order;
+import stores.AuthStore;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -95,11 +96,16 @@ public class OrderService implements IOrderService {
     public Order createOrder(CreateOrderDto order) {
         // save the order
         Order newOrder = this.orderRepository.save(order);
-        // update the customer's credit limit
+        // Get the customer the order is associated with
         Customer orderCustomer = this.customerRepository.findById(order.getCustomerId());
+        // Update the customer's credit limit
         UpdateCustomerDto dto = UpdateCustomerDto.fromCustomer(orderCustomer);
         dto.setCreditLimit(orderCustomer.getCreditLimit() - order.getTotal());
-        this.customerRepository.update(dto);
+        Customer updatedCustomer = this.customerRepository.update(dto);
+        // reset the customer in the auth store
+
+        System.out.println("Updated customer: " + updatedCustomer);
+        AuthStore.getInstance().set(updatedCustomer);
         // return the order
         return newOrder;
     }

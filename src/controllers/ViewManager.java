@@ -2,13 +2,14 @@ package controllers;
 
 import enums.ViewType;
 import views.*;
+
 import java.awt.*;
 
 /**
  * Manages the display of different views within the application.
  * It keeps track of the current and previous views, disposes of old views,
  * and creates and displays new ones based on the requested {@link ViewType}.
- * 
+ *
  * @author Ian Frye
  * @version 1.0
  * @since 2025-04-20
@@ -17,6 +18,7 @@ public class ViewManager {
     private ViewType currentView;
     private ViewType previousView;
     AppController controller;
+    private Point previousLocation = null;
 
     /**
      * Constructs a new {@code ViewManager} associated with the given application
@@ -88,6 +90,7 @@ public class ViewManager {
             Window[] windows = Window.getWindows();
             for (Window window : windows) {
                 if (window instanceof SuperView) {
+                    previousLocation = window.getLocation();
                     window.dispose();
                 }
             }
@@ -102,7 +105,12 @@ public class ViewManager {
     private void displayNewView() {
         SuperView viewToDisplay = createView(this.currentView);
         viewToDisplay.pack();
-        viewToDisplay.setLocationRelativeTo(null);
+
+        if (previousLocation != null) {
+            viewToDisplay.setLocation(previousLocation);
+        } else {
+            viewToDisplay.setLocationRelativeTo(null);
+        }
         viewToDisplay.setVisible(true);
 
     }

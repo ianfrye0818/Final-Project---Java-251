@@ -38,6 +38,9 @@ public class SuperView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setTitle("Java Cafe - " + title);
+
+        ImageIcon appIcon = new ImageIcon("src/assets/images/icon.png");
+        setIconImage(appIcon.getImage());
     }
 
     /**

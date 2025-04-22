@@ -3,10 +3,13 @@ package views;
 import components.StyledInputs;
 import components.Typography;
 import listeners.LoginViewListeners;
+import services.ImageIconService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.io.File;
+import java.net.URL;
 
 /**
  * The initial view presented to the user, providing fields for email and
@@ -42,25 +45,43 @@ public class LoginView extends SuperView {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
 
+        ImageIcon logoIcon = ImageIconService.getImageIcon();
+
+        if (logoIcon != null) {
+            ImageIcon resizedIcon = ImageIconService.resizeImageIcon(logoIcon, 100, 100);
+            JLabel logoLabel = new JLabel(resizedIcon);
+            logoLabel.setHorizontalAlignment(JLabel.CENTER);
+
+            gbc.gridy = 0;
+            gbc.gridx = 0;
+            gbc.gridwidth = 2;
+            gbc.anchor = GridBagConstraints.CENTER;
+            mainPanel.add(logoLabel, gbc);
+
+            gbc.gridy = 1;
+        }
+
         JLabel titleLabel = new Typography.StyledTitleField("Welcome to Coffee Ordering");
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        // gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         mainPanel.add(titleLabel, gbc);
 
-        JLabel subtitleLabel = new Typography.StyledSubtitleField("Please log in to continue");
-        gbc.gridy = 1;
+        JLabel subtitleLabel = new Typography.StyledSubtitleField(
+                "Please log in to continue");
+        gbc.gridy = 2;
         gbc.insets = new Insets(0, 10, 20, 10);
         mainPanel.add(subtitleLabel, gbc);
 
         // Email
         JTextField emailField = new StyledInputs.StyledTextField();
-        addFormField(mainPanel, gbc, "Email:", emailField, 2);
+
+        addFormField(mainPanel, gbc, "Email:", emailField, 3);
 
         // Password
         JPasswordField passwordField = new StyledInputs.StyledPasswordField(20);
-        addFormField(mainPanel, gbc, "Password:", passwordField, 4);
+        addFormField(mainPanel, gbc, "Password:", passwordField, 5);
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonsPanel.setBackground(Color.WHITE);
@@ -71,7 +92,7 @@ public class LoginView extends SuperView {
         JButton loginButton = new StyledInputs.PrimaryButton("Login");
         buttonsPanel.add(loginButton);
 
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(20, 10, 10, 10);
         mainPanel.add(buttonsPanel, gbc);
@@ -115,4 +136,43 @@ public class LoginView extends SuperView {
         gbc.gridy = gridY + 1;
         panel.add(field, gbc);
     }
+
+    // public ImageIcon getLogoIcon() {
+    // ImageIcon logoIcon = null;
+    // try {
+    // URL imageUrl = getClass().getResource("/assets/images/logo.png");
+    // if (imageUrl != null) {
+    // logoIcon = new ImageIcon(imageUrl);
+    // } else {
+    // File imageFile = new File("src/assets/images/logo.png");
+    // if (imageFile.exists()) {
+    // logoIcon = new ImageIcon(imageFile.getAbsolutePath());
+    // }
+    // }
+    // return logoIcon;
+    // } catch (Exception ex) {
+    // System.err.println("Error loading logo icon: " + ex.getMessage());
+    // return null;
+    // }
+    // }
+
+    // public void setImageIcon(ImageIcon icon, JPanel mainPanel) {
+    // if (icon != null) {
+    // Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+    // icon = new ImageIcon(img);
+    // JLabel logoLabel = new JLabel(icon);
+    // logoLabel.setHorizontalAlignment(JLabel.CENTER);
+
+    // GridBagConstraints gbc = new GridBagConstraints();
+    // gbc.gridy = 0;
+    // gbc.gridx = 0;
+    // gbc.gridwidth = 2;
+    // gbc.anchor = GridBagConstraints.CENTER;
+    // mainPanel.add(logoLabel, gbc);
+
+    // gbc.gridy = 1;
+    // } else {
+    // System.err.println("Failed to set image icon");
+    // }
+    // }
 }

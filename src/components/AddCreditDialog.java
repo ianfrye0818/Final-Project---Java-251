@@ -190,6 +190,8 @@ public class AddCreditDialog extends JDialog {
 
         cancelButton.addActionListener(e -> dispose());
 
+        getRootPane().setDefaultButton(addButton);
+
         // Final dialog setup
         setMinimumSize(new Dimension(400, 0));
         pack();

@@ -52,7 +52,7 @@
 
 - Make Create/Update account pages a bit wider
 - Create an action menu:
-  - Move account actions to action menu
+    - Move account actions to action menu
 - Refactor and cleanup
 - Change up p design of pages to make them more wider and the UI/UX better
 - Create a view to display all customers
@@ -61,15 +61,19 @@
 #### Tests 04/19/2025
 
 - Coffee
-  - Create
-  - Read
-  - Update
-  - Delete
+    - Create
+    - Read
+    - Update
+    - Delete
 - User/Customer
-  - Create
-  - Read
-  - Update
-  - Delete
+    - Create
+    - Read
+    - Update
+    - Delete
 - Order
-  - Create
-  - Read
+    - Create
+    - Read
+
+## Bugs
+
+- When placing an order - it does not update the UI with account credits

@@ -103,6 +103,7 @@ public class OrderDetailView extends SuperView {
         gbc.gridy = 9;
         mainPanel.add(buttonPanel, gbc);
 
+        getRootPane().setDefaultButton(backButton);
         add(mainPanel, BorderLayout.CENTER);
         pack();
         setLocationRelativeTo(null);

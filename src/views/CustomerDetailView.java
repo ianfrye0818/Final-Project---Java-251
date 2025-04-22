@@ -125,6 +125,8 @@ public class CustomerDetailView extends SuperView {
         gbc.insets = new Insets(20, 8, 8, 8);
         mainPanel.add(buttonsPanel, gbc);
 
+        getRootPane().setDefaultButton(backButton);
+
         add(mainPanel, BorderLayout.CENTER);
         pack();
         setLocationRelativeTo(null);

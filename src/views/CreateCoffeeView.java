@@ -135,6 +135,7 @@ public class CreateCoffeeView extends SuperView {
         backButton.addActionListener(listeners.getBackButtonListener());
         createButton.addActionListener(listeners.getCreateButtonListener());
 
+        getRootPane().setDefaultButton(createButton);
         pack();
         setLocationRelativeTo(null);
     }

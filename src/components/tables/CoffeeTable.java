@@ -74,7 +74,7 @@ public class CoffeeTable extends StyledTable<Coffee> {
             addRow(new Object[] {
                     coffee.getName(),
                     coffee.getDescription(),
-                    String.format("%.2f", coffee.getPrice()),
+                    String.format("$%.2f", coffee.getPrice()),
                     coffee.getIsInStock() ? "Yes" : "No"
             });
         }
